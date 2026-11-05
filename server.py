@@ -86,6 +86,10 @@ try:
     XOTELO_CITIES = json.loads((ROOT / "xotelo_cities.json").read_text(encoding="utf-8"))
 except (OSError, ValueError):
     XOTELO_CITIES = []
+try:
+    CURATED_HOTELS = json.loads((ROOT / "hoteles_destacados.json").read_text(encoding="utf-8"))
+except (OSError, ValueError):
+    CURATED_HOTELS = []
 _hotels = {}
 _lock = threading.Lock()
 _geo_lock = threading.Lock()
@@ -437,6 +441,16 @@ def add_price_keys(data):
     center = data.get("center")
     hotels = [dict(h) for h in data["hotels"]]
     if center:
+        # Hoteles elegidos a mano: su código no depende de la lista de Xotelo.
+        for group in CURATED_HOTELS:
+            if distance_km(center["lat"], center["lon"], group["lat"], group["lon"]) > XOTELO_CITY_KM:
+                continue
+            for item in group["hotels"]:
+                match = next((h for h in hotels if same_name(h["name"], item["name"])), None)
+                if match:
+                    match["key"] = item["key"]
+                else:
+                    hotels.append({"key": item["key"], "name": item["name"], "kind": "Hotel", "stars": 0, "address": "", "website": "", "lat": item.get("lat"), "lon": item.get("lon")})
         for item in xotelo_list(center):
             geo = item.get("geo") or {}
             lat, lon, key, name = geo.get("latitude"), geo.get("longitude"), item.get("key") or "", item.get("name") or ""
@@ -474,7 +488,11 @@ def api_rates(q):
     except (urllib.error.URLError, TimeoutError, ValueError, OSError) as error:
         raise Unavailable("upstream") from error
     rates = sorted(
-        ({"name": str(r.get("name") or ""), "rate": r["rate"]} for r in result.get("rates") or [] if isinstance(r.get("rate"), (int, float))),
+        (
+            # Los vendedores "SSC_" son la web oficial; su nombre llega traducido a otros idiomas.
+            {"name": "Web oficial" if str(r.get("code") or "").startswith("SSC_") else str(r.get("name") or ""), "rate": r["rate"]}
+            for r in result.get("rates") or [] if isinstance(r.get("rate"), (int, float))
+        ),
         key=lambda r: r["rate"],
     )
     data = {"rates": rates}

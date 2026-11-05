@@ -776,7 +776,8 @@ function renderHotelResults(el, hotels, s, center) {
         fieldsetHtml('Tipo', kinds.map((k) => optHtml('checkbox', 'h_kind', k, k, count((h) => (h.kind || 'Alojamiento') === k), true)).join(''))
         + fieldsetHtml('Estrellas', optHtml('radio', 'h_stars', '0', 'Cualquiera', hotels.length, true)
           + [3, 4, 5].map((n) => optHtml('radio', 'h_stars', n, n === 5 ? '5 estrellas' : `${n} o más`, count((h) => h.stars >= n))).join(''))
-        + fieldsetHtml('Compra directa', optHtml('checkbox', 'h_web', '1', 'Con web oficial', count((h) => h.website))),
+        + fieldsetHtml('Compra directa', optHtml('checkbox', 'h_web', '1', 'Con web oficial', count((h) => h.website))
+          + optHtml('checkbox', 'h_price', '1', 'Con precio', count((h) => h.key))),
       )}
       <div class="layout__main">
         ${sortbarHtml([{ id: 'stars', label: 'Más estrellas' }, { id: 'web', label: 'Web oficial' }, { id: 'name', label: 'Nombre' }])}
@@ -787,7 +788,7 @@ function renderHotelResults(el, hotels, s, center) {
           <span class="zones__i zones__i--far">Lejos: más de 3 km</span>
         </p>` : ''}
         <p class="count" data-count></p>
-        <p class="count">Precios de agencias por noche y habitación, según Xotelo. Pueden no incluir impuestos: confirma el precio final antes de reservar.</p>
+        <p class="count">Precios orientativos según Xotelo. Pueden ser por noche y no incluir impuestos: confirma el precio final de tu estancia antes de reservar.</p>
         <div class="list" data-results></div>
         <button type="button" class="btn btn--out btn--block more">Ver más alojamientos</button>
         <p class="legal">Datos de alojamientos: © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">colaboradores de OpenStreetMap</a>. Precios: <a href="https://xotelo.com" target="_blank" rel="noopener">Xotelo</a>.</p>
@@ -796,8 +797,8 @@ function renderHotelResults(el, hotels, s, center) {
 
   const byName = (a, b) => a.name.localeCompare(b.name, 'es');
   const sorters = {
-    stars: (a, b) => b.stars - a.stars || byName(a, b),
-    web: (a, b) => Boolean(b.website) - Boolean(a.website) || b.stars - a.stars || byName(a, b),
+    stars: (a, b) => Boolean(b.key) - Boolean(a.key) || b.stars - a.stars || byName(a, b),
+    web: (a, b) => Boolean(b.website) - Boolean(a.website) || Boolean(b.key) - Boolean(a.key) || b.stars - a.stars || byName(a, b),
     name: byName,
   };
   const state = { sort: 'stars', step: HOTELS_STEP, limit: HOTELS_STEP };
@@ -807,8 +808,9 @@ function renderHotelResults(el, hotels, s, center) {
     const chosen = new Set([...form.querySelectorAll('[name=h_kind]:checked')].map((i) => i.value));
     const minStars = Number(form.elements.h_stars.value);
     const needsWeb = form.elements.h_web.checked;
+    const needsPrice = form.elements.h_price.checked;
     const rows = hotels
-      .filter((h) => chosen.has(h.kind || 'Alojamiento') && h.stars >= minStars && (!needsWeb || h.website))
+      .filter((h) => chosen.has(h.kind || 'Alojamiento') && h.stars >= minStars && (!needsWeb || h.website) && (!needsPrice || h.key))
       .sort(sorters[state.sort]);
     el.querySelector('[data-count]').textContent = `${rows.length} de ${hotels.length} alojamientos`;
     el.querySelector('[data-results]').innerHTML = rows.length
@@ -1389,7 +1391,7 @@ function ratesHtml(rates) {
   if (!rates) return 'Precios no disponibles ahora mismo.';
   if (!rates.length) return 'Sin precio disponible para estas fechas.';
   const [best, ...rest] = rates;
-  return `<b class="rates__best">Desde ${esc(money(best.rate))} <small>por noche en ${esc(best.name)}</small></b>
+  return `<b class="rates__best">Desde ${esc(money(best.rate))} <small>en ${esc(best.name)}</small></b>
     ${rest.length ? `<span class="rates__rest">${rest.map((r) => `${esc(r.name)}: ${esc(money(r.rate))}`).join(' · ')}</span>` : ''}`;
 }
 

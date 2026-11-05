@@ -1,0 +1,328 @@
+[
+ {
+  "city": "Roma",
+  "lat": 41.8933,
+  "lon": 12.4829,
+  "hotels": [
+   {
+    "name": "Singer Palace Hotel Roma",
+    "key": "g187791-d13393444",
+    "lat": 41.89898,
+    "lon": 12.48106
+   },
+   {
+    "name": "Dharma Boutique Hotel & Spa",
+    "key": "g187791-d19907141",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Piazza di Spagna 9",
+    "key": "g187791-d6353278",
+    "lat": 41.90564,
+    "lon": 12.48236
+   },
+   {
+    "name": "Albergo del Senato",
+    "key": "g187791-d191099",
+    "lat": 41.89911,
+    "lon": 12.47733
+   },
+   {
+    "name": "The Fifteen Keys Hotel",
+    "key": "g187791-d7619756",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "París",
+  "lat": 48.8566,
+  "lon": 2.3522,
+  "hotels": [
+   {
+    "name": "Hotel Malte Astotel",
+    "key": "g187147-d228694",
+    "lat": 48.86721,
+    "lon": 2.33745
+   },
+   {
+    "name": "Hotel Astra Opera Astotel",
+    "key": "g187147-d229968",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Bradford Elysees Astotel",
+    "key": "g187147-d197946",
+    "lat": 48.8729,
+    "lon": 2.30814
+   },
+   {
+    "name": "Hotel Monge",
+    "key": "g187147-d10328342",
+    "lat": 48.8448,
+    "lon": 2.35246
+   },
+   {
+    "name": "Hotel Maison Mere",
+    "key": "g187147-d228757",
+    "lat": 48.87716,
+    "lon": 2.34517
+   },
+   {
+    "name": "Hotel Residence Henri IV",
+    "key": "g187147-d230491",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Lisboa",
+  "lat": 38.7223,
+  "lon": -9.1393,
+  "hotels": [
+   {
+    "name": "Hotel Da Baixa",
+    "key": "g189158-d13402042",
+    "lat": 38.71214,
+    "lon": -9.13754
+   },
+   {
+    "name": "Corpo Santo Lisbon Historical Hotel",
+    "key": "g189158-d12659702",
+    "lat": 38.70738,
+    "lon": -9.14134
+   },
+   {
+    "name": "Santiago de Alfama Boutique Hotel",
+    "key": "g189158-d7376234",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Casa do Barao",
+    "key": "g189158-d7310894",
+    "lat": 38.70988,
+    "lon": -9.14427
+   },
+   {
+    "name": "Toctoctoc Lisboa",
+    "key": "g189158-d23414869",
+    "lat": 38.71473,
+    "lon": -9.15514
+   },
+   {
+    "name": "Hotel Avenida Palace",
+    "key": "g189158-d195643",
+    "lat": 38.71476,
+    "lon": -9.1411
+   }
+  ]
+ },
+ {
+  "city": "Londres",
+  "lat": 51.5074,
+  "lon": -0.1278,
+  "hotels": [
+   {
+    "name": "Royal Lancaster London",
+    "key": "g186338-d195284",
+    "lat": 51.51218,
+    "lon": -0.17533
+   },
+   {
+    "name": "Hotel 41",
+    "key": "g186338-d188961",
+    "lat": 51.4981,
+    "lon": -0.14327
+   },
+   {
+    "name": "Brown's Hotel",
+    "key": "g186338-d188019",
+    "lat": 51.50908,
+    "lon": -0.14217
+   },
+   {
+    "name": "The Milestone Hotel and Residences",
+    "key": "g186338-d193121",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Staybridge Suites London Vauxhall",
+    "key": "g186338-d6787576",
+    "lat": 51.48914,
+    "lon": -0.12077
+   },
+   {
+    "name": "Vintry & Mercer",
+    "key": "g186338-d13126259",
+    "lat": 51.51127,
+    "lon": -0.09376
+   }
+  ]
+ },
+ {
+  "city": "Nueva York",
+  "lat": 40.7128,
+  "lon": -74.006,
+  "hotels": [
+   {
+    "name": "The Bryant Park Hotel",
+    "key": "g60763-d224214",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "LUMA Hotel Times Square",
+    "key": "g60763-d10679074",
+    "lat": 40.75442,
+    "lon": -73.98577
+   },
+   {
+    "name": "1 Hotel Central Park",
+    "key": "g60763-d6883205",
+    "lat": 40.76471,
+    "lon": -73.97651
+   },
+   {
+    "name": "Baccarat Hotel New York",
+    "key": "g60763-d7314002",
+    "lat": 40.76081,
+    "lon": -73.97736
+   },
+   {
+    "name": "The Langham New York Fifth Avenue",
+    "key": "g60763-d1776857",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Tokio",
+  "lat": 35.6812,
+  "lon": 139.7671,
+  "hotels": [
+   {
+    "name": "Hotel Metropolitan Oimachi Tracks Tokyo",
+    "key": "g298184-d34498532",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Waypoint Tsukiji Tokyo",
+    "key": "g298184-d34498577",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Cure Skytree",
+    "key": "g298184-d34504228",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Here Shinjuku",
+    "key": "g1066457-d34706666",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Millennium Mitsui Garden Hotel Tokyo",
+    "key": "g14129573-d7002465",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Cancún",
+  "lat": 21.1619,
+  "lon": -86.8515,
+  "hotels": [
+   {
+    "name": "Le Blanc Spa Resort Cancun",
+    "key": "g150807-d154868",
+    "lat": 21.12525,
+    "lon": -86.75265
+   },
+   {
+    "name": "Sun Palace Cancun",
+    "key": "g150807-d152894",
+    "lat": 21.04413,
+    "lon": -86.78262
+   },
+   {
+    "name": "Live Aqua Cancun",
+    "key": "g150807-d506374",
+    "lat": 21.10735,
+    "lon": -86.76253
+   },
+   {
+    "name": "Kempinski Hotel Cancun",
+    "key": "g150807-d152886",
+    "lat": 21.09323,
+    "lon": -86.76823
+   },
+   {
+    "name": "GR Solaris Caribe",
+    "key": "g150807-d2034192",
+    "lat": 21.04822,
+    "lon": -86.78272
+   },
+   {
+    "name": "Hyatt Ziva Cancun",
+    "key": "g150807-d152887",
+    "lat": 21.1359,
+    "lon": -86.74151
+   }
+  ]
+ },
+ {
+  "city": "Ámsterdam",
+  "lat": 52.3676,
+  "lon": 4.9041,
+  "hotels": [
+   {
+    "name": "Pillows Grand Boutique Hotel Maurits at the Park",
+    "key": "g188590-d23873032",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "The Toren",
+    "key": "g188590-d229137",
+    "lat": 52.37588,
+    "lon": 4.88596
+   },
+   {
+    "name": "Hotel The Craftsmen",
+    "key": "g188590-d277657",
+    "lat": 52.37627,
+    "lon": 4.89173
+   },
+   {
+    "name": "Ambassade Hotel",
+    "key": "g188590-d232321",
+    "lat": 52.36937,
+    "lon": 4.88718
+   },
+   {
+    "name": "Hotel The Noblemen",
+    "key": "g188590-d23400632",
+    "lat": 52.36742,
+    "lon": 4.88579
+   },
+   {
+    "name": "De L'Europe Amsterdam",
+    "key": "g188590-d232492",
+    "lat": 48.87712,
+    "lon": 2.32673
+   }
+  ]
+ }
+]
