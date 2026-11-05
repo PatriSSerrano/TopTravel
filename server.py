@@ -435,10 +435,23 @@ def xotelo_list(center):
     return items
 
 
+CURATED_MATCH_KM = 0.5
+
+
 def same_name(a, b):
     clean = lambda text: re.sub(r"[^a-z0-9]+", "", unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode().lower())
     a, b = clean(a), clean(b)
     return bool(a) and (a == b or (len(a) > 7 and len(b) > 7 and (a in b or b in a)))
+
+
+def same_curated_hotel(hotel, item):
+    """Evita dar a un edificio el precio de otro de su cadena ("APA Hotel" y "APA Hotel Shinjuku")."""
+    if not same_name(hotel["name"], item["name"]):
+        return False
+    if None not in (hotel.get("lat"), hotel.get("lon"), item.get("lat"), item.get("lon")):
+        return distance_km(hotel["lat"], hotel["lon"], item["lat"], item["lon"]) <= CURATED_MATCH_KM
+    clean = lambda text: re.sub(r"[^a-z0-9]+", "", unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode().lower())
+    return clean(hotel["name"]) == clean(item["name"])
 
 
 def add_price_keys(data):
@@ -451,7 +464,7 @@ def add_price_keys(data):
             if distance_km(center["lat"], center["lon"], group["lat"], group["lon"]) > XOTELO_CITY_KM:
                 continue
             for item in group["hotels"]:
-                match = next((h for h in hotels if same_name(h["name"], item["name"])), None)
+                match = next((h for h in hotels if same_curated_hotel(h, item)), None)
                 if match:
                     match["key"] = item["key"]
                 else:
