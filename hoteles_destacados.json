@@ -33,6 +33,54 @@
     "key": "g187791-d7619756",
     "lat": null,
     "lon": null
+   },
+   {
+    "name": "Hotel Hassler",
+    "key": "g187791-d191332",
+    "lat": 41.905986,
+    "lon": 12.483692
+   },
+   {
+    "name": "Rome Cavalieri, A Waldorf Astoria Hotel",
+    "key": "g187791-d190138",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Colosseum",
+    "key": "g187791-d230612",
+    "lat": 41.896158,
+    "lon": 12.496054
+   },
+   {
+    "name": "Hotel Camelia",
+    "key": "g187791-d576558",
+    "lat": 41.905828,
+    "lon": 12.50082
+   },
+   {
+    "name": "iQ Hotel Roma",
+    "key": "g187791-d1729030",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "The Independent Hotel",
+    "key": "g187791-d3244512",
+    "lat": 41.903916,
+    "lon": 12.50059
+   },
+   {
+    "name": "Hotel Abruzzi",
+    "key": "g187791-d236134",
+    "lat": 41.899367,
+    "lon": 12.477107
+   },
+   {
+    "name": "Augusta Lucilla Palace",
+    "key": "g187791-d1060784",
+    "lat": 41.90011,
+    "lon": 12.497752
    }
   ]
  },
@@ -76,6 +124,54 @@
     "key": "g187147-d230491",
     "lat": null,
     "lon": null
+   },
+   {
+    "name": "Hotel & Spa de Latour Maubourg",
+    "key": "g187147-d235571",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Relais Christine",
+    "key": "g187147-d219977",
+    "lat": 48.854375,
+    "lon": 2.340073
+   },
+   {
+    "name": "Hôtel Virgina",
+    "key": "g187147-d528643",
+    "lat": 48.824024,
+    "lon": 2.327444
+   },
+   {
+    "name": "Hotel Duquesne Eiffel",
+    "key": "g187147-d233585",
+    "lat": 48.852644,
+    "lon": 2.309046
+   },
+   {
+    "name": "Hotel Europe Saint Severin",
+    "key": "g187147-d250927",
+    "lat": 48.852711,
+    "lon": 2.344402
+   },
+   {
+    "name": "Hotel Eiffel Seine",
+    "key": "g187147-d572984",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Astoria - Astotel",
+    "key": "g187147-d230431",
+    "lat": 48.881681,
+    "lon": 2.322949
+   },
+   {
+    "name": "Campanile Prime Paris 19 - La Villette",
+    "key": "g187147-d233767",
+    "lat": 48.89339,
+    "lon": 2.379879
    }
   ]
  },
@@ -119,6 +215,54 @@
     "key": "g189158-d195643",
     "lat": 38.71476,
     "lon": -9.1411
+   },
+   {
+    "name": "Villa Baixa - Lisbon Luxury Apartments",
+    "key": "g189158-d12932558",
+    "lat": 38.712443,
+    "lon": -9.137663
+   },
+   {
+    "name": "Vincci Alfama",
+    "key": "g189158-d23328315",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Star Inn Lisbon",
+    "key": "g189158-d12258561",
+    "lat": 38.770664,
+    "lon": -9.125246
+   },
+   {
+    "name": "Meliá Lisboa Aeroporto",
+    "key": "g189158-d5016394",
+    "lat": 38.770363,
+    "lon": -9.124872
+   },
+   {
+    "name": "Blue Liberdade Hotel",
+    "key": "g189158-d23381482",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Jupiter Lisboa Hotel - Rooftop & Spa",
+    "key": "g189158-d7363512",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "LX Boutique Hotel",
+    "key": "g189158-d1859127",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Brown's Central Hotel",
+    "key": "g189158-d7109188",
+    "lat": null,
+    "lon": null
    }
   ]
  },
@@ -162,6 +306,54 @@
     "key": "g186338-d13126259",
     "lat": 51.51127,
     "lon": -0.09376
+   },
+   {
+    "name": "The Langham, London",
+    "key": "g186338-d187569",
+    "lat": 51.517658,
+    "lon": -0.143566
+   },
+   {
+    "name": "The Pelham London - Starhotels Collezione",
+    "key": "g186338-d193147",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Travelodge London Docklands Central",
+    "key": "g186338-d23950281",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Travelodge London City Hotel",
+    "key": "g186338-d13569031",
+    "lat": 51.515507,
+    "lon": -0.074765
+   },
+   {
+    "name": "The Tower Hotel",
+    "key": "g186338-d193097",
+    "lat": 51.506622,
+    "lon": -0.073284
+   },
+   {
+    "name": "Holiday Inn London - Kensington High St.",
+    "key": "g186338-d195280",
+    "lat": 51.498455,
+    "lon": -0.191793
+   },
+   {
+    "name": "H10 London Waterloo",
+    "key": "g186338-d1719249",
+    "lat": 51.49887,
+    "lon": -0.106294
+   },
+   {
+    "name": "Strand Palace",
+    "key": "g186338-d193112",
+    "lat": 51.511076,
+    "lon": -0.120933
    }
   ]
  },
@@ -199,6 +391,54 @@
     "key": "g60763-d1776857",
     "lat": null,
     "lon": null
+   },
+   {
+    "name": "The Bayard Hotel",
+    "key": "g60763-d80087",
+    "lat": 40.755757,
+    "lon": -73.972031
+   },
+   {
+    "name": "Hotel AKA Nomad",
+    "key": "g60763-d80110",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Crowne Plaza HY36 Midtown Manhattan",
+    "key": "g60763-d11854022",
+    "lat": 40.753735,
+    "lon": -73.993749
+   },
+   {
+    "name": "ROW NYC",
+    "key": "g60763-d1938661",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "YOTEL New York Times Square",
+    "key": "g60763-d2079052",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Park Central Hotel New York",
+    "key": "g60763-d93520",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Motto by Hilton New York City Chelsea",
+    "key": "g60763-d23448880",
+    "lat": 40.744088,
+    "lon": -73.99292
+   },
+   {
+    "name": "Embassy Suites By Hilton New York Manhattan Times Square",
+    "key": "g60763-d11998087",
+    "lat": null,
+    "lon": null
    }
   ]
  },
@@ -234,6 +474,90 @@
    {
     "name": "Millennium Mitsui Garden Hotel Tokyo",
     "key": "g14129573-d7002465",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Toyoko Inn Asakusa Kuramae NO. 2",
+    "key": "g298184-d21296164",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "ANA InterContinental Tokyo",
+    "key": "g14129743-d300459",
+    "lat": 35.668013,
+    "lon": 139.740683
+   },
+   {
+    "name": "Hotel Villa Fontaine Grand Haneda Airport",
+    "key": "g1066454-d20063612",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Gracery Shinjuku",
+    "key": "g1066457-d6987624",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "HOTEL GROOVE SHINJUKU, A PARKROYAL Hotel",
+    "key": "g14133667-d25267575",
+    "lat": 35.695915,
+    "lon": 139.700799
+   },
+   {
+    "name": "Mitsui Garden Hotel Ginza Premier",
+    "key": "g14129573-d1082914",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Sunroute Plaza Shinjuku",
+    "key": "g14133713-d320581",
+    "lat": 35.687091,
+    "lon": 139.698881
+   },
+   {
+    "name": "Dormy Hotel Onyado Nono Asakusa",
+    "key": "g14134311-d17690282",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Nohga Hotel Ueno Tokyo",
+    "key": "g1066461-d14209292",
+    "lat": 35.710138,
+    "lon": 139.778184
+   },
+   {
+    "name": "Park Hotel Tokyo",
+    "key": "g1066451-d301657",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "APA Hotel Shinjuku Gyoemmae",
+    "key": "g1066457-d6857433",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Intercontinental The Strings Tokyo",
+    "key": "g1066451-d300471",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel New Otani Tokyo Garden Tower",
+    "key": "g1066443-d3676666",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "HOTEL MYSTAYS Gotanda Station",
+    "key": "g1066854-d1083477",
     "lat": null,
     "lon": null
    }
@@ -279,6 +603,48 @@
     "key": "g150807-d152887",
     "lat": 21.1359,
     "lon": -86.74151
+   },
+   {
+    "name": "Presidente InterContinental Cancun Resort",
+    "key": "g150807-d152891",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Iberostar Selection Cancún",
+    "key": "g150807-d152892",
+    "lat": 21.067534,
+    "lon": -86.778424
+   },
+   {
+    "name": "Crown Paradise Club Cancun",
+    "key": "g150807-d155814",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Moon Palace Cancun",
+    "key": "g150807-d219163",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Haven Riviera Cancun",
+    "key": "g150807-d13499839",
+    "lat": 20.964931,
+    "lon": -86.832221
+   },
+   {
+    "name": "Moon Palace The Grand - Cancún",
+    "key": "g150807-d13138532",
+    "lat": 20.978468,
+    "lon": -86.833848
+   },
+   {
+    "name": "Emporio Cancún",
+    "key": "g150807-d6001367",
+    "lat": 21.073203,
+    "lon": -86.776447
    }
   ]
  },
@@ -322,6 +688,54 @@
     "key": "g188590-d232492",
     "lat": 48.87712,
     "lon": 2.32673
+   },
+   {
+    "name": "Hotel Okura Ámsterdam",
+    "key": "g188590-d230117",
+    "lat": 52.348619,
+    "lon": 4.893199
+   },
+   {
+    "name": "Crane Hotel Faralda Amsterdam",
+    "key": "g188590-d6929879",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Monet Garden Hotel Amsterdam",
+    "key": "g188590-d12967879",
+    "lat": 52.369923,
+    "lon": 4.907272
+   },
+   {
+    "name": "Hotel Estherea",
+    "key": "g188590-d229151",
+    "lat": 52.370612,
+    "lon": 4.888573
+   },
+   {
+    "name": "Kimpton de Witt",
+    "key": "g188590-d229478",
+    "lat": 52.377151,
+    "lon": 4.895493
+   },
+   {
+    "name": "Mövenpick Hotel Amsterdam City Centre",
+    "key": "g188590-d601686",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Aalders",
+    "key": "g188590-d237585",
+    "lat": 52.359554,
+    "lon": 4.88098
+   },
+   {
+    "name": "Banks Mansion Hotel Amsterdam",
+    "key": "g188590-d230616",
+    "lat": 52.365426,
+    "lon": 4.893195
    }
   ]
  }
