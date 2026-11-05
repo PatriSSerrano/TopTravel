@@ -5,10 +5,13 @@ import json
 import os
 import re
 import secrets
+import smtplib
 import sqlite3
+import ssl
 import threading
 import time
 from datetime import date
+from email.message import EmailMessage
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -23,6 +26,7 @@ MAX_SAVED = 100
 MAX_FAILS = 5
 FAIL_WINDOW = 900
 CHECK_EVERY = 6 * 3600
+RECOVERY_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"  # sin letras y números que se confunden
 
 EMAIL = re.compile(r"^[^@\s]{1,64}@[^@\s]+\.[^@\s]{2,}$")
 IATA = re.compile(r"^[A-Z]{3}$")
@@ -35,6 +39,8 @@ CREATE TABLE IF NOT EXISTS users (
   email TEXT NOT NULL UNIQUE,
   salt BLOB NOT NULL,
   password BLOB NOT NULL,
+  recovery_hash TEXT,
+  email_alerts INTEGER NOT NULL DEFAULT 1,
   created_at INTEGER NOT NULL
 );
 CREATE TABLE IF NOT EXISTS sessions (
@@ -67,6 +73,9 @@ CREATE TABLE IF NOT EXISTS alerts (
 CREATE INDEX IF NOT EXISTS alerts_user ON alerts (user_id, is_read);
 """
 
+# server.py la sustituye por la que lee SMTP_* de .env: sin esos datos no se envía nada.
+mail_settings = lambda: {}
+
 _fails = {}
 _fails_lock = threading.Lock()
 _dummy_salt = secrets.token_bytes(16)
@@ -96,6 +105,11 @@ def init_db():
     try:
         db.execute("PRAGMA journal_mode = WAL")
         db.executescript(SCHEMA)
+        columns = {row["name"] for row in db.execute("PRAGMA table_info(users)")}
+        if "recovery_hash" not in columns:
+            db.execute("ALTER TABLE users ADD COLUMN recovery_hash TEXT")
+        if "email_alerts" not in columns:
+            db.execute("ALTER TABLE users ADD COLUMN email_alerts INTEGER NOT NULL DEFAULT 1")
         db.commit()
     finally:
         db.close()
@@ -152,6 +166,17 @@ def note_fail(key):
         _fails.setdefault(key, []).append(time.time())
 
 
+def new_recovery_code():
+    """Devuelve el código para la persona y su resumen para guardar: permite recuperar sin correo."""
+    code = "".join(secrets.choice(RECOVERY_ALPHABET) for _ in range(20))
+    return "-".join(code[i:i + 5] for i in range(0, 20, 5)), recovery_hash(code)
+
+
+def recovery_hash(code):
+    clean = re.sub(r"[^A-Z0-9]", "", str(code).upper())
+    return hashlib.sha256(clean.encode("ascii", "ignore")).hexdigest()
+
+
 def read_credentials(body):
     email = str(body.get("email") or "").strip().lower()
     password = body.get("password")
@@ -168,12 +193,13 @@ def api_register(body, ctx):
         return 429, {"error": "Demasiados intentos. Prueba dentro de unos minutos."}
     salt = secrets.token_bytes(16)
     digest = hash_password(password, salt)
+    code, code_hash = new_recovery_code()
     db = connect()
     try:
         try:
             cursor = db.execute(
-                "INSERT INTO users (email, salt, password, created_at) VALUES (?, ?, ?, ?)",
-                (email, salt, digest, int(time.time())),
+                "INSERT INTO users (email, salt, password, recovery_hash, created_at) VALUES (?, ?, ?, ?, ?)",
+                (email, salt, digest, code_hash, int(time.time())),
             )
         except sqlite3.IntegrityError:
             note_fail(f"reg:{ctx.ip}")
@@ -182,7 +208,7 @@ def api_register(body, ctx):
         db.commit()
     finally:
         db.close()
-    return 201, {"user": {"email": email}}
+    return 201, {"user": {"email": email}, "recoveryCode": code}
 
 
 def api_login(body, ctx):
@@ -205,6 +231,58 @@ def api_login(body, ctx):
     finally:
         db.close()
     return 200, {"user": {"email": email}}
+
+
+def api_recover(body, ctx):
+    """Cambia la contraseña con el código de recuperación, que deja de valer."""
+    email, password = read_credentials(body)
+    code = str(body.get("code") or "")[:60]
+    if not PASSWORD_MIN <= len(password) <= PASSWORD_MAX:
+        return 400, {"error": f"La contraseña debe tener al menos {PASSWORD_MIN} caracteres."}
+    keys = (f"recover:{ctx.ip}", f"recover:{email}")
+    if any(too_many_fails(key) for key in keys):
+        return 429, {"error": "Demasiados intentos. Prueba dentro de unos minutos."}
+    db = connect()
+    try:
+        row = db.execute("SELECT id, recovery_hash FROM users WHERE email = ?", (email,)).fetchone()
+        stored = (row["recovery_hash"] if row else None) or ""
+        if not stored or not hmac.compare_digest(stored, recovery_hash(code)):
+            for key in keys:
+                note_fail(key)
+            return 401, {"error": "El correo o el código de recuperación no son correctos."}
+        salt = secrets.token_bytes(16)
+        new_code, code_hash = new_recovery_code()
+        db.execute(
+            "UPDATE users SET salt = ?, password = ?, recovery_hash = ? WHERE id = ?",
+            (salt, hash_password(password, salt), code_hash, row["id"]),
+        )
+        # Cierra cualquier sesión abierta con la contraseña anterior.
+        db.execute("DELETE FROM sessions WHERE user_id = ?", (row["id"],))
+        start_session(db, row["id"], ctx)
+        db.commit()
+    finally:
+        db.close()
+    return 200, {"user": {"email": email}, "recoveryCode": new_code}
+
+
+def api_new_recovery_code(body, ctx):
+    password = body.get("password")
+    password = password if isinstance(password, str) else ""
+    key = f"code:{ctx.user_id}"
+    if too_many_fails(key):
+        return 429, {"error": "Demasiados intentos. Prueba dentro de unos minutos."}
+    db = connect()
+    try:
+        row = db.execute("SELECT salt, password FROM users WHERE id = ?", (ctx.user_id,)).fetchone()
+        if not row or not hmac.compare_digest(hash_password(password[:PASSWORD_MAX], row["salt"]), row["password"]):
+            note_fail(key)
+            return 401, {"error": "La contraseña no es correcta."}
+        code, code_hash = new_recovery_code()
+        db.execute("UPDATE users SET recovery_hash = ? WHERE id = ?", (code_hash, ctx.user_id))
+        db.commit()
+    finally:
+        db.close()
+    return 200, {"recoveryCode": code}
 
 
 def api_logout(_body, ctx):
@@ -239,16 +317,76 @@ def api_delete_account(body, ctx):
     return 200, {"ok": True}
 
 
+def send_mail(to, subject, text):
+    """Envía un correo; devuelve False si el correo no está configurado."""
+    config = mail_settings()
+    host, user, password = config.get("SMTP_HOST"), config.get("SMTP_USER"), config.get("SMTP_PASSWORD")
+    if not host:
+        return False
+    message = EmailMessage()
+    message["Subject"] = subject
+    message["From"] = f"TopTravel <{config.get('MAIL_FROM') or user}>"
+    message["To"] = to
+    message.set_content(text)
+    port = int(config.get("SMTP_PORT") or 587)
+    if port == 465:
+        with smtplib.SMTP_SSL(host, port, timeout=30, context=ssl.create_default_context()) as smtp:
+            smtp.login(user, password)
+            smtp.send_message(message)
+        return True
+    with smtplib.SMTP(host, port, timeout=30) as smtp:
+        # Solo un servidor de pruebas en este mismo ordenador puede ir sin cifrar.
+        if host not in ("127.0.0.1", "localhost"):
+            smtp.starttls(context=ssl.create_default_context())
+        if user:
+            smtp.login(user, password)
+        smtp.send_message(message)
+    return True
+
+
+def mail_changes(db, changes):
+    """Un solo correo por persona con todos sus cambios de precio."""
+    site = (mail_settings().get("SITE_URL") or "").rstrip("/")
+    for user_id, lines in changes.items():
+        row = db.execute("SELECT email, email_alerts FROM users WHERE id = ?", (user_id,)).fetchone()
+        if not row or not row["email_alerts"]:
+            continue
+        text = "Ha cambiado el precio de un vuelo que guardaste en TopTravel:\n\n" + "\n".join(lines)
+        text += "\n\nLos precios son orientativos: confirma el precio final antes de comprar."
+        if site:
+            text += f"\n\nVer tus avisos: {site}"
+        text += "\n\nPuedes desactivar estos correos en «Mi cuenta»."
+        try:
+            send_mail(row["email"], "Ha cambiado el precio de tu vuelo", text)
+        except (smtplib.SMTPException, OSError, ValueError) as error:
+            # Sin el correo, el aviso sigue viéndose dentro de la web.
+            print(f"No se ha podido enviar un aviso: {type(error).__name__}", flush=True)
+
+
+def api_email_alerts(body, ctx):
+    enabled = 1 if body.get("enabled") else 0
+    db = connect()
+    try:
+        db.execute("UPDATE users SET email_alerts = ? WHERE id = ?", (enabled, ctx.user_id))
+        db.commit()
+    finally:
+        db.close()
+    return 200, {"emailAlerts": bool(enabled)}
+
+
 def api_me(_query, ctx):
     if not ctx.user_id:
         return 200, {"user": None, "unread": 0}
     db = connect()
     try:
-        user = db.execute("SELECT email FROM users WHERE id = ?", (ctx.user_id,)).fetchone()
+        user = db.execute("SELECT email, email_alerts FROM users WHERE id = ?", (ctx.user_id,)).fetchone()
         unread = db.execute("SELECT COUNT(*) AS n FROM alerts WHERE user_id = ? AND is_read = 0", (ctx.user_id,)).fetchone()
     finally:
         db.close()
-    return 200, {"user": {"email": user["email"]} if user else None, "unread": unread["n"]}
+    return 200, {
+        "user": {"email": user["email"], "emailAlerts": bool(user["email_alerts"]), "mailReady": bool(mail_settings().get("SMTP_HOST"))} if user else None,
+        "unread": unread["n"],
+    }
 
 
 # ---------- Validación de lo que se guarda ----------
@@ -454,6 +592,7 @@ def check_prices(price_of, pause=1.0):
     today = date.today().isoformat()
     db = connect()
     created = 0
+    changes = {}
     try:
         rows = db.execute("SELECT * FROM saved WHERE kind = 'flight'").fetchall()
         known = {}
@@ -480,8 +619,13 @@ def check_prices(price_of, pause=1.0):
                     (row["user_id"], f"{data['origin']['city']} → {data['dest']['city']}", data["start"], data.get("end"), old, price, now),
                 )
                 created += 1
+                when = f"{data['start']} a {data['end']}" if data.get("end") else data["start"]
+                changes.setdefault(row["user_id"], []).append(
+                    f"- {data['origin']['city']} → {data['dest']['city']} ({when}): de {round(old)} € a {round(price)} €"
+                )
             db.execute("UPDATE saved SET last_price = ?, checked_at = ? WHERE id = ?", (price, now, row["id"]))
         db.commit()
+        mail_changes(db, changes)
     finally:
         db.close()
     return created
@@ -500,6 +644,6 @@ def start_price_checks(price_of):
     threading.Thread(target=loop, daemon=True).start()
 
 
-PUBLIC_POST = {"/api/register": api_register, "/api/login": api_login, "/api/logout": api_logout}
+PUBLIC_POST = {"/api/register": api_register, "/api/login": api_login, "/api/recover": api_recover, "/api/logout": api_logout}
 PRIVATE_GET = {"/api/saved": api_saved, "/api/alerts": api_alerts}
 PUBLIC_GET = {"/api/me": api_me}

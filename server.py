@@ -1,16 +1,19 @@
 """Servidor de TopTravel.
 
 Sirve la web y pide los precios a Travelpayouts sin exponer la clave.
-Uso: python server.py [--host 0.0.0.0] [--port 8000]
+Uso: python server.py [--host 0.0.0.0] [--port 8000] [--behind-proxy]
 La clave se lee de .env en cada petición: no hace falta reiniciar al añadirla.
 """
 import argparse
 import concurrent.futures
 import gzip
+import hashlib
+import html
 import json
 import math
 import os
 import re
+import socket
 import threading
 import time
 import unicodedata
@@ -29,9 +32,14 @@ API_BASE = os.environ.get("TP_API_BASE", "https://api.travelpayouts.com")
 CACHE_SECONDS = 1800
 CACHE_MAX = 500
 MAX_TRIP_DAYS = 30
-MAP_CACHE_FILE = ROOT / "data" / "mapas.json"
+MAP_CACHE_FILE = ROOT / "data" / "mapas.json"  # formato antiguo: se convierte al arrancar
+MAP_DIR = ROOT / "data" / "mapas"
+MAP_FILES_MAX = 800
+GZIP_MIN_BYTES = 1024
+# Una ciudad grande puede devolver decenas de MB: con poca memoria se bajan estos valores.
+OVERPASS_MAX_BYTES = int(os.environ.get("OVERPASS_MAX_MB", "80")) * 1024 * 1024
+OVERPASS_SLOTS = int(os.environ.get("OVERPASS_SLOTS", "2"))
 MAP_CACHE_SECONDS = 30 * 86400
-MAP_CACHE_MAX = 60
 MAP_RADIUS_KM = 7
 XOTELO_BASE = "https://data.xotelo.com/api"
 XOTELO_LIST_BASE = os.environ.get("XOTELO_LIST_BASE", XOTELO_BASE)
@@ -81,11 +89,17 @@ OVERPASS_URLS = (
     "https://overpass-api.de/api/interpreter",
     "https://overpass.kumi.systems/api/interpreter",
 )
+LEGAL_PAGES = {"/privacidad": "privacidad.html", "/aviso-legal": "aviso-legal.html"}
 ASSET = re.compile(r"^/assets/[a-z0-9]+\.jpg$")
 
 _cache = {}
 _xotelo_lists = {}
-_map_cache = {}
+_map_locks = {}
+_map_refreshing = set()
+_hotel_refreshing = set()
+_static_files = {}
+_overpass_slots = threading.Semaphore(OVERPASS_SLOTS)
+TRUST_PROXY = False
 _xotelo_slots = threading.Semaphore(4)
 try:
     XOTELO_CITIES = json.loads((ROOT / "xotelo_cities.json").read_text(encoding="utf-8"))
@@ -108,9 +122,24 @@ class Unavailable(Exception):
     """Travelpayouts no está configurado o no ha respondido."""
 
 
+class GzJson(bytes):
+    """Respuesta JSON ya comprimida, guardada en disco."""
+
+
 def settings():
     values = {
         "TRAVELPAYOUTS_TOKEN": os.environ.get("TRAVELPAYOUTS_TOKEN", ""),
+        "CONTACT_EMAIL": os.environ.get("CONTACT_EMAIL", ""),
+        # Interruptores para dejar de usar un servicio sin tocar el código.
+        "HOTEL_PRICES": os.environ.get("HOTEL_PRICES", "on"),
+        "NOMINATIM": os.environ.get("NOMINATIM", "on"),
+        # Correo para los avisos de precio: sin SMTP_HOST no se envía ninguno.
+        "SMTP_HOST": os.environ.get("SMTP_HOST", ""),
+        "SMTP_PORT": os.environ.get("SMTP_PORT", ""),
+        "SMTP_USER": os.environ.get("SMTP_USER", ""),
+        "SMTP_PASSWORD": os.environ.get("SMTP_PASSWORD", ""),
+        "MAIL_FROM": os.environ.get("MAIL_FROM", ""),
+        "SITE_URL": os.environ.get("SITE_URL", ""),
     }
     env_file = ROOT / ".env"
     if env_file.exists():
@@ -163,6 +192,19 @@ def tp_request(path, query):
     return rows
 
 
+# La fuente deja algunos nombres sin traducir o mal puestos ("Buda" por Budapest).
+CITY_NAMES = {
+    "ACE": "Lanzarote", "AER": "Sochi", "ALA": "Almaty", "BDS": "Brindisi", "BIO": "Bilbao", "BUD": "Budapest",
+    "COR": "Córdoba (Argentina)", "EAS": "San Sebastián", "FLW": "Isla de Flores", "GZP": "Gazipaşa",
+    "IGU": "Foz de Iguazú", "JTR": "Santorini", "LCG": "La Coruña", "LIR": "Liberia (Costa Rica)",
+    "LPA": "Las Palmas de Gran Canaria", "MAA": "Chennai", "MAH": "Menorca", "MED": "Medina", "OKA": "Okinawa",
+    "PEN": "Penang", "PLZ": "Port Elizabeth", "PRN": "Pristina", "PTP": "Pointe-à-Pitre", "QRO": "Querétaro",
+    "RHO": "Rodas", "SEZ": "Seychelles", "SJC": "San José (California)", "SJO": "San José (Costa Rica)",
+    "SRZ": "Santa Cruz de la Sierra", "SVQ": "Sevilla", "TER": "Isla Terceira", "TQO": "Tulum", "TUC": "Tucumán",
+    "TUN": "Túnez", "VIL": "Dajla", "VLN": "Valencia (Venezuela)",
+}
+
+
 def places():
     """Ciudades, países y aeropuertos: se guardan en disco tras la primera descarga."""
     global _places
@@ -187,6 +229,9 @@ def places():
                 }
                 PLACES_FILE.parent.mkdir(exist_ok=True)
                 PLACES_FILE.write_text(json.dumps(_places, ensure_ascii=False), encoding="utf-8")
+            for code, name in CITY_NAMES.items():
+                if code in _places["cities"]:
+                    _places["cities"][code][0] = name
     return _places
 
 
@@ -282,6 +327,8 @@ def api_day(q):
 
 def geocode(place):
     global _last_geocode
+    if settings()["NOMINATIM"] == "off":
+        raise Unavailable("upstream")
     # Nominatim pide un máximo de una petición por segundo.
     with _geo_lock:
         wait = 1.1 - (time.time() - _last_geocode)
@@ -326,6 +373,8 @@ def overpass(lat, lon):
 
 def nominatim_lodging(lat, lon):
     # Vía alternativa cuando Overpass está saturado: da menos resultados.
+    if settings()["NOMINATIM"] == "off":
+        raise Unavailable("upstream")
     box = f"{lon - 0.08:.5f},{lat + 0.06:.5f},{lon + 0.08:.5f},{lat - 0.06:.5f}"
     elements = []
     for term in ("hotel", "hostel", "apartment"):
@@ -451,11 +500,15 @@ def same_curated_hotel(hotel, item):
     if None not in (hotel.get("lat"), hotel.get("lon"), item.get("lat"), item.get("lon")):
         return distance_km(hotel["lat"], hotel["lon"], item["lat"], item["lon"]) <= CURATED_MATCH_KM
     clean = lambda text: re.sub(r"[^a-z0-9]+", "", unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode().lower())
-    return clean(hotel["name"]) == clean(item["name"])
+    # Sin ubicación que comparar, los nombres tienen que coincidir casi enteros.
+    a, b = sorted((clean(hotel["name"]), clean(item["name"])), key=len)
+    return len(a) / max(len(b), 1) >= 0.6
 
 
 def add_price_keys(data):
     """Une nuestros alojamientos con su código de precios, sin tocar lo guardado."""
+    if settings()["HOTEL_PRICES"] == "off":
+        return data
     center = data.get("center")
     hotels = [dict(h) for h in data["hotels"]]
     if center:
@@ -497,38 +550,107 @@ def read_center(q):
     return (round(lat, 2), round(lon, 2)) if -85 <= lat <= 85 and -180 <= lon <= 180 else None
 
 
-def load_map_cache():
+def map_path(key):
+    return MAP_DIR / f"{hashlib.sha1(key.encode('utf-8')).hexdigest()[:20]}.json.gz"
+
+
+def store_map(key, data, stamp=None):
+    MAP_DIR.mkdir(parents=True, exist_ok=True)
+    path = map_path(key)
+    temp = path.with_suffix(f".{threading.get_ident()}.tmp")
+    temp.write_bytes(gzip.compress(json.dumps(data, ensure_ascii=False, separators=(",", ":")).encode("utf-8"), 9))
+    temp.replace(path)
+    if stamp:
+        os.utime(path, (stamp, stamp))
+    files = sorted(MAP_DIR.glob("*.json.gz"), key=lambda f: f.stat().st_mtime)
+    for old in files[:-MAP_FILES_MAX]:
+        old.unlink(missing_ok=True)
+    return path
+
+
+def migrate_map_cache():
+    """Pasa el archivo único antiguo a un archivo por ciudad, que no ocupa memoria."""
     try:
-        return json.loads(MAP_CACHE_FILE.read_text(encoding="utf-8"))
+        old = json.loads(MAP_CACHE_FILE.read_text(encoding="utf-8"))
     except (OSError, ValueError):
-        return {}
+        return
+    for key, (expires, data) in old.items():
+        store_map(key, data, expires - MAP_CACHE_SECONDS)
+    MAP_CACHE_FILE.unlink(missing_ok=True)
+
+
+def build_map(key, build):
+    """Evita pedir lo mismo dos veces a la vez a un servicio externo."""
+    with _lock:
+        lock = _map_locks.setdefault(key, threading.Lock())
+    with lock:
+        path = map_path(key)
+        if path.exists() and time.time() - path.stat().st_mtime < MAP_CACHE_SECONDS:
+            return GzJson(path.read_bytes())
+        data = build()
+        # Un resultado vacío o incompleto no se guarda: se volverá a intentar.
+        if not any(data.values()) or data.get("partial"):
+            return data
+        return GzJson(store_map(key, data).read_bytes())
+
+
+def refresh_map(key, build):
+    try:
+        build_map(key, build)
+    except Exception as error:
+        print(f"No se ha podido renovar un mapa: {type(error).__name__}", flush=True)
+    finally:
+        with _lock:
+            _map_refreshing.discard(key)
 
 
 def cached_map_data(key, build):
-    """Monumentos y transporte cambian poco: se guardan en disco y se reutilizan."""
-    now = time.time()
-    with _lock:
-        hit = _map_cache.get(key)
-    if hit and hit[0] > now and any(hit[1].values()):
-        return hit[1]
+    """Monumentos y transporte cambian poco: lo guardado sale al momento y se renueva aparte."""
+    path = map_path(key)
     try:
-        data = build()
+        raw, age = path.read_bytes(), time.time() - path.stat().st_mtime
+    except OSError:
+        raw, age = None, 0
+    if raw:
+        if age >= MAP_CACHE_SECONDS:
+            with _lock:
+                start = key not in _map_refreshing
+                _map_refreshing.add(key)
+            if start:
+                threading.Thread(target=refresh_map, args=(key, build), daemon=True).start()
+        return GzJson(raw)
+    try:
+        return build_map(key, build)
     except (Unavailable, urllib.error.URLError, TimeoutError, ValueError, KeyError, OSError) as error:
-        if hit:
-            return hit[1]
         raise Unavailable("upstream") from error
-    # Un resultado vacío o incompleto no se guarda: se volverá a intentar.
-    if not any(data.values()) or data.get("partial"):
-        return data
-    with _lock:
-        if len(_map_cache) >= MAP_CACHE_MAX and key not in _map_cache:
-            del _map_cache[min(_map_cache, key=lambda k: _map_cache[k][0])]
-        _map_cache[key] = (now + MAP_CACHE_SECONDS, data)
-        MAP_CACHE_FILE.parent.mkdir(exist_ok=True)
-        temp = MAP_CACHE_FILE.with_suffix(".tmp")
-        temp.write_text(json.dumps(_map_cache, ensure_ascii=False), encoding="utf-8")
-        temp.replace(MAP_CACHE_FILE)
-    return data
+
+
+# Tipos de lugar que interesan a un visitante. Se comparan directamente, sin recorrer
+# subtipos: esa parte era la más lenta de la consulta y agotaba el cupo de Wikidata.
+MONUMENT_CLASSES = " ".join(f"wd:Q{n}" for n in (
+    570116, 4989906, 33506, 207694, 839954, 16970, 2977, 163687, 108325, 23413, 16560, 53060, 174782, 12518, 12280,
+    44539, 32815, 34627, 483453, 22698, 11303, 2319498, 24354, 153562, 483110, 179700, 1081138, 1329623, 1785071,
+    5003624, 57821, 1370598, 811979, 41176, 200023, 751876, 1307276, 15243209, 3947, 7075,
+))
+WIKIDATA_AGENT = "TopTravel/1.0 (https://github.com/PatriSSerrano/TopTravel)"
+_wikidata_slot = threading.Lock()
+_wikidata_until = 0.0
+
+
+def wikidata_rows(sparql):
+    """Una consulta cada vez, y sin insistir si Wikidata pide esperar."""
+    global _wikidata_until
+    url = "https://query.wikidata.org/sparql?" + urllib.parse.urlencode({"query": sparql, "format": "json"})
+    with _wikidata_slot:
+        if time.time() < _wikidata_until:
+            raise Unavailable("busy")
+        try:
+            return fetch_json(url, {"Accept": "application/sparql-results+json", "User-Agent": WIKIDATA_AGENT}, timeout=65)["results"]["bindings"]
+        except urllib.error.HTTPError as error:
+            if error.code == 429:
+                wait = error.headers.get("Retry-After") or ""
+                _wikidata_until = time.time() + (int(wait) if wait.isdigit() else 120)
+            raise
 
 
 def build_monuments(lat, lon):
@@ -537,13 +659,12 @@ SELECT ?item ?itemLabel (SAMPLE(?img) AS ?image) (SAMPLE(?c) AS ?coord) (MAX(?li
   SERVICE wikibase:around {{ ?item wdt:P625 ?c . bd:serviceParam wikibase:center "Point({lon} {lat})"^^geo:wktLiteral ; wikibase:radius "{MAP_RADIUS_KM}" . }}
   ?item wdt:P18 ?img ; wikibase:sitelinks ?links .
   FILTER(?links >= 8)
-  VALUES ?class {{ wd:Q570116 wd:Q4989906 wd:Q33506 wd:Q839954 wd:Q16970 wd:Q23413 wd:Q174782 wd:Q12518 wd:Q16560 wd:Q12280 wd:Q2319498 wd:Q44539 wd:Q483453 wd:Q22698 }}
-  ?item wdt:P31/wdt:P279* ?class .
+  ?item wdt:P31 ?class .
+  VALUES ?class {{ {MONUMENT_CLASSES} }}
   SERVICE wikibase:label {{ bd:serviceParam wikibase:language "es,en". }}
 }} GROUP BY ?item ?itemLabel ORDER BY DESC(?popular) LIMIT 40
 """
-    url = "https://query.wikidata.org/sparql?" + urllib.parse.urlencode({"query": sparql, "format": "json"})
-    rows = fetch_json(url, {"Accept": "application/sparql-results+json"}, timeout=65)["results"]["bindings"]
+    rows = wikidata_rows(sparql)
     monuments = []
     for row in rows:
         name = row["itemLabel"]["value"]
@@ -578,8 +699,12 @@ def overpass_slow(query):
     for url in OVERPASS_URLS:
         try:
             request = urllib.request.Request(url, data=body, headers={"User-Agent": "TopTravel/1.0"})
-            with urllib.request.urlopen(request, timeout=110) as response:
-                payload = json.load(response)
+            with _overpass_slots, urllib.request.urlopen(request, timeout=110) as response:
+                raw = response.read(OVERPASS_MAX_BYTES + 1)
+                if len(raw) > OVERPASS_MAX_BYTES:
+                    raise Unavailable("too_big")  # sin reintentar: el otro servidor daría lo mismo
+                payload = json.loads(raw)
+                del raw
             # Overpass avisa de sus errores con un texto en una respuesta "correcta".
             if payload.get("remark") and not payload.get("elements"):
                 raise ValueError(payload["remark"])
@@ -652,6 +777,8 @@ def api_transit(q):
 
 
 def api_rates(q):
+    if settings()["HOTEL_PRICES"] == "off":
+        return 200, {"rates": []}
     key, start, end = q.get("key", ""), q.get("in", ""), q.get("out", "")
     if not XOTELO_KEY.fullmatch(key) or not valid_date(start) or not valid_date(end) or end <= start:
         return 400, {"error": "bad_request"}
@@ -683,7 +810,17 @@ def api_rates(q):
     return 200, data
 
 
-def lodging_list(q):
+def refresh_lodging(place, key):
+    try:
+        lodging_list({"place": place}, force=True)
+    except Exception as error:
+        print(f"No se ha podido renovar una lista: {type(error).__name__}", flush=True)
+    finally:
+        with _lock:
+            _hotel_refreshing.discard(key)
+
+
+def lodging_list(q, force=False):
     place = " ".join(q.get("place", "").split())
     if not 2 <= len(place) <= 80:
         return 400, {"error": "bad_request"}
@@ -693,7 +830,13 @@ def lodging_list(q):
         hit = _hotels.get(key)
     # Las listas antiguas sin coordenadas se renuevan, pero sirven de respaldo.
     has_coords = hit and "center" in hit[1] and all("lat" in h for h in hit[1]["hotels"][:1])
-    if hit and hit[0] > now and has_coords:
+    if hit and has_coords and not force:
+        if hit[0] <= now:
+            with _lock:
+                start = key not in _hotel_refreshing
+                _hotel_refreshing.add(key)
+            if start:
+                threading.Thread(target=refresh_lodging, args=(place, key), daemon=True).start()
         return 200, hit[1]
     try:
         elements, complete, point = find_lodging(place)
@@ -795,11 +938,13 @@ PRIVATE_POST = {
     "/api/saved/delete": accounts.api_unsave,
     "/api/alerts/read": accounts.api_alerts_read,
     "/api/account/delete": accounts.api_delete_account,
+    "/api/account/recovery-code": accounts.api_new_recovery_code,
+    "/api/account/email-alerts": accounts.api_email_alerts,
 }
 MAX_BODY = 16 * 1024
 
 # Peticiones por minuto y por visitante en lo que llama a servicios externos.
-RATE_LIMITS = {"/api/calendar": 120, "/api/day": 120, "/api/explore": 60, "/api/hotels": 20, "/api/rates": 90, "/api/monuments": 20, "/api/transit": 20}
+RATE_LIMITS = {"/api/register": 10, "/api/login": 20, "/api/recover": 10, "/api/calendar": 120, "/api/day": 120, "/api/explore": 60, "/api/hotels": 20, "/api/rates": 90, "/api/monuments": 20, "/api/transit": 20}
 _hits = {}
 _hits_lock = threading.Lock()
 
@@ -834,26 +979,92 @@ def within_rate(ip, path):
 class Handler(BaseHTTPRequestHandler):
     server_version = "TopTravel"
     sys_version = ""
+    # Reutiliza la conexión entre peticiones, que es bastante más rápido.
+    protocol_version = "HTTP/1.1"
+    disable_nagle_algorithm = True
+    timeout = 30
 
-    def send_body(self, status, body, content_type):
+    def accepts_gzip(self):
+        return "gzip" in (self.headers.get("Accept-Encoding") or "")
+
+    def send_body(self, status, body, content_type, cache=None, encoding=None, etag=None):
         self.send_response(status)
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(body)))
-        self.send_header("Cache-Control", "no-store" if content_type.startswith("application/json") else "no-cache")
+        self.send_header("Cache-Control", cache or ("no-store" if content_type.startswith("application/json") else "no-cache"))
+        self.send_header("Vary", "Accept-Encoding")
+        if encoding:
+            self.send_header("Content-Encoding", encoding)
+        if etag:
+            self.send_header("ETag", etag)
         for name, value in SECURITY_HEADERS.items():
             self.send_header(name, value)
         cookie = getattr(self, "_set_cookie", None)
         if cookie:
             self.send_header("Set-Cookie", cookie)
             self._set_cookie = None
-        self.end_headers()
         try:
+            self.end_headers()
             self.wfile.write(body)
-        except ConnectionError:
-            pass  # el navegador cerró la conexión
+        except (ConnectionError, TimeoutError):
+            self.close_connection = True  # el navegador cerró la conexión
 
     def send_json(self, status, data):
-        self.send_body(status, json.dumps(data).encode("utf-8"), "application/json; charset=utf-8")
+        kind = "application/json; charset=utf-8"
+        if isinstance(data, GzJson):
+            # Mapas de una ciudad: cambian poco y el navegador puede guardarlos.
+            cache = "public, max-age=86400"
+            if self.accepts_gzip():
+                self.send_body(status, bytes(data), kind, cache, "gzip")
+            else:
+                self.send_body(status, gzip.decompress(data), kind, cache)
+            return
+        body = json.dumps(data, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+        if len(body) >= GZIP_MIN_BYTES and self.accepts_gzip():
+            self.send_body(status, gzip.compress(body, 5), kind, encoding="gzip")
+        else:
+            self.send_body(status, body, kind)
+
+    def send_static(self, path, content_type, cache=None):
+        """Sirve un archivo comprimido y evita volver a enviarlo si el navegador ya lo tiene."""
+        stamp = path.stat().st_mtime_ns
+        entry = _static_files.get(path)
+        if not entry or entry[0] != stamp:
+            raw = path.read_bytes()
+            packed = gzip.compress(raw, 9) if not content_type.startswith("image/") else None
+            entry = (stamp, raw, packed, f'"{hashlib.sha1(raw).hexdigest()[:16]}"')
+            _static_files[path] = entry
+        _, raw, packed, etag = entry
+        if self.headers.get("If-None-Match") == etag:
+            self.send_response(304)
+            self.send_header("ETag", etag)
+            self.send_header("Cache-Control", cache or "no-cache")
+            self.send_header("Vary", "Accept-Encoding")
+            try:
+                self.end_headers()
+            except (ConnectionError, TimeoutError):
+                self.close_connection = True
+            return
+        if packed and self.accepts_gzip():
+            self.send_body(200, packed, content_type, cache, "gzip", etag)
+        else:
+            self.send_body(200, raw, content_type, cache, None, etag)
+
+    def send_legal(self, name):
+        page = (ROOT / name).read_text(encoding="utf-8")
+        email = settings()["CONTACT_EMAIL"]
+        contact = (
+            f'<a href="mailto:{html.escape(email, quote=True)}">{html.escape(email)}</a>'
+            if email else '<a href="https://www.linkedin.com/in/patrischz/" rel="noopener">mensaje por LinkedIn</a>'
+        )
+        self.send_body(200, page.replace("{{CONTACTO}}", contact).encode("utf-8"), "text/html; charset=utf-8")
+
+    def client_ip(self):
+        # Tras un proxy, la última dirección es la que él ha visto: las anteriores se pueden falsificar.
+        forwarded = self.headers.get("X-Forwarded-For")
+        if TRUST_PROXY and forwarded:
+            return forwarded.split(",")[-1].strip()
+        return self.client_address[0]
 
     def context(self):
         raw = self.headers.get("Cookie") or ""
@@ -863,8 +1074,8 @@ class Handler(BaseHTTPRequestHandler):
             token = morsel.value if morsel else None
         except Exception:
             token = None
-        ctx = accounts.Context(accounts.user_from_token(token), self.client_address[0], token)
-        ctx.secure = self.headers.get("X-Forwarded-Proto") == "https"
+        ctx = accounts.Context(accounts.user_from_token(token), self.client_ip(), token)
+        ctx.secure = TRUST_PROXY and self.headers.get("X-Forwarded-Proto") == "https"
         return ctx
 
     def same_origin(self):
@@ -878,10 +1089,16 @@ class Handler(BaseHTTPRequestHandler):
         path = urllib.parse.urlsplit(self.path).path
         public, private = ACCOUNT_POST.get(path), PRIVATE_POST.get(path)
         if not public and not private:
+            self.close_connection = True
             self.send_json(404, {"error": "No encontrado."})
             return
         if not self.same_origin() or "application/json" not in (self.headers.get("Content-Type") or ""):
+            self.close_connection = True
             self.send_json(403, {"error": "Petición no permitida."})
+            return
+        if not within_rate(self.client_ip(), path):
+            self.close_connection = True
+            self.send_json(429, {"error": "Demasiados intentos. Prueba dentro de unos minutos."})
             return
         try:
             length = int(self.headers.get("Content-Length") or 0)
@@ -928,7 +1145,7 @@ class Handler(BaseHTTPRequestHandler):
             return
         route = ROUTES.get(parsed.path)
         if route:
-            if not within_rate(self.client_address[0], parsed.path):
+            if not within_rate(self.client_ip(), parsed.path):
                 self.send_json(429, {"error": "too_many_requests"})
                 return
             query = {k: v[0] for k, v in urllib.parse.parse_qs(parsed.query).items()}
@@ -943,13 +1160,20 @@ class Handler(BaseHTTPRequestHandler):
         if ASSET.match(parsed.path):
             photo = ROOT / parsed.path.lstrip("/")
             if photo.is_file():
-                self.send_body(200, photo.read_bytes(), "image/jpeg")
+                self.send_static(photo, "image/jpeg", "public, max-age=86400")
                 return
+        if parsed.path in LEGAL_PAGES:
+            self.send_legal(LEGAL_PAGES[parsed.path])
+            return
+        if parsed.path == "/favicon.ico":
+            self.send_body(204, b"", "image/x-icon", "public, max-age=86400")
+            return
         static = STATIC.get(parsed.path)
         if not static:
             self.send_body(404, b"No encontrado", "text/plain; charset=utf-8")
             return
-        self.send_body(200, (ROOT / static[0]).read_bytes(), static[1])
+        cache = "public, max-age=86400" if parsed.path.startswith("/vendor/") else None
+        self.send_static(ROOT / static[0], static[1], cache)
 
     def log_message(self, fmt, *args):
         # La URL interna nunca lleva la clave, pero evitamos ruido en la consola.
@@ -957,18 +1181,31 @@ class Handler(BaseHTTPRequestHandler):
             super().log_message(fmt, *args)
 
 
+class Server(ThreadingHTTPServer):
+    daemon_threads = True
+
+
+class ServerV6(Server):
+    address_family = socket.AF_INET6
+
+
 def main():
+    global TRUST_PROXY
     _hotels.update(load_hotels())
-    _map_cache.update(load_map_cache())
+    migrate_map_cache()
+    accounts.mail_settings = settings
     accounts.init_db()
     accounts.start_price_checks(flight_price)
     parser = argparse.ArgumentParser()
-    parser.add_argument("--host", default="0.0.0.0")
-    parser.add_argument("--port", type=int, default=8000)
+    # Los alojamientos web suelen indicar dirección y puerto con las variables IP y PORT.
+    parser.add_argument("--host", default=os.environ.get("IP") or "0.0.0.0")
+    parser.add_argument("--port", type=int, default=int(os.environ.get("PORT") or 8000))
+    parser.add_argument("--behind-proxy", action="store_true", help="confía en las cabeceras X-Forwarded-* del proxy")
     args = parser.parse_args()
+    TRUST_PROXY = args.behind_proxy
     state = "activados" if settings()["TRAVELPAYOUTS_TOKEN"] else "sin activar (falta la clave en .env)"
     print(f"TopTravel en http://localhost:{args.port} · precios {state}", flush=True)
-    ThreadingHTTPServer((args.host, args.port), Handler).serve_forever()
+    (ServerV6 if ":" in args.host else Server)((args.host, args.port), Handler).serve_forever()
 
 
 if __name__ == "__main__":

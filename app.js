@@ -223,6 +223,13 @@ function setupCombo(key, input, list, seg) {
     hideError();
     close();
     if (key === 'origin') loadExplore();
+    // Lleva al siguiente paso para no tener que pulsar cada campo.
+    if (key === 'origin' && !state.dest) {
+      $('dest').focus();
+    } else if (!state.start) {
+      input.blur();
+      openCal('start');
+    }
   };
 
   input.addEventListener('focus', () => { closePops(); open(); });
@@ -237,9 +244,10 @@ function setupCombo(key, input, list, seg) {
       const step = e.key === 'ArrowDown' ? 1 : -1;
       active = (active + step + items.length) % items.length;
       paint();
-    } else if (e.key === 'Enter' && !list.hidden && active >= 0) {
+    } else if (e.key === 'Enter' && !list.hidden && items.length && (active >= 0 || !state[key])) {
+      // Sin elegir con las flechas, vale la primera sugerencia.
       e.preventDefault();
-      pick(items[active]);
+      pick(items[Math.max(active, 0)]);
     }
   });
   // mousedown evita que el campo pierda el foco antes de elegir.
@@ -958,13 +966,42 @@ function renderAuth(mode, notice = '') {
     <form class="authform" data-auth="${login ? 'login' : 'register'}" novalidate>
       <label>Correo electrónico<input type="email" name="email" autocomplete="email" required></label>
       <label>Contraseña<input type="password" name="password" autocomplete="${login ? 'current-password' : 'new-password'}" minlength="8" required></label>
-      ${login ? '' : '<p class="muted authform__note">Mínimo 8 caracteres. Guardamos tu correo y tus elementos guardados solo para que uses esta función, y puedes borrar tu cuenta cuando quieras. No hay recuperación de contraseña por ahora: guárdala bien.</p>'}
+      ${login ? '' : '<p class="muted authform__note">Mínimo 8 caracteres. Al crear la cuenta aceptas la <a href="/privacidad" target="_blank" rel="noopener">política de privacidad</a>. Puedes borrar tu cuenta cuando quieras.</p>'}
       <p class="search__err" data-error role="alert" hidden></p>
       <button type="submit" class="btn btn--block">${login ? 'Entrar' : 'Crear cuenta'}</button>
     </form>
     <div class="dlg__actions authform__switch">
       <button type="button" class="linkbtn" data-auth-switch="${login ? 'register' : 'login'}">${login ? 'Crear una cuenta nueva' : 'Ya tengo cuenta'}</button>
+      ${login ? '<button type="button" class="linkbtn" data-auth-recover>He olvidado mi contraseña</button>' : ''}
       <button type="button" class="linkbtn" data-close>Cerrar</button>
+    </div>`;
+}
+
+function renderRecover() {
+  $('dlg').innerHTML = `
+    <h3>Recuperar la contraseña</h3>
+    <p class="muted">Usa el código de recuperación que te dimos al crear la cuenta.</p>
+    <form class="authform" data-recover novalidate>
+      <label>Correo electrónico<input type="email" name="email" autocomplete="email" required></label>
+      <label>Código de recuperación<input type="text" name="code" autocomplete="off" spellcheck="false" required></label>
+      <label>Contraseña nueva<input type="password" name="password" autocomplete="new-password" minlength="8" required></label>
+      <p class="search__err" data-error role="alert" hidden></p>
+      <button type="submit" class="btn btn--block">Cambiar la contraseña</button>
+    </form>
+    <div class="dlg__actions authform__switch">
+      <button type="button" class="linkbtn" data-auth-switch="login">Volver</button>
+      <button type="button" class="linkbtn" data-close>Cerrar</button>
+    </div>`;
+}
+
+function renderRecoveryCode(code, title = 'Guarda tu código de recuperación') {
+  $('dlg').innerHTML = `
+    <h3>${esc(title)}</h3>
+    <p class="muted">Si olvidas la contraseña, este código es la única forma de recuperar tu cuenta. No volveremos a enseñártelo.</p>
+    <p class="recovery__code" data-recovery-code>${esc(code)}</p>
+    <div class="dlg__actions authform__switch">
+      <button type="button" class="btn btn--out" data-copy-code>Copiar</button>
+      <button type="button" class="btn" data-recovery-done>Ya lo he guardado</button>
     </div>`;
 }
 
@@ -972,10 +1009,20 @@ function renderAccount() {
   $('dlg').innerHTML = `
     <h3>Mi cuenta</h3>
     <p class="muted">${esc(account.user.email)}</p>
+    ${account.user.mailReady ? `<label class="account__mail"><input type="checkbox" data-email-alerts ${account.user.emailAlerts ? 'checked' : ''}> Avisarme por correo si cambia el precio de un vuelo guardado</label>` : ''}
     <div class="dlg__actions authform__switch">
       <button type="button" class="btn btn--out" data-logout>Cerrar sesión</button>
       <button type="button" class="btn" data-close>Cerrar</button>
     </div>
+    <details class="account__danger account__code">
+      <summary>Crear un código de recuperación nuevo</summary>
+      <form class="authform" data-new-code novalidate>
+        <p class="muted authform__note">El código anterior dejará de funcionar.</p>
+        <label>Tu contraseña<input type="password" name="password" autocomplete="current-password" required></label>
+        <p class="search__err" data-error role="alert" hidden></p>
+        <button type="submit" class="btn btn--out btn--block">Crear código</button>
+      </form>
+    </details>
     <details class="account__danger">
       <summary>Borrar mi cuenta</summary>
       <form class="authform" data-delete-account novalidate>
@@ -1007,7 +1054,7 @@ function renderSaved() {
   $('dlg').innerHTML = `
     <h3>Guardados</h3>
     ${flights.length ? `<h4 class="dlg__sub">Vuelos</h4><p class="muted authform__note">Revisamos el precio cada pocas horas.</p><ul class="favs">${flightRows}</ul>` : ''}
-    ${stays.length ? `<h4 class="dlg__sub">Alojamientos</h4><p class="muted authform__note">Sin aviso de precio: no tenemos precios de alojamientos.</p><ul class="favs">${stayRows}</ul>` : ''}
+    ${stays.length ? `<h4 class="dlg__sub">Alojamientos</h4><p class="muted authform__note">Sin aviso de precio: de momento los avisos solo cubren los vuelos.</p><ul class="favs">${stayRows}</ul>` : ''}
     ${account.saved.length ? '' : '<p class="muted">Aún no has guardado nada. Busca un vuelo o un alojamiento y pulsa guardar.</p>'}
     <div class="dlg__actions" style="margin-top:16px"><button type="button" class="btn" data-close>Cerrar</button></div>`;
 }
@@ -1081,6 +1128,17 @@ function initAccount() {
     const open = e.target.closest('[data-open-saved]');
     const remove = e.target.closest('[data-remove-saved]');
     if (change) renderAuth(change.dataset.authSwitch);
+    if (e.target.closest('[data-auth-recover]')) renderRecover();
+    if (e.target.closest('[data-copy-code]')) {
+      const text = dlg.querySelector('[data-recovery-code]').textContent;
+      navigator.clipboard?.writeText(text).then(() => toast('Código copiado.')).catch(() => toast('Cópialo a mano, por favor.'));
+    }
+    if (e.target.closest('[data-recovery-done]')) {
+      dlg.close();
+      const next = account.afterLogin;
+      account.afterLogin = null;
+      if (next) next();
+    }
     if (open) openSaved(Number(open.dataset.openSaved));
     if (remove) {
       const id = Number(remove.dataset.removeSaved);
@@ -1103,6 +1161,18 @@ function initAccount() {
     }
   });
 
+  dlg.addEventListener('change', async (e) => {
+    if (!e.target.matches('[data-email-alerts]')) return;
+    try {
+      const { emailAlerts } = await api('/api/account/email-alerts', { enabled: e.target.checked });
+      account.user.emailAlerts = emailAlerts;
+      toast(emailAlerts ? 'Te avisaremos también por correo.' : 'No te enviaremos más correos.');
+    } catch (error) {
+      e.target.checked = !e.target.checked;
+      toast(error.message);
+    }
+  });
+
   dlg.addEventListener('submit', async (e) => {
     const form = e.target;
     e.preventDefault();
@@ -1113,13 +1183,26 @@ function initAccount() {
     try {
       if (form.dataset.auth) {
         const body = { email: form.elements.email.value, password: form.elements.password.value };
-        await api(`/api/${form.dataset.auth}`, body);
+        const result = await api(`/api/${form.dataset.auth}`, body);
         await refreshAccount();
+        if (result.recoveryCode) {
+          renderRecoveryCode(result.recoveryCode);
+          toast('Cuenta creada.');
+          return;
+        }
         dlg.close();
         const next = account.afterLogin;
         account.afterLogin = null;
-        toast(form.dataset.auth === 'register' ? 'Cuenta creada.' : 'Sesión iniciada.');
+        toast('Sesión iniciada.');
         if (next) next();
+      } else if ('recover' in form.dataset) {
+        const body = { email: form.elements.email.value, code: form.elements.code.value, password: form.elements.password.value };
+        const result = await api('/api/recover', body);
+        await refreshAccount();
+        renderRecoveryCode(result.recoveryCode, 'Contraseña cambiada: guarda tu código nuevo');
+      } else if ('newCode' in form.dataset) {
+        const result = await api('/api/account/recovery-code', { password: form.elements.password.value });
+        renderRecoveryCode(result.recoveryCode, 'Tu código de recuperación nuevo');
       } else if ('deleteAccount' in form.dataset) {
         await api('/api/account/delete', { password: form.elements.password.value });
         account.user = null;
@@ -1588,7 +1671,7 @@ async function loadVisibleRates(root, s, rows = []) {
       }
     }
   };
-  await Promise.all([next(), next(), next()]);
+  await Promise.all([next(), next(), next(), next(), next()]);
 }
 
 function hotelHtml(h, s) {
@@ -1873,8 +1956,8 @@ function renderIdeas() {
         ${heartHtml(code, p.city)}
         <button type="button" class="dest" data-code="${code}">
           <span class="dest__img" style="display:block">
-            <img class="is-on" src="assets/${PHOTOS[code]}.jpg" alt="" width="800" height="800">
-            ${[2, 3, 4].map((n) => `<img data-src="assets/${PHOTOS[code]}${n}.jpg" alt="" width="800" height="800">`).join('')}
+            <img class="is-on" src="assets/${PHOTOS[code]}.jpg" alt="" width="640" height="640" loading="lazy" decoding="async">
+            ${[2, 3, 4].map((n) => `<img data-src="assets/${PHOTOS[code]}${n}.jpg" alt="" width="640" height="640" decoding="async">`).join('')}
             <span class="dest__dots" aria-hidden="true"><i class="is-on"></i><i></i><i></i><i></i></span>
           </span>
           <span class="dest__t">${esc(p.city)}</span>
@@ -2064,7 +2147,7 @@ function init() {
     } else if (unfav) {
       toggleFav(unfav.dataset.unfav);
       renderFavs();
-    } else if (e.target.closest('[data-close]') || e.target === $('dlg')) {
+    } else if (e.target.closest('[data-close]') || (e.target === $('dlg') && !$('dlg').querySelector('[data-recovery-code]'))) {
       $('dlg').close();
     }
   });

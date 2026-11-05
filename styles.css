@@ -543,3 +543,19 @@ dialog .favs li > span:first-child { min-width: 0; }
 .pin--monument { box-shadow: 0 0 0 2px #fff, 0 1px 4px rgba(0,0,0,.45); border: 0; }
 .map__photo { display: block; width: 100%; height: 160px; object-fit: cover; border-radius: 10px; background: var(--soft); }
 .map__credit { font-size: 11px; color: var(--muted); }
+
+/* Código de recuperación */
+.recovery__code { margin: 14px 0; padding: 14px; border: 1px dashed var(--line); border-radius: 12px; background: #fff; color: var(--ink); font: 700 15px/1.5 ui-monospace, Consolas, monospace; text-align: center; overflow-wrap: anywhere; user-select: all; }
+.account__code summary { color: var(--ink); }
+.account__mail { display: flex; gap: 8px; align-items: flex-start; margin: 12px 0; font-size: 14px; }
+.foot__legal { flex-basis: 100%; margin: 0; }
+.foot__legal a { color: inherit; font-weight: 600; }
+
+/* Páginas legales */
+.legal { max-width: 760px; margin: 0 auto; padding: 32px 16px 56px; color: var(--ink); line-height: 1.6; }
+.legal h1 { margin: 12px 0 4px; font-size: 30px; }
+.legal h2 { margin: 28px 0 6px; font-size: 19px; }
+.legal__back { font-weight: 700; color: inherit; }
+.legal__date { margin: 0; color: var(--muted, #6b5a4a); font-size: 14px; }
+.legal ul { padding-left: 20px; }
+.legal a { color: inherit; }
