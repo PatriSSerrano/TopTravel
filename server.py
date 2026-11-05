@@ -29,6 +29,10 @@ API_BASE = os.environ.get("TP_API_BASE", "https://api.travelpayouts.com")
 CACHE_SECONDS = 1800
 CACHE_MAX = 500
 MAX_TRIP_DAYS = 30
+MAP_CACHE_FILE = ROOT / "data" / "mapas.json"
+MAP_CACHE_SECONDS = 30 * 86400
+MAP_CACHE_MAX = 60
+MAP_RADIUS_KM = 7
 XOTELO_BASE = "https://data.xotelo.com/api"
 XOTELO_LIST_BASE = os.environ.get("XOTELO_LIST_BASE", XOTELO_BASE)
 XOTELO_LIST_OK_SECONDS = 7 * 86400
@@ -81,6 +85,7 @@ ASSET = re.compile(r"^/assets/[a-z0-9]+\.jpg$")
 
 _cache = {}
 _xotelo_lists = {}
+_map_cache = {}
 _xotelo_slots = threading.Semaphore(4)
 try:
     XOTELO_CITIES = json.loads((ROOT / "xotelo_cities.json").read_text(encoding="utf-8"))
@@ -116,9 +121,9 @@ def settings():
     return values
 
 
-def fetch_json(url, headers=None):
+def fetch_json(url, headers=None, timeout=30):
     request = urllib.request.Request(url, headers={"User-Agent": "TopTravel/1.0", **(headers or {})})
-    with urllib.request.urlopen(request, timeout=30) as response:
+    with urllib.request.urlopen(request, timeout=timeout) as response:
         raw = response.read()
     return json.loads(gzip.decompress(raw) if raw[:2] == b"\x1f\x8b" else raw)
 
@@ -471,6 +476,168 @@ def api_hotels(q):
     return (status, add_price_keys(data)) if status == 200 else (status, data)
 
 
+def read_center(q):
+    try:
+        lat, lon = float(q.get("lat", "")), float(q.get("lon", ""))
+    except ValueError:
+        return None
+    return (round(lat, 2), round(lon, 2)) if -85 <= lat <= 85 and -180 <= lon <= 180 else None
+
+
+def load_map_cache():
+    try:
+        return json.loads(MAP_CACHE_FILE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+def cached_map_data(key, build):
+    """Monumentos y transporte cambian poco: se guardan en disco y se reutilizan."""
+    now = time.time()
+    with _lock:
+        hit = _map_cache.get(key)
+    if hit and hit[0] > now and any(hit[1].values()):
+        return hit[1]
+    try:
+        data = build()
+    except (Unavailable, urllib.error.URLError, TimeoutError, ValueError, KeyError, OSError) as error:
+        if hit:
+            return hit[1]
+        raise Unavailable("upstream") from error
+    # Un resultado vacío o incompleto no se guarda: se volverá a intentar.
+    if not any(data.values()) or data.get("partial"):
+        return data
+    with _lock:
+        if len(_map_cache) >= MAP_CACHE_MAX and key not in _map_cache:
+            del _map_cache[min(_map_cache, key=lambda k: _map_cache[k][0])]
+        _map_cache[key] = (now + MAP_CACHE_SECONDS, data)
+        MAP_CACHE_FILE.parent.mkdir(exist_ok=True)
+        temp = MAP_CACHE_FILE.with_suffix(".tmp")
+        temp.write_text(json.dumps(_map_cache, ensure_ascii=False), encoding="utf-8")
+        temp.replace(MAP_CACHE_FILE)
+    return data
+
+
+def build_monuments(lat, lon):
+    sparql = f"""
+SELECT ?item ?itemLabel (SAMPLE(?img) AS ?image) (SAMPLE(?c) AS ?coord) (MAX(?links) AS ?popular) WHERE {{
+  SERVICE wikibase:around {{ ?item wdt:P625 ?c . bd:serviceParam wikibase:center "Point({lon} {lat})"^^geo:wktLiteral ; wikibase:radius "{MAP_RADIUS_KM}" . }}
+  ?item wdt:P18 ?img ; wikibase:sitelinks ?links .
+  FILTER(?links >= 8)
+  VALUES ?class {{ wd:Q570116 wd:Q4989906 wd:Q33506 wd:Q839954 wd:Q16970 wd:Q23413 wd:Q174782 wd:Q12518 wd:Q16560 wd:Q12280 wd:Q2319498 wd:Q44539 wd:Q483453 wd:Q22698 }}
+  ?item wdt:P31/wdt:P279* ?class .
+  SERVICE wikibase:label {{ bd:serviceParam wikibase:language "es,en". }}
+}} GROUP BY ?item ?itemLabel ORDER BY DESC(?popular) LIMIT 40
+"""
+    url = "https://query.wikidata.org/sparql?" + urllib.parse.urlencode({"query": sparql, "format": "json"})
+    rows = fetch_json(url, {"Accept": "application/sparql-results+json"}, timeout=65)["results"]["bindings"]
+    monuments = []
+    for row in rows:
+        name = row["itemLabel"]["value"]
+        point = re.match(r"Point\(([-\d.]+) ([-\d.]+)\)", row["coord"]["value"])
+        if not point or re.fullmatch(r"Q\d+", name):
+            continue
+        file_name = urllib.parse.unquote(row["image"]["value"].rsplit("/", 1)[-1])
+        quoted = urllib.parse.quote(file_name.replace(" ", "_"))
+        monuments.append({
+            "name": name[:120],
+            "lat": float(point.group(2)),
+            "lon": float(point.group(1)),
+            "image": f"https://commons.wikimedia.org/wiki/Special:FilePath/{quoted}?width=480",
+            "credit": f"https://commons.wikimedia.org/wiki/File:{quoted}",
+        })
+    return {"monuments": monuments}
+
+
+def api_monuments(q):
+    center = read_center(q)
+    if not center:
+        return 400, {"error": "bad_request"}
+    return 200, cached_map_data(f"m|{center[0]}|{center[1]}", lambda: build_monuments(*center))
+
+
+TRANSIT_KINDS = {"subway": "metro", "light_rail": "metro", "monorail": "metro", "tram": "tram", "bus": "bus", "trolleybus": "bus"}
+
+
+def overpass_slow(query):
+    body = urllib.parse.urlencode({"data": query}).encode("utf-8")
+    last_error = None
+    for url in OVERPASS_URLS:
+        try:
+            request = urllib.request.Request(url, data=body, headers={"User-Agent": "TopTravel/1.0"})
+            with urllib.request.urlopen(request, timeout=110) as response:
+                payload = json.load(response)
+            # Overpass avisa de sus errores con un texto en una respuesta "correcta".
+            if payload.get("remark") and not payload.get("elements"):
+                raise ValueError(payload["remark"])
+            return payload.get("elements", [])
+        except (urllib.error.URLError, TimeoutError, ValueError, OSError) as error:
+            last_error = error
+    raise Unavailable("upstream") from last_error
+
+
+def build_transit(lat, lon):
+    # El recorrido se recorta a la zona del mapa: si no, una ciudad pesa decenas de MB.
+    margin_lat = (MAP_RADIUS_KM + 1) / 110.574
+    margin_lon = (MAP_RADIUS_KM + 1) / (111.32 * math.cos(math.radians(lat)))
+    box = f"{lat - margin_lat:.4f},{lon - margin_lon:.4f},{lat + margin_lat:.4f},{lon + margin_lon:.4f}"
+
+    def routes(kinds):
+        return overpass_slow(
+            f'[out:json][timeout:90];rel["type"="route"]["route"~"^({kinds})$"]'
+            f"(around:{MAP_RADIUS_KM * 1000},{lat},{lon});out geom({box});"
+        )
+
+    elements = routes("subway|light_rail|monorail|tram")
+    partial = False
+    try:
+        elements = elements + routes("bus|trolleybus")
+    except Unavailable:
+        partial = True  # sin autobuses de momento: el metro y el tranvía sí se muestran
+    best = {}
+    for element in elements:
+        tags = element.get("tags", {})
+        kind = TRANSIT_KINDS.get(tags.get("route"))
+        ref = str(tags.get("ref") or tags.get("name") or "")[:30]
+        if not kind or not ref:
+            continue
+        step, digits = (5, 4) if kind == "bus" else (2, 5)
+        paths = []
+        for member in element.get("members", []):
+            # Los puntos fuera de la zona llegan vacíos.
+            points = [p for p in member.get("geometry") or [] if p]
+            if member.get("type") != "way" or len(points) < 2:
+                continue
+            kept = points[::step]
+            if kept[-1] is not points[-1]:
+                kept.append(points[-1])
+            paths.append([[round(p["lat"], digits), round(p["lon"], digits)] for p in kept])
+        if not paths:
+            continue
+        colour = str(tags.get("colour") or "")
+        line = {
+            "kind": kind,
+            "ref": ref,
+            "name": str(tags.get("name") or "")[:90],
+            "color": colour if re.fullmatch(r"#[0-9a-fA-F]{6}", colour) else "",
+            "paths": paths,
+        }
+        identity = (kind, ref)
+        if identity not in best or sum(map(len, paths)) > sum(map(len, best[identity]["paths"])):
+            best[identity] = line
+    result = {"lines": list(best.values())}
+    if partial:
+        result["partial"] = True
+    return result
+
+
+def api_transit(q):
+    center = read_center(q)
+    if not center:
+        return 400, {"error": "bad_request"}
+    return 200, cached_map_data(f"t|{center[0]}|{center[1]}", lambda: build_transit(*center))
+
+
 def api_rates(q):
     key, start, end = q.get("key", ""), q.get("in", ""), q.get("out", "")
     if not XOTELO_KEY.fullmatch(key) or not valid_date(start) or not valid_date(end) or end <= start:
@@ -583,7 +750,7 @@ def api_explore(q):
     }
 
 
-ROUTES = {"/api/calendar": api_calendar, "/api/day": api_day, "/api/hotels": api_hotels, "/api/explore": api_explore, "/api/rates": api_rates}
+ROUTES = {"/api/calendar": api_calendar, "/api/day": api_day, "/api/hotels": api_hotels, "/api/explore": api_explore, "/api/rates": api_rates, "/api/monuments": api_monuments, "/api/transit": api_transit}
 
 
 def lowest_price(params):
@@ -619,7 +786,7 @@ PRIVATE_POST = {
 MAX_BODY = 16 * 1024
 
 # Peticiones por minuto y por visitante en lo que llama a servicios externos.
-RATE_LIMITS = {"/api/calendar": 120, "/api/day": 120, "/api/explore": 60, "/api/hotels": 20, "/api/rates": 90}
+RATE_LIMITS = {"/api/calendar": 120, "/api/day": 120, "/api/explore": 60, "/api/hotels": 20, "/api/rates": 90, "/api/monuments": 20, "/api/transit": 20}
 _hits = {}
 _hits_lock = threading.Lock()
 
@@ -629,7 +796,7 @@ SECURITY_HEADERS = {
     "Referrer-Policy": "strict-origin-when-cross-origin",
     "Content-Security-Policy": (
         "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; "
-        "img-src 'self' data: https://tile.openstreetmap.org; connect-src 'self'; "
+        "img-src 'self' data: https://tile.openstreetmap.org https://*.wikimedia.org; connect-src 'self'; "
         "object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"
     ),
 }
@@ -779,6 +946,7 @@ class Handler(BaseHTTPRequestHandler):
 
 def main():
     _hotels.update(load_hotels())
+    _map_cache.update(load_map_cache())
     accounts.init_db()
     accounts.start_price_checks(flight_price)
     parser = argparse.ArgumentParser()

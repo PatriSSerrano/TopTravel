@@ -525,7 +525,7 @@ function setMode(mode) {
   $('heroTitle').textContent = flights ? 'Encuentra el vuelo más barato, día a día.' : 'Compara alojamientos en un solo paso.';
   $('heroSub').textContent = flights
     ? 'Mira el precio de cada día del mes y elige la mejor fecha para volar.'
-    : 'Elige tu estancia una vez: te llevamos a Booking.com y Airbnb con tu búsqueda ya hecha.';
+    : 'Mira en el mapa el precio de cada alojamiento y lo cerca que queda del centro.';
   $('destLabel').textContent = flights ? 'A' : 'Destino';
   $('dest').placeholder = flights ? 'País, ciudad o aeropuerto' : 'Ciudad, zona o alojamiento';
   $('startLabel').textContent = flights ? 'Ida' : 'Llegada';
@@ -672,7 +672,7 @@ function wireControls(root, state, draw) {
   form.addEventListener('submit', (e) => e.preventDefault());
   form.addEventListener('change', () => { state.limit = state.step; draw(); });
   form.addEventListener('reset', () => setTimeout(() => { state.limit = state.step; draw(); }));
-  root.querySelector('.sortbar').addEventListener('click', (e) => {
+  root.querySelector('.sortbar')?.addEventListener('click', (e) => {
     const b = e.target.closest('[data-sort]');
     if (!b) return;
     state.sort = b.dataset.sort;
@@ -780,15 +780,25 @@ function renderHotelResults(el, hotels, s, center) {
           + optHtml('checkbox', 'h_price', '1', 'Con precio', count((h) => h.key))),
       )}
       <div class="layout__main">
-        ${sortbarHtml([{ id: 'stars', label: 'Más estrellas' }, { id: 'web', label: 'Web oficial' }, { id: 'name', label: 'Nombre' }])}
-        <div class="map map--small" data-map hidden role="region" aria-label="Mapa de alojamientos"></div>
+        <div class="maptabs" role="group" aria-label="Elegir mapa">
+          <button type="button" class="is-on" data-map-mode="prices" aria-pressed="true">Precios</button>
+          <button type="button" data-map-mode="monuments" aria-pressed="false">Monumentos</button>
+          <button type="button" data-map-mode="transit" aria-pressed="false">Transporte</button>
+        </div>
+        <div class="map map--city" data-map role="region" aria-label="Mapa de la ciudad"></div>
+        <div class="transit-kinds" data-transit-kinds hidden>
+          <label><input type="checkbox" data-kind="metro" checked> Metro</label>
+          <label><input type="checkbox" data-kind="tram" checked> Tranvía</label>
+          <label><input type="checkbox" data-kind="bus" checked> Autobús</label>
+        </div>
+        <p class="map__note" data-map-note role="status"></p>
         ${center ? `<p class="zones" aria-label="Distancia al centro">
           <span class="zones__i zones__i--near">Cerca: hasta 1 km</span>
           <span class="zones__i zones__i--mid">Media: hasta 3 km</span>
           <span class="zones__i zones__i--far">Lejos: más de 3 km</span>
         </p>` : ''}
         <p class="count" data-count></p>
-        <p class="count">Precios orientativos según Xotelo. Pueden ser por noche y no incluir impuestos: confirma el precio final de tu estancia antes de reservar.</p>
+        <p class="count">Precio orientativo por noche y por persona: el precio de la habitación según Xotelo, dividido entre los viajeros. Puede no incluir impuestos, así que confirma el total antes de reservar.</p>
         <div class="list" data-results></div>
         <button type="button" class="btn btn--out btn--block more">Ver más alojamientos</button>
         <p class="legal">Datos de alojamientos: © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">colaboradores de OpenStreetMap</a>. Precios: <a href="https://xotelo.com" target="_blank" rel="noopener">Xotelo</a>.</p>
@@ -796,12 +806,8 @@ function renderHotelResults(el, hotels, s, center) {
     </div>`;
 
   const byName = (a, b) => a.name.localeCompare(b.name, 'es');
-  const sorters = {
-    stars: (a, b) => Boolean(b.key) - Boolean(a.key) || b.stars - a.stars || byName(a, b),
-    web: (a, b) => Boolean(b.website) - Boolean(a.website) || Boolean(b.key) - Boolean(a.key) || b.stars - a.stars || byName(a, b),
-    name: byName,
-  };
-  const state = { sort: 'stars', step: HOTELS_STEP, limit: HOTELS_STEP };
+  const order = (a, b) => Boolean(b.key) - Boolean(a.key) || b.stars - a.stars || byName(a, b);
+  const state = { step: HOTELS_STEP, limit: HOTELS_STEP };
 
   const draw = () => {
     const form = el.querySelector('form');
@@ -811,22 +817,27 @@ function renderHotelResults(el, hotels, s, center) {
     const needsPrice = form.elements.h_price.checked;
     const rows = hotels
       .filter((h) => chosen.has(h.kind || 'Alojamiento') && h.stars >= minStars && (!needsWeb || h.website) && (!needsPrice || h.key))
-      .sort(sorters[state.sort]);
+      .sort(order);
     el.querySelector('[data-count]').textContent = `${rows.length} de ${hotels.length} alojamientos`;
     el.querySelector('[data-results]').innerHTML = rows.length
       ? rows.slice(0, state.limit).map((h) => hotelHtml(h, s)).join('')
       : noMatchHtml;
     el.querySelector('.more').hidden = rows.length <= state.limit;
-    drawHotelMap(el.querySelector('[data-map]'), rows, s, center, hotels);
-    loadVisibleRates(el, s);
+    drawHotelMap(el, rows, s, center, hotels);
+    loadVisibleRates(el, s, rows);
   };
 
   wireControls(el, state, draw);
   el.addEventListener('click', (e) => {
+    const tab = e.target.closest('[data-map-mode]');
+    if (tab) setMapMode(el, tab.dataset.mapMode);
     const b = e.target.closest('[data-save-stay]');
     if (!b) return;
     const hotel = hotels.find((h) => h.name === b.dataset.saveStay);
     if (hotel) toggleStay(hotel, s, b);
+  });
+  el.addEventListener('change', (e) => {
+    if (e.target.matches('[data-kind]')) showTransitKinds(el);
   });
   draw();
 }
@@ -1144,14 +1155,20 @@ function newMap(el, options = {}, tiles = true) {
   return map;
 }
 
-let hotelMap = null;
-let hotelLayer = null;
+const cityMap = { map: null, el: null, center: null, s: null, mode: 'prices', prices: null, monuments: null, transit: null, markers: new Map(), monumentsData: null, transitData: null, run: 0, framed: false };
 
-function hotelPopup(h, s) {
+function peopleIn(s) {
+  return Math.max(1, s.pax.adults + s.pax.children);
+}
+
+const perPerson = (rate, s) => Math.round(rate / peopleIn(s));
+
+function hotelPopup(h, s, rates) {
   const booking = linkBooking({ ...s, dest: { city: `${h.name}, ${s.dest.city}`, country: '' } });
   const stars = h.stars ? ' · ' + '★'.repeat(h.stars) : '';
   return `<b class="map__title">${esc(h.name)}</b><span class="map__sub">${esc(h.kind || 'Alojamiento')}${stars}</span>
     ${kmHtml(h)}
+    ${rates && rates.length ? `<div class="rates">${ratesHtml(rates, s)}</div>` : ''}
     ${h.website ? `<a class="btn" href="${esc(h.website)}" target="_blank" rel="noopener nofollow">Web oficial</a>` : ''}
     <a class="btn btn--out" href="${esc(booking)}" target="_blank" rel="noopener">Ver precio en Booking</a>`;
 }
@@ -1170,34 +1187,184 @@ function circlePoints(center, km) {
 function addZones(map, center, furthest) {
   const band = (from, to, color) => {
     const shape = from > 0 ? [circlePoints(center, to), circlePoints(center, from)] : circlePoints(center, to);
-    L.polygon(shape, { color, weight: 1, opacity: 0.8, fillColor: color, fillOpacity: 0.16, interactive: false }).addTo(map);
+    L.polygon(shape, { color, weight: 1, opacity: 0.8, fillColor: color, fillOpacity: 0.14, interactive: false }).addTo(map);
   };
   band(ZONES.near.from, ZONES.near.to, ZONES.near.color);
   band(ZONES.mid.from, ZONES.mid.to, ZONES.mid.color);
-  band(3, Math.max(5, furthest + 0.5), FAR_COLOR);
+  band(3, Math.max(7.5, furthest + 0.5), FAR_COLOR);
   L.circleMarker([center.lat, center.lon], { radius: 4, color: '#fff', weight: 2, fillColor: '#3a2314', fillOpacity: 1, interactive: false }).addTo(map);
 }
 
-function drawHotelMap(el, rows, s, center, hotels) {
-  if (!hasMaps() || !el) return;
-  const points = rows.filter((h) => typeof h.lat === 'number' && typeof h.lon === 'number');
-  el.hidden = !points.length;
-  if (!points.length) return;
-  if (!hotelMap || hotelMap.getContainer() !== el) {
-    if (hotelMap) hotelMap.remove();
-    hotelMap = newMap(el);
-    if (center) addZones(hotelMap, center, Math.max(0, ...hotels.map((h) => h.km || 0)));
-    hotelLayer = L.layerGroup().addTo(hotelMap);
+function mapNote(root, text) {
+  const note = root.querySelector('[data-map-note]');
+  if (note) note.textContent = text;
+}
+
+function priceIcon(text, km) {
+  const zone = typeof km === 'number' ? zoneOf(km) : 'none';
+  return L.divIcon({ className: `pricepin pricepin--${zone}`, html: `<span>${esc(text)}</span>`, iconSize: [48, 22], iconAnchor: [24, 11] });
+}
+
+function paintPriceMarker(key, rates) {
+  const item = cityMap.markers.get(key);
+  if (!item) return;
+  if (!rates || !rates.length) {
+    cityMap.prices.removeLayer(item.marker);
+    return;
   }
-  hotelMap.invalidateSize();
-  hotelLayer.clearLayers();
+  item.marker.setIcon(priceIcon(money(perPerson(rates[0].rate, cityMap.s)), item.hotel.km));
+  item.marker.setPopupContent(hotelPopup(item.hotel, cityMap.s, rates));
+  if (!cityMap.prices.hasLayer(item.marker)) cityMap.prices.addLayer(item.marker);
+}
+
+function drawHotelMap(root, rows, s, center, hotels) {
+  const el = root.querySelector('[data-map]');
+  if (!hasMaps() || !el) return;
+  if (cityMap.el !== el) {
+    if (cityMap.map) cityMap.map.remove();
+    Object.assign(cityMap, { map: newMap(el), el, center, s, mode: 'prices', monumentsData: null, transitData: null, framed: false, markers: new Map(), run: cityMap.run + 1 });
+    if (center) addZones(cityMap.map, center, Math.max(0, ...hotels.map((h) => h.km || 0)));
+    cityMap.transit = {
+      bus: L.layerGroup(),
+      tram: L.layerGroup(),
+      metro: L.layerGroup(),
+    };
+    cityMap.monuments = L.layerGroup();
+    cityMap.prices = L.layerGroup().addTo(cityMap.map);
+  }
+  cityMap.map.invalidateSize();
+  cityMap.prices.clearLayers();
+  cityMap.markers = new Map();
+  const points = rows.filter((h) => h.key && typeof h.lat === 'number' && typeof h.lon === 'number');
   points.forEach((h) => {
-    const icon = L.divIcon({ className: `pin${typeof h.km === 'number' ? ` pin--${zoneOf(h.km)}` : ''}`, html: `<span>${h.stars || ''}</span>`, iconSize: [20, 20], iconAnchor: [10, 10] });
-    L.marker([h.lat, h.lon], { icon, title: h.name, alt: h.name }).bindPopup(hotelPopup(h, s)).addTo(hotelLayer);
+    const marker = L.marker([h.lat, h.lon], { icon: priceIcon('…', h.km), title: h.name, alt: h.name }).bindPopup(hotelPopup(h, s), { maxWidth: 280 });
+    cityMap.markers.set(h.key, { marker, hotel: h });
+    marker.addTo(cityMap.prices);
+    const known = rateCache.get(rateId(h.key, s));
+    if (known) paintPriceMarker(h.key, known);
   });
-  const bounds = L.latLngBounds(points.map((h) => [h.lat, h.lon]));
-  if (center) bounds.extend(L.latLngBounds(circlePoints(center, 3)));
-  hotelMap.fitBounds(bounds, { padding: [24, 24], maxZoom: 15 });
+  if (!cityMap.framed) {
+    const bounds = points.length ? L.latLngBounds(points.map((h) => [h.lat, h.lon])) : L.latLngBounds([]);
+    if (center) bounds.extend(L.latLngBounds(circlePoints(center, 3.2)));
+    if (bounds.isValid()) cityMap.map.fitBounds(bounds, { padding: [24, 24], maxZoom: 15 });
+    cityMap.framed = true;
+  }
+  if (cityMap.mode === 'prices') {
+    const missing = rows.filter((h) => h.key).length - points.length;
+    mapNote(root, points.length
+      ? `${plural(points.length, 'alojamiento', 'alojamientos')} con precio en el mapa, por noche y por persona.${missing > 0 ? ` ${plural(missing, 'otro', 'otros')} con precio solo en la lista: no tenemos su ubicación.` : ''}`
+      : 'Todavía no hay alojamientos con precio en el mapa de esta ciudad. Mira los mapas de monumentos y transporte.');
+  }
+}
+
+function monumentPopup(m) {
+  // Wikidata guarda muchos nombres en minúscula ("basílica de…").
+  const name = m.name.charAt(0).toUpperCase() + m.name.slice(1);
+  return `<b class="map__title">${esc(name)}</b>${kmHtml(m)}
+    <img class="map__photo" src="${esc(m.image)}" alt="${esc(name)}" width="240" height="160" loading="lazy">
+    <a class="map__credit" href="${esc(m.credit)}" target="_blank" rel="noopener">Foto y licencia: Wikimedia Commons</a>`;
+}
+
+async function loadMonuments(root) {
+  const { center, run } = cityMap;
+  if (cityMap.monumentsData || !center) return;
+  const q = new URLSearchParams({ lat: center.lat, lon: center.lon });
+  mapNote(root, 'Buscando monumentos… La primera vez en una ciudad puede tardar hasta un minuto.');
+  try {
+    const r = await fetch(`/api/monuments?${q}`);
+    const body = await r.json();
+    if (!r.ok) throw new Error(body.error);
+    if (run !== cityMap.run) return;
+    cityMap.monumentsData = body.monuments;
+    const from = L.latLng(center.lat, center.lon);
+    body.monuments.forEach((m) => {
+      m.km = from.distanceTo([m.lat, m.lon]) / 1000;
+      const icon = L.divIcon({ className: `pin pin--monument pin--${zoneOf(m.km)}`, iconSize: [16, 16], iconAnchor: [8, 8] });
+      L.marker([m.lat, m.lon], { icon, title: m.name, alt: m.name }).bindPopup(monumentPopup(m), { maxWidth: 270, minWidth: 250 }).addTo(cityMap.monuments);
+    });
+  } catch {
+    if (run === cityMap.run && cityMap.mode !== 'prices') mapNote(root, 'No hemos podido cargar los monumentos. Inténtalo de nuevo en un momento.');
+  }
+}
+
+const TRANSIT_LOOK = {
+  metro: { label: 'Metro', weight: 4.5, opacity: 0.95, fallback: '#7a3e9d' },
+  tram: { label: 'Tranvía', weight: 3, opacity: 0.9, fallback: '#c2410c' },
+  bus: { label: 'Autobús', weight: 1.3, opacity: 0.45, fallback: '#3a5a8c' },
+};
+
+async function loadTransit(root) {
+  const { center, run } = cityMap;
+  if (cityMap.transitData || !center) return;
+  const q = new URLSearchParams({ lat: center.lat, lon: center.lon });
+  mapNote(root, 'Buscando líneas de transporte… La primera vez en una ciudad puede tardar un par de minutos.');
+  try {
+    const r = await fetch(`/api/transit?${q}`);
+    const body = await r.json();
+    if (!r.ok) throw new Error(body.error);
+    if (run !== cityMap.run) return;
+    cityMap.transitData = body.lines;
+    cityMap.transitPartial = Boolean(body.partial);
+    const renderer = L.canvas({ tolerance: 6 });
+    ['bus', 'tram', 'metro'].forEach((kind) => {
+      const look = TRANSIT_LOOK[kind];
+      body.lines.filter((l) => l.kind === kind).forEach((line) => {
+        L.polyline(line.paths, { renderer, color: line.color || look.fallback, weight: look.weight, opacity: look.opacity })
+          .bindPopup(`<b class="map__title">${esc(look.label)} ${esc(line.ref)}</b>${line.name ? `<span class="map__sub">${esc(line.name)}</span>` : ''}`)
+          .addTo(cityMap.transit[kind]);
+      });
+    });
+    showTransitKinds(root);
+  } catch {
+    if (run === cityMap.run && cityMap.mode === 'transit') mapNote(root, 'No hemos podido cargar el transporte: el servicio de mapas puede estar saturado. Inténtalo de nuevo en un momento.');
+  }
+}
+
+function showTransitKinds(root) {
+  if (cityMap.mode !== 'transit') return;
+  const lines = cityMap.transitData;
+  root.querySelectorAll('[data-kind]').forEach((box) => {
+    const group = cityMap.transit[box.dataset.kind];
+    if (box.checked) group.addTo(cityMap.map);
+    else cityMap.map.removeLayer(group);
+  });
+  if (!lines) return;
+  const n = (kind) => lines.filter((l) => l.kind === kind).length;
+  mapNote(root, lines.length
+    ? `${n('metro')} de metro, ${n('tram')} de tranvía y ${n('bus')} de autobús en unos 7 km alrededor del centro. Pulsa una línea para ver su nombre.${cityMap.transitPartial ? ' Los autobuses no han cargado: el servicio de mapas está saturado.' : ''}`
+    : 'No hemos encontrado líneas de transporte en esta zona.');
+}
+
+async function setMapMode(root, mode) {
+  if (!cityMap.map) return;
+  cityMap.mode = mode;
+  root.querySelectorAll('[data-map-mode]').forEach((b) => {
+    const on = b.dataset.mapMode === mode;
+    b.classList.toggle('is-on', on);
+    b.setAttribute('aria-pressed', String(on));
+  });
+  const { map, prices, monuments, transit } = cityMap;
+  map.closePopup();
+  [prices, monuments, transit.bus, transit.tram, transit.metro].forEach((layer) => map.removeLayer(layer));
+  root.querySelector('[data-transit-kinds]').hidden = mode !== 'transit';
+  if (mode === 'prices') {
+    prices.addTo(map);
+    mapNote(root, `${plural(cityMap.markers.size, 'alojamiento', 'alojamientos')} con precio en el mapa, por noche y por persona.`);
+    return;
+  }
+  monuments.addTo(map);
+  if (mode === 'transit') {
+    showTransitKinds(root);
+    loadMonuments(root);
+    await loadTransit(root);
+    return;
+  }
+  await loadMonuments(root);
+  if (cityMap.mode === 'monuments' && cityMap.monumentsData) {
+    mapNote(root, cityMap.monumentsData.length
+      ? `${plural(cityMap.monumentsData.length, 'lugar destacado', 'lugares destacados')}. Pulsa un punto para ver su nombre y su foto.`
+      : 'No hemos encontrado monumentos con foto en esta zona.');
+  }
 }
 
 let exploreMap = null;
@@ -1387,27 +1554,35 @@ const kmHtml = (h) => (typeof h.km === 'number' ? `<span class="km km--${zoneOf(
 const rateCache = new Map();
 let ratesRun = 0;
 
-function ratesHtml(rates) {
+function ratesHtml(rates, s) {
   if (!rates) return 'Precios no disponibles ahora mismo.';
   if (!rates.length) return 'Sin precio disponible para estas fechas.';
   const [best, ...rest] = rates;
-  return `<b class="rates__best">Desde ${esc(money(best.rate))} <small>en ${esc(best.name)}</small></b>
-    ${rest.length ? `<span class="rates__rest">${rest.map((r) => `${esc(r.name)}: ${esc(money(r.rate))}`).join(' · ')}</span>` : ''}`;
+  return `<b class="rates__best">Desde ${esc(money(perPerson(best.rate, s)))} <small>por noche y persona en ${esc(best.name)}</small></b>
+    ${rest.length ? `<span class="rates__rest">${rest.map((r) => `${esc(r.name)}: ${esc(money(perPerson(r.rate, s)))}`).join(' · ')}</span>` : ''}`;
 }
 
-async function loadVisibleRates(root, s) {
+const rateId = (key, s) => [key, s.start, s.end, s.pax.adults, s.pax.rooms].join('|');
+const MAX_RATE_REQUESTS = 40;
+
+async function loadVisibleRates(root, s, rows = []) {
   const run = ++ratesRun;
-  const pending = [...root.querySelectorAll('[data-rates]')];
-  const paint = (key, rates) => root.querySelectorAll(`[data-rates="${key}"]`).forEach((el) => { el.innerHTML = ratesHtml(rates); });
+  const visible = [...root.querySelectorAll('[data-rates]')].map((el) => el.dataset.rates);
+  const onMap = rows.filter((h) => h.key && typeof h.lat === 'number').map((h) => h.key);
+  const pending = [...new Set([...visible, ...onMap])].slice(0, MAX_RATE_REQUESTS);
+  const paint = (key, rates) => {
+    root.querySelectorAll(`[data-rates="${key}"]`).forEach((el) => { el.innerHTML = ratesHtml(rates, s); });
+    paintPriceMarker(key, rates);
+  };
   const next = async () => {
     while (pending.length && run === ratesRun) {
-      const key = pending.shift().dataset.rates;
-      const id = [key, s.start, s.end, s.pax.adults, s.pax.rooms].join('|');
+      const key = pending.shift();
+      const id = rateId(key, s);
       if (!rateCache.has(id)) {
         const q = new URLSearchParams({ key, in: s.start, out: s.end, adults: s.pax.adults, rooms: s.pax.rooms });
         const rates = await fetch(`/api/rates?${q}`).then((r) => (r.ok ? r.json() : null)).then((b) => (b ? b.rates : null)).catch(() => null);
         if (rates) rateCache.set(id, rates);
-        paint(key, rates);
+        if (run === ratesRun) paint(key, rates);
       } else {
         paint(key, rateCache.get(id));
       }

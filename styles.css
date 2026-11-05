@@ -525,3 +525,21 @@ dialog .favs li > span:first-child { min-width: 0; }
 .rates__best { display: block; font-size: 18px; font-weight: 800; color: var(--ink); }
 .rates__best small { font-size: 12px; font-weight: 600; color: var(--muted); }
 .rates__rest { display: block; margin-top: 2px; font-size: 12px; }
+
+/* ---------- Tres mapas de la ciudad ---------- */
+.maptabs { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; margin-bottom: 10px; }
+.maptabs button { background: #fff; color: var(--ink); border: 0; border-right: 1px solid var(--line); padding: 13px 6px; font-weight: 700; }
+.maptabs button:last-child { border-right: 0; }
+.maptabs button:hover { background: var(--soft); }
+.maptabs button.is-on { background: var(--mustard); color: var(--brown-900); }
+.map--city { height: min(460px, 60vh); margin-bottom: 8px; }
+.map--city + .transit-kinds, .transit-kinds { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0 0 6px; font-size: 13px; font-weight: 600; }
+.transit-kinds[hidden] { display: none; }
+.transit-kinds label { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
+[data-map-note] { margin: 0 0 8px; }
+.pricepin--near span { box-shadow: 0 0 0 2px #2e9e4f; }
+.pricepin--mid span { box-shadow: 0 0 0 2px #f2c200; }
+.pricepin--far span { box-shadow: 0 0 0 2px #d93a2b; }
+.pin--monument { box-shadow: 0 0 0 2px #fff, 0 1px 4px rgba(0,0,0,.45); border: 0; }
+.map__photo { display: block; width: 100%; height: 160px; object-fit: cover; border-radius: 10px; background: var(--soft); }
+.map__credit { font-size: 11px; color: var(--muted); }
