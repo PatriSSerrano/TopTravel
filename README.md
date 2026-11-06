@@ -4,26 +4,26 @@ Web gratuita para comparar vuelos y alojamientos. Reúne en un solo sitio lo que
 
 Nadie gana dinero con esta web: no tiene publicidad, comisiones ni enlaces de afiliado.
 
-**Entra en la web: <https://toptravel.alwaysdata.net>** (versión beta)
+**Web: <https://toptravel.alwaysdata.net>** (versión beta)
 
-## Qué puedes hacer
+## Qué ofrece
 
 **Vuelos**
-- Ver en un calendario el precio de cada día del mes.
-- Comparar vuelos por aerolínea, escalas y duración, e ir a la web de la aerolínea para comprar.
-- Descubrir destinos en un mapa del mundo con el precio de volar a cada uno.
+- Calendario con el precio de cada día del mes.
+- Comparación de vuelos por aerolínea, escalas y duración, con enlace a la web de la aerolínea.
+- Mapa del mundo con el precio de volar a cada destino.
 
 **Alojamientos**
-- Buscar hoteles y apartamentos en cualquier ciudad.
-- Consultar tres mapas de cada ciudad, todos con anillos de distancia al centro: verde hasta 1 km, amarillo hasta 3 km y rojo a más de 3 km.
+- Búsqueda de hoteles y apartamentos en cualquier ciudad.
+- Tres mapas de cada ciudad, todos con anillos de distancia al centro: verde hasta 1 km, amarillo hasta 3 km y rojo a más de 3 km.
   - **Precios:** el precio por noche y por persona de cada alojamiento.
   - **Monumentos:** los lugares más conocidos, con su nombre y su foto.
   - **Transporte:** las líneas de metro, tranvía y autobús, con los monumentos marcados.
 
-**Tu cuenta**
-- Guardar los vuelos y alojamientos que te interesen.
-- Recibir avisos cuando baja o sube el precio de un vuelo guardado.
-- Recuperar tu cuenta con un código si olvidas la contraseña.
+**Cuenta**
+- Vuelos y alojamientos guardados.
+- Avisos cuando baja o sube el precio de un vuelo guardado.
+- Recuperación de la cuenta con un código si se olvida la contraseña.
 
 Funciona en ordenador, tableta y móvil.
 
@@ -41,8 +41,8 @@ Funciona en ordenador, tableta y móvil.
 
 ## Qué conviene saber
 
-- **Los precios son orientativos.** Confirma siempre el precio final antes de comprar o reservar.
-- **No todos los alojamientos tienen precio.** De momento lo tienen 342 hoteles de 26 ciudades, y seguimos añadiendo más.
+- **Los precios son orientativos.** El precio final se confirma siempre antes de comprar o reservar.
+- **No todos los alojamientos tienen precio.** De momento lo tienen 342 hoteles de 26 ciudades.
 - **Las ciudades más buscadas salen al momento.** En las demás, la primera búsqueda puede tardar un par de minutos y las siguientes ya son inmediatas.
 - **Los avisos se ven dentro de la web.** El envío por correo llegará más adelante.
 
@@ -50,7 +50,7 @@ Funciona en ordenador, tableta y móvil.
 
 - Toda la conexión va cifrada con HTTPS.
 - Los correos, los guardados y los avisos se guardan cifrados, y las contraseñas nunca se guardan tal cual.
-- Puedes borrar tu cuenta y todos tus datos desde «Mi cuenta». Más información en la [política de privacidad](https://toptravel.alwaysdata.net/privacidad).
+- La cuenta y todos sus datos se pueden borrar desde «Cuenta». Más información en la [política de privacidad](https://toptravel.alwaysdata.net/privacidad).
 
 ## Autora
 

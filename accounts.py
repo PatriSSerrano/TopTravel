@@ -240,11 +240,11 @@ def read_credentials(body):
 def api_register(body, ctx):
     email, password = read_credentials(body)
     if not EMAIL.match(email) or len(email) > 200:
-        return 400, {"error": "Escribe un correo válido."}
+        return 400, {"error": "El correo no es válido."}
     if not PASSWORD_MIN <= len(password) <= PASSWORD_MAX:
         return 400, {"error": f"La contraseña debe tener al menos {PASSWORD_MIN} caracteres."}
     if too_many_fails(f"reg:{ctx.ip}"):
-        return 429, {"error": "Demasiados intentos. Prueba dentro de unos minutos."}
+        return 429, {"error": "Demasiados intentos. Se puede volver a intentar dentro de unos minutos."}
     salt = secrets.token_bytes(16)
     digest = hash_password(password, salt)
     code, code_hash = new_recovery_code()
@@ -269,7 +269,7 @@ def api_login(body, ctx):
     email, password = read_credentials(body)
     key = f"login:{ctx.ip}:{email}"
     if too_many_fails(key):
-        return 429, {"error": "Demasiados intentos. Prueba dentro de unos minutos."}
+        return 429, {"error": "Demasiados intentos. Se puede volver a intentar dentro de unos minutos."}
     db = connect()
     try:
         row = db.execute("SELECT id, salt, password FROM users WHERE email = ?", (fingerprint(email),)).fetchone()
@@ -295,7 +295,7 @@ def api_recover(body, ctx):
         return 400, {"error": f"La contraseña debe tener al menos {PASSWORD_MIN} caracteres."}
     keys = (f"recover:{ctx.ip}", f"recover:{email}")
     if any(too_many_fails(key) for key in keys):
-        return 429, {"error": "Demasiados intentos. Prueba dentro de unos minutos."}
+        return 429, {"error": "Demasiados intentos. Se puede volver a intentar dentro de unos minutos."}
     db = connect()
     try:
         row = db.execute("SELECT id, recovery_hash FROM users WHERE email = ?", (fingerprint(email),)).fetchone()
@@ -324,7 +324,7 @@ def api_new_recovery_code(body, ctx):
     password = password if isinstance(password, str) else ""
     key = f"code:{ctx.user_id}"
     if too_many_fails(key):
-        return 429, {"error": "Demasiados intentos. Prueba dentro de unos minutos."}
+        return 429, {"error": "Demasiados intentos. Se puede volver a intentar dentro de unos minutos."}
     db = connect()
     try:
         row = db.execute("SELECT salt, password FROM users WHERE id = ?", (ctx.user_id,)).fetchone()
@@ -356,7 +356,7 @@ def api_delete_account(body, ctx):
     password = password if isinstance(password, str) else ""
     key = f"delete:{ctx.user_id}"
     if too_many_fails(key):
-        return 429, {"error": "Demasiados intentos. Prueba dentro de unos minutos."}
+        return 429, {"error": "Demasiados intentos. Se puede volver a intentar dentro de unos minutos."}
     db = connect()
     try:
         row = db.execute("SELECT salt, password FROM users WHERE id = ?", (ctx.user_id,)).fetchone()
@@ -405,13 +405,13 @@ def mail_changes(db, changes):
         row = db.execute("SELECT email_sealed, email_alerts FROM users WHERE id = ?", (user_id,)).fetchone()
         if not row or not row["email_alerts"]:
             continue
-        text = "Ha cambiado el precio de un vuelo que guardaste en TopTravel:\n\n" + "\n".join(lines)
-        text += "\n\nLos precios son orientativos: confirma el precio final antes de comprar."
+        text = "Ha cambiado el precio de un vuelo guardado en TopTravel:\n\n" + "\n".join(lines)
+        text += "\n\nLos precios son orientativos: el precio final se confirma antes de comprar."
         if site:
-            text += f"\n\nVer tus avisos: {site}"
-        text += "\n\nPuedes desactivar estos correos en «Mi cuenta»."
+            text += f"\n\nVer los avisos: {site}"
+        text += "\n\nEstos correos se pueden desactivar en «Cuenta»."
         try:
-            send_mail(unseal(row["email_sealed"]), "Ha cambiado el precio de tu vuelo", text)
+            send_mail(unseal(row["email_sealed"]), "Ha cambiado el precio de un vuelo guardado", text)
         except (smtplib.SMTPException, OSError, ValueError) as error:
             # Sin el correo, el aviso sigue viéndose dentro de la web.
             print(f"No se ha podido enviar un aviso: {type(error).__name__}", flush=True)
@@ -587,7 +587,7 @@ def make_save(price_of):
                 return 200, {"item": saved_out(existing)}
             count = db.execute("SELECT COUNT(*) AS n FROM saved WHERE user_id = ?", (ctx.user_id,)).fetchone()["n"]
             if count >= MAX_SAVED:
-                return 400, {"error": f"Puedes guardar hasta {MAX_SAVED} elementos."}
+                return 400, {"error": f"Se pueden guardar hasta {MAX_SAVED} elementos."}
             cursor = db.execute(
                 "INSERT INTO saved (user_id, kind, item_key, data, last_price, checked_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 (ctx.user_id, kind, key, seal(json.dumps(clean, ensure_ascii=False)), price, now if price is not None else None, now),

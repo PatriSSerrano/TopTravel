@@ -141,7 +141,7 @@ const PROVIDERS = {
   flights: [],
   stays: [
     { name: 'Booking.com', badge: 'B', link: linkBooking, about: 'Hoteles, apartamentos y casas con valoraciones de clientes.' },
-    { name: 'Airbnb', badge: 'A', link: linkAirbnb, about: 'Casas y alojamientos de particulares.', note: (s) => (s.pax.rooms > 1 ? 'Airbnb no recibe el número de habitaciones: elige un alojamiento con espacio suficiente.' : '') },
+    { name: 'Airbnb', badge: 'A', link: linkAirbnb, about: 'Casas y alojamientos de particulares.', note: (s) => (s.pax.rooms > 1 ? 'Airbnb no recibe el número de habitaciones: conviene elegir un alojamiento con espacio suficiente.' : '') },
   ],
 };
 
@@ -208,8 +208,8 @@ function setupCombo(key, input, list, seg) {
       </li>`).join('');
     if (!items.length) {
       html = state.mode === 'stays'
-        ? `<li class="sug__empty" role="presentation">Buscaremos «${esc(text)}» tal como lo has escrito.</li>`
-        : '<li class="sug__empty" role="presentation">Sin resultados. También puedes escribir el código de 3 letras del aeropuerto.</li>';
+        ? `<li class="sug__empty" role="presentation">Se buscará «${esc(text)}» tal como está escrito.</li>`
+        : '<li class="sug__empty" role="presentation">Sin resultados. También se puede escribir el código de 3 letras del aeropuerto.</li>';
     }
     list.innerHTML = html;
     list.hidden = false;
@@ -310,7 +310,7 @@ function loadMonth(route, month) {
 
 function priceNote(route, months) {
   if (state.mode !== 'flights') return '';
-  if (!route) return 'Elige origen y destino para ver el precio de cada día.';
+  if (!route) return 'Hay que elegir origen y destino para ver el precio de cada día.';
   const entries = months.map((m) => state.prices[priceKey(route, m)]).filter(Boolean);
   if (entries.some((e) => e.status === 'loading')) return 'Buscando precios…';
   if (entries.some((e) => e.status === 'off')) return 'Los precios por día no están disponibles ahora mismo.';
@@ -349,9 +349,9 @@ function monthHtml(first, route) {
 }
 
 function calHint() {
-  if (!state.start) return state.mode === 'stays' ? 'Elige la fecha de llegada' : 'Elige la fecha de ida';
+  if (!state.start) return state.mode === 'stays' ? 'Falta la fecha de llegada' : 'Falta la fecha de ida';
   if (isOneWay()) return showDate(state.start);
-  if (!state.end) return state.mode === 'stays' ? 'Ahora elige la salida' : 'Ahora elige la vuelta';
+  if (!state.end) return state.mode === 'stays' ? 'Falta la fecha de salida' : 'Falta la fecha de vuelta';
   return `${showDate(state.start)} – ${showDate(state.end)}`;
 }
 
@@ -462,7 +462,7 @@ function renderPax() {
       <select id="cabinSel">${CABINS.map((c) => `<option value="${c.id}"${c.id === state.pax.cabin ? ' selected' : ''}>${c.label}</option>`).join('')}</select>
     </div>` : '';
   $('paxPop').innerHTML = `${rowHtml}${cabin}
-    <p class="pax__note">Al proveedor se le envían ${CHILD_AGE} años por niño y ${INFANT_AGE} año por bebé. Podrás corregir la edad en su web.</p>
+    <p class="pax__note">Al vendedor se le envían ${CHILD_AGE} años por niño y ${INFANT_AGE} año por bebé. La edad se puede corregir en su web.</p>
     <button type="button" class="btn btn--block" data-done>Listo</button>`;
 }
 
@@ -530,10 +530,10 @@ function setMode(mode) {
   document.body.dataset.mode = mode;
   document.querySelectorAll('.pilltab').forEach((b) => b.classList.toggle('is-on', b.dataset.mode === mode));
   const flights = mode === 'flights';
-  $('heroTitle').textContent = flights ? 'Encuentra el vuelo más barato, día a día.' : 'Compara alojamientos en un solo paso.';
+  $('heroTitle').textContent = flights ? 'El vuelo más barato, día a día.' : 'Alojamientos con su precio y su distancia al centro.';
   $('heroSub').textContent = flights
-    ? 'Mira el precio de cada día del mes y elige la mejor fecha para volar.'
-    : 'Mira en el mapa el precio de cada alojamiento y lo cerca que queda del centro.';
+    ? 'Se muestra el precio de cada día del mes para elegir la mejor fecha.'
+    : 'En el mapa se ve el precio de cada alojamiento y lo cerca que está del centro.';
   $('destLabel').textContent = flights ? 'A' : 'Destino';
   $('dest').placeholder = flights ? 'País, ciudad o aeropuerto' : 'Ciudad, zona o alojamiento';
   $('startLabel').textContent = flights ? 'Ida' : 'Llegada';
@@ -571,14 +571,14 @@ function validate() {
   if (flights) {
     state.origin = resolvePlace('origin', $('origin'));
     if (!state.origin) {
-      fail('segOrigin', $('origin').value.trim() ? 'Elige el origen de la lista o escribe el código de 3 letras del aeropuerto.' : 'Indica desde dónde sales.');
+      fail('segOrigin', $('origin').value.trim() ? 'Hay que elegir el origen de la lista o escribir el código de 3 letras del aeropuerto.' : 'Falta el origen.');
       return false;
     }
     $('origin').value = placeLabel(state.origin);
   }
   state.dest = resolvePlace('dest', $('dest'));
   if (!state.dest) {
-    fail('segDest', flights && $('dest').value.trim() ? 'Elige el destino de la lista o escribe el código de 3 letras del aeropuerto.' : 'Indica tu destino.');
+    fail('segDest', flights && $('dest').value.trim() ? 'Hay que elegir el destino de la lista o escribir el código de 3 letras del aeropuerto.' : 'Falta el destino.');
     return false;
   }
   $('dest').value = placeLabel(state.dest);
@@ -587,11 +587,11 @@ function validate() {
     return false;
   }
   if (!state.start) {
-    fail('segStart', flights ? 'Elige la fecha de ida.' : 'Elige la fecha de llegada.');
+    fail('segStart', flights ? 'Falta la fecha de ida.' : 'Falta la fecha de llegada.');
     return false;
   }
   if (!isOneWay() && !state.end) {
-    fail('segEnd', flights ? 'Elige la fecha de vuelta o cambia a «Solo ida».' : 'Elige la fecha de salida.');
+    fail('segEnd', flights ? 'Falta la fecha de vuelta. También se puede cambiar a «Solo ida».' : 'Falta la fecha de salida.');
     return false;
   }
   return true;
@@ -728,7 +728,7 @@ function renderFlightResults(el, lists) {
         <p class="count" data-count></p>
         <div data-results></div>
         <button type="button" class="btn btn--out btn--block more">Ver más vuelos</button>
-        <p class="count">Precios encontrados recientemente. Pueden haber cambiado: confírmalo en la web de la aerolínea, donde se compra.</p>
+        <p class="count">Precios encontrados recientemente. Pueden haber cambiado: el precio final se confirma en la web de la aerolínea, donde se compra.</p>
       </div>
     </div>`;
 
@@ -806,7 +806,7 @@ function renderHotelResults(el, hotels, s, center) {
           <span class="zones__i zones__i--far">Lejos: más de 3 km</span>
         </p>` : ''}
         <p class="count" data-count></p>
-        <p class="count">Precio orientativo por noche y por persona: el precio de la habitación según Xotelo, dividido entre los viajeros. Puede no incluir impuestos, así que confirma el total antes de reservar.</p>
+        <p class="count">Precio orientativo por noche y por persona: el precio de la habitación según Xotelo, dividido entre los viajeros. Puede no incluir impuestos, por lo que el total se debe confirmar antes de reservar.</p>
         <div class="list" data-results></div>
         <button type="button" class="btn btn--out btn--block more">Ver más alojamientos</button>
         <p class="legal">Datos de alojamientos: © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">colaboradores de OpenStreetMap</a>. Precios: <a href="https://xotelo.com" target="_blank" rel="noopener">Xotelo</a>.</p>
@@ -886,14 +886,14 @@ const stayIsSaved = (h, s) => Boolean(findStay(h, s));
 function requireLogin(next) {
   if (account.user) return true;
   account.afterLogin = next;
-  renderAuth('login', 'Inicia sesión para guardar y recibir avisos.');
+  renderAuth('login', 'Hay que iniciar sesión para guardar y recibir avisos.');
   if (!$('dlg').open) $('dlg').showModal();
   return false;
 }
 
 function paintSaveTrip(s) {
   const b = $('saveTrip');
-  if (b) b.textContent = findTrip(s) ? 'Guardado ✓' : 'Guardar y avisarme';
+  if (b) b.textContent = findTrip(s) ? 'Guardado ✓' : 'Guardar y recibir avisos';
 }
 
 async function toggleTrip(s) {
@@ -907,7 +907,7 @@ async function toggleTrip(s) {
     } else {
       const { item } = await api('/api/saved', { kind: 'flight', data: tripPayload(s) });
       account.saved.unshift(item);
-      toast(item.lastPrice === null ? 'Guardado. Aún no hay precio con el que comparar.' : `Guardado. Te avisaremos si cambia desde ${money(item.lastPrice)}.`);
+      toast(item.lastPrice === null ? 'Guardado. Aún no hay precio con el que comparar.' : `Guardado. Se enviará un aviso si cambia desde ${money(item.lastPrice)}.`);
     }
     paintSaveTrip(s);
   } catch (error) {
@@ -940,8 +940,8 @@ async function toggleStay(h, s, button) {
 }
 
 function paintAccount() {
-  $('accountLabel').textContent = account.user ? 'Mi cuenta' : 'Entrar';
-  $('accountBtn').setAttribute('aria-label', account.user ? 'Mi cuenta' : 'Iniciar sesión');
+  $('accountLabel').textContent = account.user ? 'Cuenta' : 'Entrar';
+  $('accountBtn').setAttribute('aria-label', account.user ? 'Cuenta' : 'Iniciar sesión');
   $('alertCount').textContent = account.unread;
   $('alertCount').hidden = !account.unread;
 }
@@ -966,13 +966,13 @@ function renderAuth(mode, notice = '') {
     <form class="authform" data-auth="${login ? 'login' : 'register'}" novalidate>
       <label>Correo electrónico<input type="email" name="email" autocomplete="email" required></label>
       <label>Contraseña<input type="password" name="password" autocomplete="${login ? 'current-password' : 'new-password'}" minlength="8" required></label>
-      ${login ? '' : '<p class="muted authform__note">Mínimo 8 caracteres. Al crear la cuenta aceptas la <a href="/privacidad" target="_blank" rel="noopener">política de privacidad</a>. Puedes borrar tu cuenta cuando quieras.</p>'}
+      ${login ? '' : '<p class="muted authform__note">Mínimo 8 caracteres. Crear la cuenta supone aceptar la <a href="/privacidad" target="_blank" rel="noopener">política de privacidad</a>. La cuenta se puede borrar en cualquier momento.</p>'}
       <p class="search__err" data-error role="alert" hidden></p>
       <button type="submit" class="btn btn--block">${login ? 'Entrar' : 'Crear cuenta'}</button>
     </form>
     <div class="dlg__actions authform__switch">
-      <button type="button" class="linkbtn" data-auth-switch="${login ? 'register' : 'login'}">${login ? 'Crear una cuenta nueva' : 'Ya tengo cuenta'}</button>
-      ${login ? '<button type="button" class="linkbtn" data-auth-recover>He olvidado mi contraseña</button>' : ''}
+      <button type="button" class="linkbtn" data-auth-switch="${login ? 'register' : 'login'}">${login ? 'Crear una cuenta nueva' : 'Entrar con una cuenta existente'}</button>
+      ${login ? '<button type="button" class="linkbtn" data-auth-recover>Contraseña olvidada</button>' : ''}
       <button type="button" class="linkbtn" data-close>Cerrar</button>
     </div>`;
 }
@@ -980,7 +980,7 @@ function renderAuth(mode, notice = '') {
 function renderRecover() {
   $('dlg').innerHTML = `
     <h3>Recuperar la contraseña</h3>
-    <p class="muted">Usa el código de recuperación que te dimos al crear la cuenta.</p>
+    <p class="muted">Se necesita el código de recuperación que se mostró al crear la cuenta.</p>
     <form class="authform" data-recover novalidate>
       <label>Correo electrónico<input type="email" name="email" autocomplete="email" required></label>
       <label>Código de recuperación<input type="text" name="code" autocomplete="off" spellcheck="false" required></label>
@@ -994,22 +994,22 @@ function renderRecover() {
     </div>`;
 }
 
-function renderRecoveryCode(code, title = 'Guarda tu código de recuperación') {
+function renderRecoveryCode(code, title = 'Código de recuperación: hay que guardarlo') {
   $('dlg').innerHTML = `
     <h3>${esc(title)}</h3>
-    <p class="muted">Si olvidas la contraseña, este código es la única forma de recuperar tu cuenta. No volveremos a enseñártelo.</p>
+    <p class="muted">Si se olvida la contraseña, este código es la única forma de recuperar la cuenta. No se volverá a mostrar.</p>
     <p class="recovery__code" data-recovery-code>${esc(code)}</p>
     <div class="dlg__actions authform__switch">
       <button type="button" class="btn btn--out" data-copy-code>Copiar</button>
-      <button type="button" class="btn" data-recovery-done>Ya lo he guardado</button>
+      <button type="button" class="btn" data-recovery-done>Código guardado</button>
     </div>`;
 }
 
 function renderAccount() {
   $('dlg').innerHTML = `
-    <h3>Mi cuenta</h3>
+    <h3>Cuenta</h3>
     <p class="muted">${esc(account.user.email)}</p>
-    ${account.user.mailReady ? `<label class="account__mail"><input type="checkbox" data-email-alerts ${account.user.emailAlerts ? 'checked' : ''}> Avisarme por correo si cambia el precio de un vuelo guardado</label>` : ''}
+    ${account.user.mailReady ? `<label class="account__mail"><input type="checkbox" data-email-alerts ${account.user.emailAlerts ? 'checked' : ''}> Avisos por correo si cambia el precio de un vuelo guardado</label>` : ''}
     <div class="dlg__actions authform__switch">
       <button type="button" class="btn btn--out" data-logout>Cerrar sesión</button>
       <button type="button" class="btn" data-close>Cerrar</button>
@@ -1018,16 +1018,16 @@ function renderAccount() {
       <summary>Crear un código de recuperación nuevo</summary>
       <form class="authform" data-new-code novalidate>
         <p class="muted authform__note">El código anterior dejará de funcionar.</p>
-        <label>Tu contraseña<input type="password" name="password" autocomplete="current-password" required></label>
+        <label>Contraseña<input type="password" name="password" autocomplete="current-password" required></label>
         <p class="search__err" data-error role="alert" hidden></p>
         <button type="submit" class="btn btn--out btn--block">Crear código</button>
       </form>
     </details>
     <details class="account__danger">
-      <summary>Borrar mi cuenta</summary>
+      <summary>Borrar la cuenta</summary>
       <form class="authform" data-delete-account novalidate>
-        <p class="muted authform__note">Se borrarán tu cuenta, tus guardados y tus avisos. No se puede deshacer.</p>
-        <label>Tu contraseña<input type="password" name="password" autocomplete="current-password" required></label>
+        <p class="muted authform__note">Se borrarán la cuenta, los guardados y los avisos. No se puede deshacer.</p>
+        <label>Contraseña<input type="password" name="password" autocomplete="current-password" required></label>
         <p class="search__err" data-error role="alert" hidden></p>
         <button type="submit" class="btn btn--out btn--block">Borrar definitivamente</button>
       </form>
@@ -1053,9 +1053,9 @@ function renderSaved() {
     </li>`).join('');
   $('dlg').innerHTML = `
     <h3>Guardados</h3>
-    ${flights.length ? `<h4 class="dlg__sub">Vuelos</h4><p class="muted authform__note">Revisamos el precio cada pocas horas.</p><ul class="favs">${flightRows}</ul>` : ''}
+    ${flights.length ? `<h4 class="dlg__sub">Vuelos</h4><p class="muted authform__note">El precio se revisa cada pocas horas.</p><ul class="favs">${flightRows}</ul>` : ''}
     ${stays.length ? `<h4 class="dlg__sub">Alojamientos</h4><p class="muted authform__note">Sin aviso de precio: de momento los avisos solo cubren los vuelos.</p><ul class="favs">${stayRows}</ul>` : ''}
-    ${account.saved.length ? '' : '<p class="muted">Aún no has guardado nada. Busca un vuelo o un alojamiento y pulsa guardar.</p>'}
+    ${account.saved.length ? '' : '<p class="muted">Aún no hay nada guardado. Los vuelos y alojamientos se guardan desde los resultados de búsqueda.</p>'}
     <div class="dlg__actions" style="margin-top:16px"><button type="button" class="btn" data-close>Cerrar</button></div>`;
 }
 
@@ -1084,7 +1084,7 @@ async function renderAlerts() {
     }).join('');
     $('dlg').innerHTML = `
       <h3>Avisos de precio</h3>
-      ${rows ? `<ul class="favs">${rows}</ul>` : '<p class="muted">Sin avisos todavía. Te avisaremos aquí si cambia el precio de un vuelo guardado.</p>'}
+      ${rows ? `<ul class="favs">${rows}</ul>` : '<p class="muted">Sin avisos todavía. Aquí aparecerá un aviso si cambia el precio de un vuelo guardado.</p>'}
       <div class="dlg__actions" style="margin-top:16px"><button type="button" class="btn" data-close>Cerrar</button></div>`;
     if (account.unread) {
       await api('/api/alerts/read', {});
@@ -1101,7 +1101,7 @@ function afterAccountChange() {
   if (!$('results').hidden) {
     document.querySelectorAll('[data-save-stay]').forEach((b) => { b.textContent = 'Guardar'; });
     const save = $('saveTrip');
-    if (save) save.textContent = 'Guardar y avisarme';
+    if (save) save.textContent = 'Guardar y recibir avisos';
   }
 }
 
@@ -1131,7 +1131,7 @@ function initAccount() {
     if (e.target.closest('[data-auth-recover]')) renderRecover();
     if (e.target.closest('[data-copy-code]')) {
       const text = dlg.querySelector('[data-recovery-code]').textContent;
-      navigator.clipboard?.writeText(text).then(() => toast('Código copiado.')).catch(() => toast('Cópialo a mano, por favor.'));
+      navigator.clipboard?.writeText(text).then(() => toast('Código copiado.')).catch(() => toast('No se ha podido copiar. Hay que copiarlo a mano.'));
     }
     if (e.target.closest('[data-recovery-done]')) {
       dlg.close();
@@ -1166,7 +1166,7 @@ function initAccount() {
     try {
       const { emailAlerts } = await api('/api/account/email-alerts', { enabled: e.target.checked });
       account.user.emailAlerts = emailAlerts;
-      toast(emailAlerts ? 'Te avisaremos también por correo.' : 'No te enviaremos más correos.');
+      toast(emailAlerts ? 'Los avisos también se enviarán por correo.' : 'Los avisos ya no se enviarán por correo.');
     } catch (error) {
       e.target.checked = !e.target.checked;
       toast(error.message);
@@ -1199,10 +1199,10 @@ function initAccount() {
         const body = { email: form.elements.email.value, code: form.elements.code.value, password: form.elements.password.value };
         const result = await api('/api/recover', body);
         await refreshAccount();
-        renderRecoveryCode(result.recoveryCode, 'Contraseña cambiada: guarda tu código nuevo');
+        renderRecoveryCode(result.recoveryCode, 'Contraseña cambiada. Hay que guardar el código nuevo');
       } else if ('newCode' in form.dataset) {
         const result = await api('/api/account/recovery-code', { password: form.elements.password.value });
-        renderRecoveryCode(result.recoveryCode, 'Tu código de recuperación nuevo');
+        renderRecoveryCode(result.recoveryCode, 'Código de recuperación nuevo');
       } else if ('deleteAccount' in form.dataset) {
         await api('/api/account/delete', { password: form.elements.password.value });
         account.user = null;
@@ -1335,8 +1335,8 @@ function drawHotelMap(root, rows, s, center, hotels) {
   if (cityMap.mode === 'prices') {
     const missing = rows.filter((h) => h.key).length - points.length;
     mapNote(root, points.length
-      ? `${plural(points.length, 'alojamiento', 'alojamientos')} con precio en el mapa, por noche y por persona.${missing > 0 ? ` ${plural(missing, 'otro', 'otros')} con precio solo en la lista: no tenemos su ubicación.` : ''}`
-      : 'Todavía no hay alojamientos con precio en el mapa de esta ciudad. Mira los mapas de monumentos y transporte.');
+      ? `${plural(points.length, 'alojamiento', 'alojamientos')} con precio en el mapa, por noche y por persona.${missing > 0 ? ` ${plural(missing, 'otro', 'otros')} con precio solo en la lista: falta su ubicación.` : ''}`
+      : 'Todavía no hay alojamientos con precio en el mapa de esta ciudad. Los mapas de monumentos y transporte sí están disponibles.');
   }
 }
 
@@ -1366,7 +1366,7 @@ async function loadMonuments(root) {
       L.marker([m.lat, m.lon], { icon, title: m.name, alt: m.name }).bindPopup(monumentPopup(m), { maxWidth: 270, minWidth: 250 }).addTo(cityMap.monuments);
     });
   } catch {
-    if (run === cityMap.run && cityMap.mode !== 'prices') mapNote(root, 'No hemos podido cargar los monumentos. Inténtalo de nuevo en un momento.');
+    if (run === cityMap.run && cityMap.mode !== 'prices') mapNote(root, 'No se han podido cargar los monumentos. Se puede volver a intentar en un momento.');
   }
 }
 
@@ -1399,7 +1399,7 @@ async function loadTransit(root) {
     });
     showTransitKinds(root);
   } catch {
-    if (run === cityMap.run && cityMap.mode === 'transit') mapNote(root, 'No hemos podido cargar el transporte: el servicio de mapas puede estar saturado. Inténtalo de nuevo en un momento.');
+    if (run === cityMap.run && cityMap.mode === 'transit') mapNote(root, 'No se ha podido cargar el transporte. El servicio de mapas puede estar saturado. Se puede volver a intentar en un momento.');
   }
 }
 
@@ -1414,8 +1414,8 @@ function showTransitKinds(root) {
   if (!lines) return;
   const n = (kind) => lines.filter((l) => l.kind === kind).length;
   mapNote(root, lines.length
-    ? `${n('metro')} de metro, ${n('tram')} de tranvía y ${n('bus')} de autobús en unos 7 km alrededor del centro. Pulsa una línea para ver su nombre.${cityMap.transitPartial ? ' Los autobuses no han cargado: el servicio de mapas está saturado.' : ''}`
-    : 'No hemos encontrado líneas de transporte en esta zona.');
+    ? `${n('metro')} de metro, ${n('tram')} de tranvía y ${n('bus')} de autobús en unos 7 km alrededor del centro. Al pulsar una línea se ve su nombre.${cityMap.transitPartial ? ' Los autobuses no han cargado: el servicio de mapas está saturado.' : ''}`
+    : 'No se han encontrado líneas de transporte en esta zona.');
 }
 
 async function setMapMode(root, mode) {
@@ -1445,8 +1445,8 @@ async function setMapMode(root, mode) {
   await loadMonuments(root);
   if (cityMap.mode === 'monuments' && cityMap.monumentsData) {
     mapNote(root, cityMap.monumentsData.length
-      ? `${plural(cityMap.monumentsData.length, 'lugar destacado', 'lugares destacados')}. Pulsa un punto para ver su nombre y su foto.`
-      : 'No hemos encontrado monumentos con foto en esta zona.');
+      ? `${plural(cityMap.monumentsData.length, 'lugar destacado', 'lugares destacados')}. Al pulsar un punto se ven su nombre y su foto.`
+      : 'No se han encontrado monumentos con foto en esta zona.');
   }
 }
 
@@ -1538,7 +1538,7 @@ async function loadExplore() {
   const run = ++exploreRun;
   const month = $('exploreMonth').value;
   exploreFrom = state.origin || PLACES.find((p) => p.code === 'MAD');
-  $('exploreSub').textContent = `Desde ${exploreFrom.city}. Cambia la ciudad en «Desde», en el buscador de arriba.`;
+  $('exploreSub').textContent = `Desde ${exploreFrom.city}. La ciudad se cambia en el campo «Desde» del buscador.`;
   $('exploreNote').textContent = 'Buscando precios…';
   if (!exploreMap) {
     exploreMap = newMap($('exploreMap'), {
@@ -1575,10 +1575,10 @@ async function loadExplore() {
     exploreItems.forEach((item) => item.marker.addTo(exploreLayer));
     declutterPrices();
     if (!exploreItems.length) {
-      $('exploreNote').textContent = 'No hay precios recientes desde esta ciudad para esas fechas. Prueba con otras.';
+      $('exploreNote').textContent = 'No hay precios recientes desde esta ciudad para esas fechas. Otras fechas pueden tener resultados.';
       return;
     }
-    $('exploreNote').textContent = `${plural(exploreItems.length, 'destino', 'destinos')} · precio reciente por adulto, ${oneWay ? 'solo ida' : 'ida y vuelta'}. Acerca el mapa para ver más.`;
+    $('exploreNote').textContent = `${plural(exploreItems.length, 'destino', 'destinos')} · precio reciente por adulto, ${oneWay ? 'solo ida' : 'ida y vuelta'}. Al acercar el mapa se ven más.`;
   } catch {
     if (run === exploreRun) $('exploreNote').textContent = 'Los precios del mapa no están disponibles ahora mismo.';
   }
@@ -1707,12 +1707,12 @@ async function loadHotels(s) {
     if (run !== hotelsRun) return;
     if (!r.ok) throw new Error(body.error || 'error');
     if (!body.hotels.length) {
-      el.innerHTML = '<div class="empty"><b>No hemos encontrado alojamientos en esa zona</b>Prueba con el nombre de la ciudad.</div>';
+      el.innerHTML = '<div class="empty"><b>No se han encontrado alojamientos en esa zona</b>La búsqueda funciona mejor con el nombre de la ciudad.</div>';
       return;
     }
     renderHotelResults(el, body.hotels, s, body.center);
   } catch {
-    if (run === hotelsRun) el.innerHTML = '<div class="empty"><b>No hemos podido cargar los alojamientos</b>Inténtalo de nuevo en un momento o usa las opciones de esta página.</div>';
+    if (run === hotelsRun) el.innerHTML = '<div class="empty"><b>No se han podido cargar los alojamientos</b>Se puede volver a intentar en un momento.</div>';
   }
 }
 
@@ -1725,7 +1725,7 @@ async function loadOffers(s) {
   const message = (title, text) => `<div class="empty"><b>${esc(title)}</b>${esc(text)}</div>`;
 
   if (s.pax.cabin !== 'economy') {
-    el.innerHTML = message('Precios solo en clase turista', 'Por ahora solo mostramos precios de clase turista.');
+    el.innerHTML = message('Precios solo en clase turista', 'Por ahora solo se muestran precios de clase turista.');
     return;
   }
   el.innerHTML = '<div class="list"><div class="skel"></div><div class="skel"></div></div>';
@@ -1750,9 +1750,9 @@ async function loadOffers(s) {
       ].filter((l) => l.offers.length);
     }
     if (lists.length) renderFlightResults(el, lists);
-    else el.innerHTML = message('Sin precios recientes para estas fechas', 'Prueba otro día en el calendario: los días con precio aparecen marcados.');
+    else el.innerHTML = message('Sin precios recientes para estas fechas', 'En el calendario aparecen marcados los días con precio.');
   } catch {
-    if (!stale()) el.innerHTML = message('Precios no disponibles ahora mismo', 'Inténtalo de nuevo en un momento.');
+    if (!stale()) el.innerHTML = message('Precios no disponibles ahora mismo', 'Se puede volver a intentar en un momento.');
   }
 }
 
@@ -1791,11 +1791,11 @@ function renderResults(s) {
     ${flights ? '<section class="offers" aria-label="Vuelos encontrados"><div id="offers"></div></section>' : hotelsHtml}
     ${flights ? '' : `<div class="how">
       <h3>Ver todas las ofertas de alojamiento</h3>
-      <p>Se abrirá en una pestaña nueva con tus datos rellenados; el precio y la disponibilidad son los que muestre esa web.</p>
+      <p>Se abrirá en una pestaña nueva con los datos ya rellenados. El precio y la disponibilidad son los que muestre esa web.</p>
     </div>
     <div class="partners">${cards}</div>`}
     ${flights ? hotelsHtml : ''}
-    <p class="legal" id="legal">TopTravel no vende billetes ni alojamientos y no procesa pagos: la reserva y el pago se hacen en la web del proveedor.</p>`;
+    <p class="legal" id="legal">TopTravel no vende billetes ni alojamientos y no procesa pagos: la reserva y el pago se hacen en la web del vendedor.</p>`;
   res.hidden = false;
   $('home').hidden = true;
   $('newSearch').addEventListener('click', goHome);
@@ -1840,7 +1840,7 @@ function restore(r) {
   state.end = expired ? null : r.end;
   setMode(r.mode);
   if (expired) {
-    toast('Esa fecha ya ha pasado: elige una nueva.');
+    toast('Esa fecha ya ha pasado. Hay que elegir otra.');
     window.scrollTo({ top: 0, behavior: 'smooth' });
     openCal('start');
     return;
@@ -1948,7 +1948,7 @@ function initGallery() {
 function renderIdeas() {
   stopGallery();
   $('trendTitle').textContent = 'Ideas de destino';
-  $('trendSub').textContent = 'Pulsa uno para empezar tu búsqueda.';
+  $('trendSub').textContent = 'Al pulsar uno, empieza la búsqueda.';
   $('trending').innerHTML = IDEAS.map((code) => {
     const p = PLACES.find((x) => x.code === code);
     return `
@@ -2001,8 +2001,8 @@ function renderFavs() {
             <button type="button" class="linkbtn" data-unfav="${p.code}">Quitar</button>
           </span>
         </li>`).join('')}</ul>`
-    : '<p class="muted">Todavía no tienes favoritos. Pulsa el corazón de un destino para guardarlo aquí.</p>';
-  $('dlg').innerHTML = `<h3>Tus favoritos</h3>${list}<div class="dlg__actions" style="margin-top:16px"><button type="button" class="btn" data-close>Cerrar</button></div>`;
+    : '<p class="muted">Todavía no hay favoritos. Los destinos se guardan aquí al pulsar su corazón.</p>';
+  $('dlg').innerHTML = `<h3>Favoritos</h3>${list}<div class="dlg__actions" style="margin-top:16px"><button type="button" class="btn" data-close>Cerrar</button></div>`;
 }
 
 let toastTimer;

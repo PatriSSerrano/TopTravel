@@ -1102,7 +1102,7 @@ class Handler(BaseHTTPRequestHandler):
             return
         if not within_rate(self.client_ip(), path):
             self.close_connection = True
-            self.send_json(429, {"error": "Demasiados intentos. Prueba dentro de unos minutos."})
+            self.send_json(429, {"error": "Demasiados intentos. Se puede volver a intentar dentro de unos minutos."})
             return
         try:
             length = int(self.headers.get("Content-Length") or 0)
@@ -1122,13 +1122,13 @@ class Handler(BaseHTTPRequestHandler):
             return
         ctx = self.context()
         if private and not ctx.user_id:
-            self.send_json(401, {"error": "Inicia sesión para continuar."})
+            self.send_json(401, {"error": "Hay que iniciar sesión para continuar."})
             return
         try:
             status, data = (public or private)(body, ctx)
         except Exception as error:
             print(f"Error en {path}: {type(error).__name__}", flush=True)
-            self.send_json(500, {"error": "Algo ha fallado. Inténtalo de nuevo."})
+            self.send_json(500, {"error": "Algo ha fallado. Se puede volver a intentar."})
             return
         self._set_cookie = ctx.set_cookie
         self.send_json(status, data)
@@ -1146,13 +1146,13 @@ class Handler(BaseHTTPRequestHandler):
         if public or private:
             ctx = self.context()
             if private and not ctx.user_id:
-                self.send_json(401, {"error": "Inicia sesión para continuar."})
+                self.send_json(401, {"error": "Hay que iniciar sesión para continuar."})
                 return
             try:
                 self.send_json(*(public or private)({}, ctx))
             except Exception as error:
                 print(f"Error en {parsed.path}: {type(error).__name__}", flush=True)
-                self.send_json(500, {"error": "Algo ha fallado. Inténtalo de nuevo."})
+                self.send_json(500, {"error": "Algo ha fallado. Se puede volver a intentar."})
             return
         route = ROUTES.get(parsed.path)
         if route:
