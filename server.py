@@ -26,6 +26,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 import accounts
+import price_collector
 
 ROOT = Path(__file__).resolve().parent
 API_BASE = os.environ.get("TP_API_BASE", "https://api.travelpayouts.com")
@@ -148,6 +149,8 @@ def settings():
         # Interruptores para dejar de usar un servicio sin tocar el código.
         "HOTEL_PRICES": os.environ.get("HOTEL_PRICES", "on"),
         "NOMINATIM": os.environ.get("NOMINATIM", "on"),
+        # Gráfico y recomendación en Guardados: se activará cuando el historial tenga 1 o 2 meses.
+        "PRICE_INSIGHTS": os.environ.get("PRICE_INSIGHTS", "off"),
         # Correo para los avisos de precio: sin SMTP_HOST no se envía ninguno.
         "SMTP_HOST": os.environ.get("SMTP_HOST", ""),
         "SMTP_PORT": os.environ.get("SMTP_PORT", ""),
@@ -305,6 +308,56 @@ def airline_logo(code):
     temp.write_bytes(raw)
     temp.replace(path)
     return path
+
+
+def stay_price(data):
+    """Precio más bajo por noche de un alojamiento guardado; None si no hay datos."""
+    status, body = api_rates({"key": data["key"], "in": data["start"], "out": data["end"], "adults": str(data["pax"].get("adults", 1)), "rooms": str(data["pax"].get("rooms", 1))})
+    rates = [r["rate"] for r in body.get("rates", [])] if status == 200 else []
+    return min(rates) if rates else None
+
+
+def saved_price(data):
+    return flight_price(data) if "origin" in data else stay_price(data)
+
+
+def cheaper_day(data):
+    """Para un vuelo, el día más barato de ese mes para la ida."""
+    if "origin" not in data:
+        return None
+    today = date.today().isoformat()
+    status, body = api_calendar({"origin": data["origin"]["code"], "dest": data["dest"]["code"], "month": data["start"][:7]})
+    days = {d: p for d, p in body.get("days", {}).items() if d >= today} if status == 200 else {}
+    if not days:
+        return None
+    best = min(days, key=days.get)
+    return {"day": best, "price": days[best]}
+
+
+def history_destinations(origin):
+    """Primero las ciudades con hoteles a las que se vuela desde ahí; después, los destinos más baratos."""
+    status, body = api_explore({"origin": origin, "month": ""})
+    reachable = body.get("destinations", []) if status == 200 else []
+    # Se busca por nombre solo entre destinos reales: hay varias ciudades llamadas Londres o Berlín.
+    by_name = {item["city"].casefold(): item["code"] for item in reversed(reachable)}
+    wanted = [by_name.get(group["city"].casefold()) for group in CURATED_HOTELS] + [item["code"] for item in reachable]
+    unique = [code for code in dict.fromkeys(wanted) if code and code != origin and IATA.match(code)]
+    return unique[:price_collector.MAX_DESTINATIONS]
+
+
+def history_month_prices(origin, destination, month):
+    status, body = api_calendar({"origin": origin, "dest": destination, "month": month})
+    if status != 200:
+        raise ValueError("sin datos")
+    return body["days"]
+
+
+def history_hotel_keys():
+    return [hotel["key"] for group in CURATED_HOTELS for hotel in group["hotels"]]
+
+
+def history_stay_price(key, start, end):
+    return stay_price({"key": key, "start": start, "end": end, "pax": {"adults": 1, "rooms": 1}})
 
 
 def search_limit():
@@ -989,7 +1042,7 @@ ACCOUNT_POST = {
     **accounts.PUBLIC_POST,
 }
 PRIVATE_POST = {
-    "/api/saved": accounts.make_save(flight_price),
+    "/api/saved": accounts.make_save(saved_price),
     "/api/saved/delete": accounts.api_unsave,
     "/api/alerts/read": accounts.api_alerts_read,
     "/api/account/delete": accounts.api_delete_account,
@@ -1204,7 +1257,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_json(401, {"error": "Hay que iniciar sesión para continuar."})
                 return
             try:
-                self.send_json(*(public or private)({}, ctx))
+                query = {k: v[0] for k, v in urllib.parse.parse_qs(parsed.query).items()}
+                self.send_json(*(public or private)(query, ctx))
             except Exception as error:
                 print(f"Error en {parsed.path}: {type(error).__name__}", flush=True)
                 self.send_json(500, {"error": "Algo ha fallado. Se puede volver a intentar."})
@@ -1282,7 +1336,9 @@ def main():
     migrate_map_cache()
     accounts.mail_settings = settings
     accounts.init_db()
-    accounts.start_price_checks(flight_price)
+    accounts.PRIVATE_GET["/api/saved/history"] = accounts.make_history(cheaper_day)
+    accounts.insights_ready = lambda: settings()["PRICE_INSIGHTS"] == "on"
+    accounts.start_price_checks(saved_price)
     parser = argparse.ArgumentParser()
     # Los alojamientos web suelen indicar dirección y puerto con las variables IP y PORT.
     parser.add_argument("--host", default=os.environ.get("IP") or "0.0.0.0")
@@ -1292,6 +1348,8 @@ def main():
     TRUST_PROXY = args.behind_proxy
     if TRUST_PROXY:
         threading.Thread(target=watch_restart_flag, daemon=True).start()
+        # Solo en la web publicada: en local no hace falta llenar el historial.
+        price_collector.start(history_destinations, history_month_prices, history_hotel_keys, history_stay_price)
     state = "activados" if settings()["TRAVELPAYOUTS_TOKEN"] else "sin activar (falta la clave en .env)"
     print(f"TopTravel en http://localhost:{args.port} · precios {state}", flush=True)
     (ServerV6 if ":" in args.host else Server)((args.host, args.port), Handler).serve_forever()

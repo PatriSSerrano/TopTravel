@@ -657,3 +657,20 @@ dialog .favs li > span:first-child { min-width: 0; }
 /* Logos de aerolíneas: el círculo con el código queda debajo por si no hay logo */
 .air i { position: relative; overflow: hidden; width: 40px; height: 40px; flex: none; }
 .air__logo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 4px; background: #fff; }
+
+/* Evolución del precio en Guardados */
+dialog .favs li:has(.history) { flex-wrap: wrap; }
+.history { flex-basis: 100%; margin-top: 6px; display: grid; gap: 10px; }
+.pricechart { display: block; width: 100%; height: auto; }
+.pricechart__area { fill: var(--mustard); opacity: .16; }
+.pricechart__line { fill: none; stroke: var(--orange); stroke-width: 2; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.pricechart__now { fill: var(--mustard); stroke: var(--surface); stroke-width: 2; }
+.pricechart__axis { display: flex; justify-content: space-between; margin-top: -6px; font-size: 12px; color: var(--muted); }
+.pricefacts { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
+.pricefacts li { display: block !important; padding: 0 !important; border: 0 !important; }
+.pricefacts small { display: block; color: var(--muted); font-size: 12px; }
+.pricefacts b { font-size: 16px; }
+.advice { display: grid; gap: 2px; padding: 10px 12px; border-radius: 12px; border-left: 3px solid var(--line-strong); background: var(--soft); font-size: 14px; }
+.advice--buy { border-left-color: var(--orange); }
+.advice--wait { border-left-color: var(--mustard); }
+.savehint { margin: 10px 2px 0; font-size: 14px; color: var(--muted); }

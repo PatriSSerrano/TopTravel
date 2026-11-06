@@ -834,7 +834,7 @@ function renderHotelResults(el, hotels, s, center) {
 }
 
 /* ---------- Cuentas, guardados y avisos ---------- */
-const account = { user: null, unread: 0, saved: [], afterLogin: null };
+const account = { user: null, unread: 0, saved: [], afterLogin: null, insights: false };
 
 async function api(path, body) {
   const options = body === undefined
@@ -911,7 +911,7 @@ async function toggleStay(h, s, button) {
       await api('/api/saved/delete', { id: current.id });
       account.saved = account.saved.filter((x) => x !== current);
     } else {
-      const data = { name: h.name, lodging: h.kind || 'Alojamiento', stars: h.stars, address: h.address, website: h.website, dest: placeOut({ ...s.dest, code: s.dest.code || '' }), start: s.start, end: s.end, pax: s.pax };
+      const data = { name: h.name, key: h.key || '', lodging: h.kind || 'Alojamiento', stars: h.stars, address: h.address, website: h.website, dest: placeOut({ ...s.dest, code: s.dest.code || '' }), start: s.start, end: s.end, pax: s.pax };
       const { item } = await api('/api/saved', { kind: 'stay', data });
       account.saved.unshift(item);
       toast('Alojamiento guardado.');
@@ -928,6 +928,7 @@ function paintAccount() {
   $('alertCount').textContent = account.unread;
   $('alertCount').hidden = !account.unread;
   paintSavedCount();
+  document.querySelectorAll('[data-insights]').forEach((el) => { el.hidden = !account.insights; });
 }
 
 async function refreshAccount() {
@@ -935,6 +936,7 @@ async function refreshAccount() {
     const me = await api('/api/me');
     account.user = me.user;
     account.unread = me.unread;
+    account.insights = Boolean(me.insights);
     account.saved = me.user ? (await api('/api/saved')).saved : [];
   } catch {
     // Sin servidor de cuentas la web sigue funcionando para buscar.
@@ -1018,6 +1020,63 @@ function renderAccount() {
     </details>`;
 }
 
+const ADVICE_MARK = { buy: 'advice--buy', wait: 'advice--wait', collect: 'advice--collect' };
+
+function priceChart(points) {
+  const W = 520, H = 150, PAD = 12;
+  const prices = points.map((p) => p[1]);
+  const low = Math.min(...prices), high = Math.max(...prices);
+  const range = high - low || 1;
+  const times = points.map((p) => fromIso(p[0]).getTime());
+  const span = times[times.length - 1] - times[0] || 1;
+  const x = (i) => PAD + ((times[i] - times[0]) / span) * (W - PAD * 2);
+  const y = (price) => PAD + (1 - (price - low) / range) * (H - PAD * 2);
+  const line = points.map((p, i) => `${x(i).toFixed(1)},${y(p[1]).toFixed(1)}`).join(' ');
+  const end = points.length - 1;
+  return `<svg class="pricechart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Evolución del precio, de ${esc(money(prices[0]))} a ${esc(money(prices[end]))}">
+    <polygon class="pricechart__area" points="${x(0).toFixed(1)},${H} ${line} ${x(end).toFixed(1)},${H}"/>
+    <polyline class="pricechart__line" points="${line}"/>
+    <circle class="pricechart__now" cx="${x(end).toFixed(1)}" cy="${y(prices[end]).toFixed(1)}" r="4"/>
+  </svg>
+  <div class="pricechart__axis"><span>${esc(showDate(points[0][0]))}</span><span>${esc(showDate(points[end][0]))}</span></div>`;
+}
+
+function historyHtml(data) {
+  if (!data.hasSource) return '<p class="muted authform__note">No hay precios disponibles para este alojamiento, así que no se puede seguir su evolución.</p>';
+  const stats = data.stats;
+  const signed = (n) => `${n > 0 ? '+' : ''}${String(n).replace('.', ',')} %`;
+  const facts = stats ? `<ul class="pricefacts">
+      <li><small>Ahora</small><b>${esc(money(stats.last))}</b></li>
+      <li><small>Mínimo</small><b>${esc(money(stats.low))}</b></li>
+      <li><small>Máximo</small><b>${esc(money(stats.high))}</b></li>
+      <li><small>Desde que se guardó</small><b>${esc(signed(stats.totalChange))}</b></li>
+    </ul>` : '';
+  const chart = data.points.length > 1 ? priceChart(data.points) : '';
+  const until = data.advice.until ? ` Conviene volver a mirarlo antes del ${esc(showDate(data.advice.until))}.` : '';
+  const cheaper = data.cheaperDay && stats ? `<p class="muted authform__note">El día más barato del mes para la ida es el ${esc(showDate(data.cheaperDay.day))}, desde ${esc(money(data.cheaperDay.price))}.</p>` : '';
+  return `${chart}${facts}
+    <div class="advice ${ADVICE_MARK[data.advice.kind] || ''}"><b>${esc(data.advice.title)}</b><span>${esc(data.advice.reason)}${until}</span></div>
+    ${cheaper}
+    <p class="muted authform__note">Es una orientación basada en los precios vistos, no una garantía.</p>`;
+}
+
+async function toggleHistory(button) {
+  const box = button.closest('li').querySelector('[data-history-box]');
+  if (!box.hidden) {
+    box.hidden = true;
+    button.textContent = 'Evolución';
+    return;
+  }
+  box.hidden = false;
+  button.textContent = 'Ocultar';
+  box.innerHTML = '<p class="muted authform__note">Cargando…</p>';
+  try {
+    box.innerHTML = historyHtml(await api(`/api/saved/history?id=${Number(button.dataset.history)}`));
+  } catch (error) {
+    box.innerHTML = `<p class="muted authform__note">${esc(error.message)}</p>`;
+  }
+}
+
 function datesText(start, end) {
   return end ? `${showDate(start)} – ${showDate(end)}` : `${showDate(start)} · solo ida`;
 }
@@ -1040,18 +1099,21 @@ function renderSaved() {
   const flightRows = flights.map((x) => `
     <li>
       <span>${esc(x.data.origin.city)} → ${esc(x.data.dest.city)}<small>${esc(datesText(x.data.start, x.data.end))} · ${x.lastPrice === null ? 'sin precio aún' : `último precio ${esc(money(x.lastPrice))}`}</small></span>
-      <span class="saved__acts"><button type="button" class="btn btn--out" data-open-saved="${x.id}">Ver</button><button type="button" class="linkbtn" data-remove-saved="${x.id}">Quitar</button></span>
+      <span class="saved__acts">${account.insights ? `<button type="button" class="btn btn--out" data-history="${x.id}">Evolución</button>` : ''}<button type="button" class="btn btn--out" data-open-saved="${x.id}">Ver</button><button type="button" class="linkbtn" data-remove-saved="${x.id}">Quitar</button></span>
+      <div class="history" data-history-box hidden></div>
     </li>`).join('');
   const stayRows = stays.map((x) => `
     <li>
       <span>${esc(x.data.name)}<small>${esc(x.data.dest.city)} · ${esc(datesText(x.data.start, x.data.end))}</small></span>
-      <span class="saved__acts"><button type="button" class="btn btn--out" data-open-saved="${x.id}">Ver</button><button type="button" class="linkbtn" data-remove-saved="${x.id}">Quitar</button></span>
+      <span class="saved__acts">${account.insights ? `<button type="button" class="btn btn--out" data-history="${x.id}">Evolución</button>` : ''}<button type="button" class="btn btn--out" data-open-saved="${x.id}">Ver</button><button type="button" class="linkbtn" data-remove-saved="${x.id}">Quitar</button></span>
+      <div class="history" data-history-box hidden></div>
     </li>`).join('');
   $('dlg').innerHTML = `
     <h3>Guardados</h3>
+    ${account.insights ? '<p class="muted authform__note">Cada vuelo y alojamiento guardado tiene un gráfico con la evolución de su precio y una recomendación de cuándo comprar.</p>' : ''}
     ${places.length ? `<h4 class="dlg__sub">Destinos</h4><ul class="favs">${placeRows}</ul>` : ''}
-    ${flights.length ? `<h4 class="dlg__sub">Vuelos</h4><p class="muted authform__note">El precio se revisa cada pocas horas.</p><ul class="favs">${flightRows}</ul>` : ''}
-    ${stays.length ? `<h4 class="dlg__sub">Alojamientos</h4><p class="muted authform__note">Sin aviso de precio: de momento los avisos solo cubren los vuelos.</p><ul class="favs">${stayRows}</ul>` : ''}
+    ${flights.length ? `<h4 class="dlg__sub">Vuelos</h4><ul class="favs">${flightRows}</ul>` : ''}
+    ${stays.length ? `<h4 class="dlg__sub">Alojamientos</h4><ul class="favs">${stayRows}</ul>` : ''}
     ${places.length || account.saved.length ? '' : '<p class="muted">Aún no hay nada guardado. Los destinos se guardan con el corazón de su foto, y los vuelos y alojamientos desde los resultados de búsqueda.</p>'}
     ${account.user ? '' : '<p class="muted authform__note" style="margin-top:12px">Con una cuenta también se guardan vuelos y alojamientos, y llegan avisos de precio. <button type="button" class="linkbtn" data-auth-switch="login">Iniciar sesión</button></p>'}
     <div class="dlg__actions" style="margin-top:16px"><button type="button" class="btn" data-close>Cerrar</button></div>`;
@@ -1126,6 +1188,8 @@ function initAccount() {
     const remove = e.target.closest('[data-remove-saved]');
     if (change) renderAuth(change.dataset.authSwitch);
     if (e.target.closest('[data-auth-recover]')) renderRecover();
+    const history = e.target.closest('[data-history]');
+    if (history) toggleHistory(history);
     if (e.target.closest('[data-copy-code]')) {
       const text = dlg.querySelector('[data-recovery-code]').textContent;
       navigator.clipboard?.writeText(text).then(() => toast('Código copiado.')).catch(() => toast('No se ha podido copiar. Hay que copiarlo a mano.'));
@@ -1854,6 +1918,7 @@ function renderResults(s) {
         <button type="button" class="btn btn--out" id="newSearch">Nueva búsqueda</button>
       </span>
     </div>
+    ${account.insights ? `<p class="savehint">Al guardar ${flights ? 'este vuelo' : 'un alojamiento'} se ve en Guardados un gráfico con la evolución de su precio y una recomendación de cuándo comprar.</p>` : ''}
     ${flights ? '<section class="offers" aria-label="Vuelos encontrados"><div id="offers"></div></section>' : hotelsHtml}
     ${flights ? hotelsHtml : ''}
     <p class="legal" id="legal">TopTravel no vende billetes ni alojamientos y no procesa pagos: la reserva y el pago se hacen en la web del vendedor.</p>`;

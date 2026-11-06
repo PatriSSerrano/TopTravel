@@ -6,6 +6,11 @@ Cada versión tiene tres números, por ejemplo 1.2.3:
 - **El segundo** cambia al añadir algo nuevo, como más ciudades o una función.
 - **El tercero** cambia al corregir un error o hacer un retoque.
 
+## 1.1.1 · 6 de noviembre de 2026
+
+- Empieza a guardarse un historial propio de precios de vuelos y hoteles. El gráfico y la recomendación se mostrarán cuando tenga datos suficientes.
+- Los avisos de precio también cubren los alojamientos guardados.
+
 ## 1.1.0 · 6 de noviembre de 2026
 
 - Logos de las aerolíneas en los resultados de vuelos.
