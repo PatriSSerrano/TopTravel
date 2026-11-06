@@ -100,6 +100,11 @@ OVERPASS_URLS = (
 OVERPASS_MAIN_TIMEOUT = 110
 OVERPASS_BACKUP_TIMEOUT = 45  # si el principal falla, los de reserva no deben alargar la espera
 LEGAL_PAGES = {"/privacidad": "privacidad.html", "/aviso-legal": "aviso-legal.html"}
+LOGO = re.compile(r"^/logos/([A-Z0-9]{2})\.png$")
+LOGO_DIR = ROOT / "data" / "logos"
+LOGO_SOURCE = "https://pics.avs.io/120/120/{}.png"
+LOGO_MAX_BYTES = 300 * 1024
+LOGO_RETRY_SECONDS = 3600
 ASSET = re.compile(r"^/assets/[a-z0-9]+\.jpg$")
 
 _cache = {}
@@ -274,6 +279,32 @@ def offer(row):
         "durationBack": row.get("duration_back"),
         "url": f"https://www.{site}" if site else "",
     }
+
+
+_logo_failures = {}
+
+
+def airline_logo(code):
+    """Descarga el logo una sola vez: después sale de este servidor, sin avisar a terceros."""
+    path = LOGO_DIR / f"{code}.png"
+    if path.is_file():
+        return path
+    if time.time() < _logo_failures.get(code, 0):
+        return None
+    try:
+        request = urllib.request.Request(LOGO_SOURCE.format(code), headers={"User-Agent": "TopTravel/1.0"})
+        with urllib.request.urlopen(request, timeout=15) as response:
+            raw = response.read(LOGO_MAX_BYTES + 1)
+        if len(raw) > LOGO_MAX_BYTES or not raw[:4] == bytes([0x89, 0x50, 0x4E, 0x47]):
+            raise ValueError("no es un logo")
+    except (urllib.error.URLError, TimeoutError, ValueError, OSError):
+        _logo_failures[code] = time.time() + LOGO_RETRY_SECONDS
+        return None
+    LOGO_DIR.mkdir(parents=True, exist_ok=True)
+    temp = path.with_suffix(f".{threading.get_ident()}.tmp")
+    temp.write_bytes(raw)
+    temp.replace(path)
+    return path
 
 
 def search_limit():
@@ -968,7 +999,7 @@ PRIVATE_POST = {
 MAX_BODY = 16 * 1024
 
 # Peticiones por minuto y por visitante en lo que llama a servicios externos.
-RATE_LIMITS = {"/api/register": 10, "/api/login": 20, "/api/recover": 10, "/api/calendar": 120, "/api/day": 120, "/api/explore": 60, "/api/hotels": 20, "/api/rates": 90, "/api/monuments": 20, "/api/transit": 20}
+RATE_LIMITS = {"/logos": 240, "/api/register": 10, "/api/login": 20, "/api/recover": 10, "/api/calendar": 120, "/api/day": 120, "/api/explore": 60, "/api/hotels": 20, "/api/rates": 90, "/api/monuments": 20, "/api/transit": 20}
 _hits = {}
 _hits_lock = threading.Lock()
 
@@ -1197,6 +1228,17 @@ class Handler(BaseHTTPRequestHandler):
             if photo.is_file():
                 self.send_static(photo, "image/jpeg", "public, max-age=86400")
                 return
+        logo = LOGO.match(parsed.path)
+        if logo:
+            if not within_rate(self.client_ip(), "/logos"):
+                self.send_json(429, {"error": "too_many_requests"})
+                return
+            path = airline_logo(logo.group(1))
+            if path:
+                self.send_static(path, "image/png", "public, max-age=2592000")
+            else:
+                self.send_body(404, b"No encontrado", "text/plain; charset=utf-8")
+            return
         if parsed.path in LEGAL_PAGES:
             self.send_legal(LEGAL_PAGES[parsed.path])
             return

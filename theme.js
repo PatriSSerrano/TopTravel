@@ -1,7 +1,7 @@
 /* Modo claro u oscuro. Se carga antes que la página para que no parpadee al abrirla. */
 (() => {
   // Número de versión de la web: se cambia aquí y en CHANGELOG.md al publicar.
-  const VERSION = '1.0.0';
+  const VERSION = '1.1.0';
   const KEY = 'toptravel-tema';
   const root = document.documentElement;
   const read = () => {
@@ -20,9 +20,17 @@
     });
   };
 
-  // La portada se presenta en oscuro salvo que ya se haya elegido otra cosa.
-  const saved = read() || root.dataset.defaultTheme;
-  root.dataset.theme = saved === 'dark' ? 'dark' : 'light';
+  // Un solo ajuste para toda la web: oscuro de inicio, y solo cambia con el botón.
+  root.dataset.theme = read() === 'light' ? 'light' : 'dark';
+
+  // Si se cambia en otra pestaña, esta también se actualiza.
+  addEventListener('storage', (event) => {
+    if (event.key !== KEY) return;
+    root.dataset.theme = event.newValue === 'light' ? 'light' : 'dark';
+    paintMeta();
+    paintButtons();
+    document.dispatchEvent(new CustomEvent('toptravel:tema'));
+  });
 
   document.addEventListener('DOMContentLoaded', () => {
     paintMeta();

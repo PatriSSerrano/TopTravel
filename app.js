@@ -604,7 +604,7 @@ function legHtml(o, at, from, to, mins, stops) {
   const track = [duration(mins), stopsText(stops)].filter(Boolean).join(' · ');
   return `
     <div class="leg">
-      <div class="air"><i style="background:hsl(${hue} 55% 38%)" aria-hidden="true">${esc(o.airline)}</i><span>${esc(o.airlineName || o.airline)}</span></div>
+      <div class="air"><i style="background:hsl(${hue} 55% 38%)" aria-hidden="true">${esc(o.airline)}${/^[A-Z0-9]{2}$/.test(o.airline) ? `<img class="air__logo" src="logos/${o.airline}.png" alt="" loading="lazy" decoding="async" width="40" height="40">` : ''}</i><span>${esc(o.airlineName || o.airline)}</span></div>
       <div class="times">
         <div><strong>${esc(hhmm(at))}</strong><small>${esc(from)} · ${esc(at ? showDate(at.slice(0, 10)) : '')}</small></div>
         <div class="track ${stops === 0 ? 'direct' : 'stop'}">${esc(track)}</div>
@@ -2061,6 +2061,11 @@ function toast(message) {
 }
 
 /* ---------- Eventos ---------- */
+// Si no hay logo de una aerolínea, queda su código sobre el círculo de color.
+document.addEventListener('error', (e) => {
+  if (e.target.classList?.contains('air__logo')) e.target.remove();
+}, true);
+
 function init() {
   setupCombo('origin', $('origin'), $('originList'), $('segOrigin'));
   setupCombo('dest', $('dest'), $('destList'), $('segDest'));
