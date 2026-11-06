@@ -707,6 +707,34 @@ dialog .favs li:has(.history) { flex-wrap: wrap; }
 .plan-layer input { accent-color: var(--orange-dark); margin: 0; }
 .plan-layer i { width: 12px; height: 12px; border-radius: 50%; flex: none; }
 .plan-layer .plan-layer__hotel { border-radius: 3px; background: #3a2314; }
-.plan-layer .plan-layer__line { height: 4px; width: 16px; border-radius: 2px; background: #2563a8; }
-.plan-layer .plan-layer__line--bus { background: #7a7a7a; }
 .pin-hotel { background: #3a2314; border: 1px solid #fff; border-radius: 2px; }
+
+/* Varios destinos */
+.multi { margin-top: 12px; padding: 14px 16px; background: var(--surface); color: var(--ink); border: 3px solid var(--brown-900); border-radius: 22px; }
+.multi[hidden] { display: none; }
+.multi__row { display: grid; grid-template-columns: 1.6fr 1fr auto; gap: 8px; align-items: center; margin-bottom: 8px; }
+.multi__row .seg { border: 1px solid var(--line); border-radius: 14px; }
+.multi__row input[type=date] { width: 100%; background: transparent; color: inherit; border: 0; font: inherit; }
+.multi__del { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); font-size: 20px; line-height: 1; }
+.multi__hint { margin: 6px 0 0; font-size: 12px; color: var(--muted); }
+.stages { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+.stage { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 10px 16px; border: 1px solid var(--line-strong); border-radius: 14px; background: var(--surface); color: var(--ink); text-align: left; }
+.stage small { color: var(--muted); font-size: 12px; }
+.stage.is-on { background: var(--brown-900); border-color: var(--brown-900); color: #fff7e8; }
+.stage.is-on small { color: #f0dfc2; }
+[data-theme="dark"] .stage.is-on { background: var(--orange-dark); border-color: var(--orange-dark); color: #1c120b; }
+[data-theme="dark"] .stage.is-on small { color: #1c120b; }
+@media (max-width: 760px) {
+  .multi__row { grid-template-columns: 1fr auto; }
+  .multi__row .seg--text { grid-column: 1 / -1; }
+}
+
+/* Guardados en apartados y favoritos en el mapa */
+.savedtabs { display: flex; gap: 6px; margin: 12px 0 14px; border-bottom: 1px solid var(--line); }
+.savedtab { background: none; border: 0; border-bottom: 3px solid transparent; padding: 8px 10px; font-weight: 700; color: var(--muted); }
+.savedtab em { font-style: normal; font-weight: 600; font-size: 12px; }
+.savedtab.is-on { color: var(--ink); border-bottom-color: var(--orange-dark); }
+.pin-fav { display: grid; place-items: center; border-radius: 50%; border: 2px solid #fff; color: #fff; font-size: 13px; line-height: 1; box-shadow: 0 1px 4px rgba(0,0,0,.45); }
+.pin-fav--stay { background: #3a2314; }
+.pin-fav--activity { background: #d35400; }
+.transit-favs { flex-basis: 100%; font-weight: 500; color: var(--muted); }

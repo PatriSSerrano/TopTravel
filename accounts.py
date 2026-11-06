@@ -515,6 +515,29 @@ def clean_flight(data):
     }
 
 
+def clean_coord(value, limit):
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    return round(number, 6) if -limit <= number <= limit else None
+
+
+def clean_activity(data):
+    website = clean_text(data.get("website"), 300)
+    if website and urlsplit(website).scheme not in ("http", "https"):
+        website = ""
+    return {
+        "name": clean_text(data.get("name"), 160, True),
+        "type": clean_text(data.get("type"), 30),
+        "city": clean_text(data.get("city"), 80, True),
+        "country": clean_text(data.get("country"), 80),
+        "lat": clean_coord(data.get("lat"), 90),
+        "lon": clean_coord(data.get("lon"), 180),
+        "website": website,
+    }
+
+
 def clean_stay(data):
     website = clean_text(data.get("website"), 300)
     key = clean_text(data.get("key"), 40)
@@ -532,6 +555,8 @@ def clean_stay(data):
         "stars": clean_int(data.get("stars"), 0, 5, 0),
         "address": clean_text(data.get("address"), 200),
         "website": website,
+        "lat": clean_coord(data.get("lat"), 90),
+        "lon": clean_coord(data.get("lon"), 180),
         "dest": {
             "code": clean_text(place.get("code"), 3),
             "city": clean_text(place.get("city"), 80, True),
@@ -544,7 +569,12 @@ def clean_stay(data):
     }
 
 
+CLEANERS = {"flight": clean_flight, "stay": clean_stay, "activity": clean_activity}
+
+
 def item_key(kind, data):
+    if kind == "activity":
+        return "|".join((kind, data["name"].casefold(), data["city"].casefold()))
     if kind == "flight":
         parts = (data["origin"]["code"], data["dest"]["code"], data["start"], data["end"] or "", int(data["direct"]))
     else:
@@ -574,6 +604,8 @@ def api_saved(_query, ctx):
 
 def has_price_source(kind, data):
     """Vuelos en turista y alojamientos con código de precio: de lo demás no hay datos."""
+    if kind == "activity":
+        return False
     if kind == "flight":
         return data["pax"].get("cabin", "economy") == "economy"
     return bool(data.get("key"))
@@ -644,7 +676,7 @@ def make_history(cheaper_day_of):
         db = connect()
         try:
             row = db.execute("SELECT * FROM saved WHERE id = ? AND user_id = ?", (item_id, ctx.user_id)).fetchone()
-            if not row:
+            if not row or row["kind"] == "activity":
                 return 404, {"error": "No encontrado."}
             points = [[r["day"], r["price"]] for r in db.execute(
                 "SELECT day, price FROM price_history WHERE route = ? ORDER BY day", (row["item_key"],))]
@@ -668,10 +700,10 @@ def make_save(price_of):
     def api_save(body, ctx):
         kind = body.get("kind")
         data = body.get("data")
-        if kind not in ("flight", "stay") or not isinstance(data, dict):
+        if kind not in CLEANERS or not isinstance(data, dict):
             return 400, {"error": "Datos no válidos."}
         try:
-            clean = clean_flight(data) if kind == "flight" else clean_stay(data)
+            clean = CLEANERS[kind](data)
         except (ValueError, TypeError, KeyError):
             return 400, {"error": "Datos no válidos."}
         price = None
@@ -760,7 +792,7 @@ def check_prices(price_of, pause=1.0):
         known = {}
         for row in rows:
             data = json.loads(unseal(row["data"]))
-            if data["start"] < today or not has_price_source(row["kind"], data):
+            if not has_price_source(row["kind"], data) or data["start"] < today:
                 continue
             # La huella es la misma para todo el que guarde el mismo viaje: se consulta una vez.
             route = row["item_key"]

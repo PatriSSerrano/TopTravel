@@ -92,9 +92,11 @@ const state = {
   prices: {},
   favs: store.get('tt.favs', []),
   recent: store.get('tt.recent', []),
+  stops: [],
 };
 
 const isOneWay = () => state.mode === 'flights' && $('tripType').value === 'oneway';
+const isMulti = () => state.mode === 'flights' && $('tripType').value === 'multi';
 
 /* ---------- Fechas (siempre en hora local) ---------- */
 const pad = (n) => String(n).padStart(2, '0');
@@ -537,6 +539,7 @@ function setMode(mode) {
 function hideError() { $('formErr').hidden = true; }
 function clearInvalid() {
   ['segOrigin', 'segDest', 'segStart', 'segEnd'].forEach((id) => $(id).classList.remove('is-invalid'));
+  document.querySelectorAll('.multi .is-invalid').forEach((el) => el.classList.remove('is-invalid'));
 }
 
 function fail(segId, message) {
@@ -575,11 +578,90 @@ function validate() {
     fail('segEnd', flights ? 'Falta la fecha de vuelta. También se puede cambiar a «Solo ida».' : 'Falta la fecha de salida.');
     return false;
   }
+  return !isMulti() || validateStops();
+}
+
+function validateStops() {
+  let previousPlace = state.dest;
+  let previousDate = state.start;
+  for (const stop of state.stops) {
+    const row = $(`row-${stop.key}`);
+    const input = row.querySelector('input[type=text]');
+    state[stop.key] = resolvePlace(stop.key, input);
+    if (!state[stop.key]) {
+      fail(`seg-${stop.key}`, input.value.trim() ? 'Hay que elegir cada destino de la lista.' : 'Falta uno de los destinos. Se puede quitar con la X.');
+      return false;
+    }
+    input.value = placeLabel(state[stop.key]);
+    if (state[stop.key].code === previousPlace.code) {
+      fail(`seg-${stop.key}`, 'Dos destinos seguidos no pueden ser el mismo.');
+      return false;
+    }
+    if (!stop.date || stop.date <= previousDate) {
+      fail(`seg-${stop.key}`, `Falta la fecha de ${state[stop.key].city}, que debe ser posterior a la del destino anterior.`);
+      return false;
+    }
+    if (stop.date >= state.end) {
+      fail('segEnd', 'La vuelta debe ser posterior a la llegada al último destino.');
+      return false;
+    }
+    previousPlace = state[stop.key];
+    previousDate = stop.date;
+  }
   return true;
+}
+
+/* ---------- Varios destinos: filas del buscador ---------- */
+const MAX_EXTRA_STOPS = 4;
+let stopCounter = 0;
+
+function addStopRow() {
+  if (state.stops.length >= MAX_EXTRA_STOPS) return;
+  stopCounter += 1;
+  const key = `stop${stopCounter}`;
+  const row = document.createElement('div');
+  row.className = 'multi__row';
+  row.id = `row-${key}`;
+  row.innerHTML = `
+    <div class="seg seg--text" id="seg-${key}">
+      <label class="seg__l" for="${key}">Siguiente destino</label>
+      <input id="${key}" class="seg__in" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="${key}List" placeholder="País, ciudad o aeropuerto">
+      <ul id="${key}List" class="sug" role="listbox" hidden></ul>
+    </div>
+    <div class="seg">
+      <label class="seg__l" for="${key}Date">Fecha del vuelo</label>
+      <input id="${key}Date" class="seg__in" type="date" min="${todayIso()}" max="${maxIso()}">
+    </div>
+    <button type="button" class="multi__del" aria-label="Quitar este destino">×</button>`;
+  $('multiRows').append(row);
+  const stop = { key, date: null };
+  state[key] = null;
+  state.stops.push(stop);
+  setupCombo(key, row.querySelector(`#${key}`), row.querySelector(`#${key}List`), row.querySelector(`#seg-${key}`));
+  row.querySelector(`#${key}Date`).addEventListener('change', (e) => { stop.date = e.target.value || null; hideError(); });
+  row.querySelector('.multi__del').addEventListener('click', () => {
+    row.remove();
+    state.stops = state.stops.filter((x) => x !== stop);
+    delete state[key];
+    if (!state.stops.length) { $('tripType').value = 'round'; syncMulti(); }
+    paintMultiAdd();
+  });
+  paintMultiAdd();
+}
+
+function paintMultiAdd() {
+  $('multiAdd').hidden = state.stops.length >= MAX_EXTRA_STOPS;
+}
+
+function syncMulti() {
+  const on = $('tripType').value === 'multi';
+  $('multiBox').hidden = !on;
+  if (on && !state.stops.length) addStopRow();
 }
 
 function snapshot() {
   return {
+    ...(isMulti() ? { stops: state.stops.map((stop) => ({ place: state[stop.key], date: stop.date })) } : {}),
     mode: state.mode,
     origin: state.mode === 'flights' ? state.origin : null,
     dest: state.dest,
@@ -778,6 +860,7 @@ function renderHotelResults(el, hotels, s, center) {
           <label><input type="checkbox" data-kind="metro" checked> Metro</label>
           <label><input type="checkbox" data-kind="tram" checked> Tranvía</label>
           <label><input type="checkbox" data-kind="bus" checked> Autobús</label>
+          <span class="transit-favs" data-transit-favs></span>
         </div>
         <p class="map__note" data-map-note role="status"></p>
         ${center ? `<p class="zones" aria-label="Distancia al centro">
@@ -861,6 +944,31 @@ function findStay(h, s) {
     && x.data.dest.city === s.dest.city && x.data.start === s.start && x.data.end === s.end);
 }
 const stayIsSaved = (h, s) => Boolean(findStay(h, s));
+const findActivity = (a, city) => account.saved.find((x) => x.kind === 'activity' && x.data.name === a.name && x.data.city === city);
+
+async function toggleActivity(a, s, button) {
+  if (!requireLogin(() => toggleActivity(a, s, button))) return;
+  const city = s.dest.city;
+  const current = findActivity(a, city);
+  try {
+    if (current) {
+      await api('/api/saved/delete', { id: current.id });
+      account.saved = account.saved.filter((x) => x !== current);
+    } else {
+      const data = { name: a.name, type: a.kind, city, country: s.dest.country || '', lat: a.lat, lon: a.lon, website: a.website || '' };
+      const { item } = await api('/api/saved', { kind: 'activity', data });
+      account.saved.unshift(item);
+      toast('Actividad guardada.');
+    }
+    paintSavedCount();
+    const label = findActivity(a, city) ? 'Guardado ✓' : 'Guardar';
+    document.querySelectorAll('[data-save-plan]').forEach((b) => { if (b.dataset.savePlan === a.name) b.textContent = label; });
+    if (button) button.textContent = label;
+    paintTransitFavorites();
+  } catch (error) {
+    toast(error.message);
+  }
+}
 
 function requireLogin(next) {
   if (account.user) return true;
@@ -907,12 +1015,14 @@ async function toggleStay(h, s, button) {
       await api('/api/saved/delete', { id: current.id });
       account.saved = account.saved.filter((x) => x !== current);
     } else {
-      const data = { name: h.name, key: h.key || '', lodging: h.kind || 'Alojamiento', stars: h.stars, address: h.address, website: h.website, dest: placeOut({ ...s.dest, code: s.dest.code || '' }), start: s.start, end: s.end, pax: s.pax };
+      const data = { name: h.name, key: h.key || '', lodging: h.kind || 'Alojamiento', stars: h.stars, address: h.address, website: h.website, lat: h.lat, lon: h.lon, dest: placeOut({ ...s.dest, code: s.dest.code || '' }), start: s.start, end: s.end, pax: s.pax };
       const { item } = await api('/api/saved', { kind: 'stay', data });
       account.saved.unshift(item);
       toast('Alojamiento guardado.');
     }
     button.textContent = findStay(h, s) ? 'Guardado ✓' : 'Guardar';
+    paintSavedCount();
+    paintTransitFavorites();
   } catch (error) {
     toast(error.message);
   }
@@ -1083,6 +1193,8 @@ function paintSavedCount() {
   $('savedCount').hidden = !total;
 }
 
+let savedTab = 'flights';
+
 function renderSaved() {
   const places = state.favs.map((code) => PLACES.find((p) => p.code === code)).filter(Boolean);
   const placeRows = places.map((p) => `
@@ -1092,26 +1204,41 @@ function renderSaved() {
     </li>`).join('');
   const flights = account.saved.filter((x) => x.kind === 'flight');
   const stays = account.saved.filter((x) => x.kind === 'stay');
-  const flightRows = flights.map((x) => `
+  const activities = account.saved.filter((x) => x.kind === 'activity');
+  const activityRows = activities.map((x) => {
+    const links = reviewLinks(x.data, x.data.city);
+    return `
+    <li>
+      <span>${esc(x.data.name)}<small>${esc(PLAN_KIND_ONE[x.data.type] || 'Actividad')} · ${esc(x.data.city)}</small></span>
+      <span class="saved__acts"><a class="btn btn--out" href="${esc(links.google)}" target="_blank" rel="noopener">Reseñas</a>${x.data.website ? `<a class="btn btn--out" href="${esc(x.data.website)}" target="_blank" rel="noopener nofollow">Web</a>` : ''}<button type="button" class="linkbtn" data-remove-saved="${x.id}">Quitar</button></span>
+    </li>`;
+  }).join('');
+  const flightRows = (list) => list.map((x) => `
     <li>
       <span>${esc(x.data.origin.city)} → ${esc(x.data.dest.city)}<small>${esc(datesText(x.data.start, x.data.end))} · ${x.lastPrice === null ? 'sin precio aún' : `último precio ${esc(money(x.lastPrice))}`}</small></span>
       <span class="saved__acts">${account.insights ? `<button type="button" class="btn btn--out" data-history="${x.id}">Evolución</button>` : ''}<button type="button" class="btn btn--out" data-open-saved="${x.id}">Ver</button><button type="button" class="linkbtn" data-remove-saved="${x.id}">Quitar</button></span>
       <div class="history" data-history-box hidden></div>
     </li>`).join('');
-  const stayRows = stays.map((x) => `
+  const stayRows = (list) => list.map((x) => `
     <li>
       <span>${esc(x.data.name)}<small>${esc(x.data.dest.city)} · ${esc(datesText(x.data.start, x.data.end))}</small></span>
       <span class="saved__acts">${account.insights ? `<button type="button" class="btn btn--out" data-history="${x.id}">Evolución</button>` : ''}<button type="button" class="btn btn--out" data-open-saved="${x.id}">Ver</button><button type="button" class="linkbtn" data-remove-saved="${x.id}">Quitar</button></span>
       <div class="history" data-history-box hidden></div>
     </li>`).join('');
+  const tabs = [
+    ['flights', 'Vuelos', flights.length, flightRows(flights), 'Los vuelos se guardan desde los resultados de búsqueda.'],
+    ['stays', 'Alojamiento', stays.length, stayRows(stays), 'Los alojamientos se guardan desde su tarjeta en los resultados.'],
+    ['activities', 'Actividades', activities.length, activityRows, 'Las actividades se guardan desde el apartado de planes.'],
+  ];
   $('dlg').innerHTML = `
     <h3>Guardados</h3>
     ${account.insights ? '<p class="muted authform__note">Cada vuelo y alojamiento guardado tiene un gráfico con la evolución de su precio y una recomendación de cuándo comprar.</p>' : ''}
     ${places.length ? `<h4 class="dlg__sub">Destinos</h4><ul class="favs">${placeRows}</ul>` : ''}
-    ${flights.length ? `<h4 class="dlg__sub">Vuelos</h4><ul class="favs">${flightRows}</ul>` : ''}
-    ${stays.length ? `<h4 class="dlg__sub">Alojamientos</h4><ul class="favs">${stayRows}</ul>` : ''}
-    ${places.length || account.saved.length ? '' : '<p class="muted">Aún no hay nada guardado. Los destinos se guardan con el corazón de su foto, y los vuelos y alojamientos desde los resultados de búsqueda.</p>'}
-    ${account.user ? '' : '<p class="muted authform__note" style="margin-top:12px">Con una cuenta también se guardan vuelos y alojamientos, y llegan avisos de precio. <button type="button" class="linkbtn" data-auth-switch="login">Iniciar sesión</button></p>'}
+    <div class="savedtabs" role="tablist" aria-label="Apartados de guardados">
+      ${tabs.map(([id, label, count]) => `<button type="button" role="tab" class="savedtab${id === savedTab ? ' is-on' : ''}" data-saved-tab="${id}" aria-selected="${id === savedTab}">${esc(label)} <em>${count}</em></button>`).join('')}
+    </div>
+    ${tabs.map(([id, , count, rows, empty]) => `<div data-saved-panel="${id}"${id === savedTab ? '' : ' hidden'}>${count ? `<ul class="favs">${rows}</ul>` : `<p class="muted">${esc(empty)}</p>`}</div>`).join('')}
+    ${account.user ? '' : '<p class="muted authform__note" style="margin-top:12px">Con una cuenta se guardan vuelos, alojamientos y actividades, y llegan avisos de precio. <button type="button" class="linkbtn" data-auth-switch="login">Iniciar sesión</button></p>'}
     <div class="dlg__actions" style="margin-top:16px"><button type="button" class="btn" data-close>Cerrar</button></div>`;
 }
 
@@ -1155,7 +1282,8 @@ async function renderAlerts() {
 function afterAccountChange() {
   paintAccount();
   if (!$('results').hidden) {
-    document.querySelectorAll('[data-save-stay]').forEach((b) => { b.textContent = 'Guardar'; });
+    document.querySelectorAll('[data-save-stay], [data-save-plan]').forEach((b) => { b.textContent = 'Guardar'; });
+    paintTransitFavorites();
     const save = $('saveTrip');
     if (save) save.textContent = 'Guardar y recibir avisos';
   }
@@ -1203,6 +1331,7 @@ function initAccount() {
         await api('/api/saved/delete', { id });
         account.saved = account.saved.filter((x) => x.id !== id);
         renderSaved();
+        paintTransitFavorites();
       } catch (error) {
         toast(error.message);
       }
@@ -1391,8 +1520,11 @@ function drawHotelMap(root, rows, s, center, hotels) {
       metro: L.layerGroup(),
     };
     cityMap.monuments = L.layerGroup();
+    cityMap.favorites = L.layerGroup();
     cityMap.prices = L.layerGroup().addTo(cityMap.map);
   }
+  cityMap.hotels = hotels;
+  cityMap.s = s;
   cityMap.map.invalidateSize();
   cityMap.prices.clearLayers();
   cityMap.markers = new Map();
@@ -1415,6 +1547,35 @@ function drawHotelMap(root, rows, s, center, hotels) {
     mapNote(root, points.length
       ? `${plural(points.length, 'alojamiento', 'alojamientos')} con precio en el mapa, por noche y por persona.${missing > 0 ? ` ${plural(missing, 'otro', 'otros')} con precio solo en la lista: falta su ubicación.` : ''}`
       : 'Todavía no hay alojamientos con precio en el mapa de esta ciudad. Los mapas de monumentos y transporte sí están disponibles.');
+  }
+}
+
+/* En el mapa de transporte solo salen los alojamientos y actividades guardados de esta ciudad. */
+function paintTransitFavorites() {
+  const { favorites, s, map, el } = cityMap;
+  if (!favorites || !map || !s) return;
+  favorites.clearLayers();
+  const city = s.dest.city;
+  const known = cityMap.hotels || [];
+  const rows = account.saved.flatMap((x) => {
+    if (x.kind === 'activity' && x.data.city === city) return [{ name: x.data.name, sub: PLAN_KIND_ONE[x.data.type] || 'Actividad', lat: x.data.lat, lon: x.data.lon, web: x.data.website, type: 'activity' }];
+    if (x.kind === 'stay' && x.data.dest.city === city) {
+      const hotel = known.find((h) => h.name === x.data.name);
+      return [{ name: x.data.name, sub: x.data.lodging || 'Alojamiento', lat: x.data.lat ?? hotel?.lat, lon: x.data.lon ?? hotel?.lon, web: x.data.website, type: 'stay' }];
+    }
+    return [];
+  }).filter((f) => typeof f.lat === 'number' && typeof f.lon === 'number');
+  rows.forEach((f) => {
+    const icon = L.divIcon({ className: `pin-fav pin-fav--${f.type}`, html: '★', iconSize: [24, 24], iconAnchor: [12, 12] });
+    L.marker([f.lat, f.lon], { icon, title: f.name, alt: f.name, zIndexOffset: 500 })
+      .bindPopup(`<b class="map__title">${esc(f.name)}</b><span class="map__sub">${esc(f.sub)} · Guardado</span>${f.web ? `<a class="btn btn--out" href="${esc(f.web)}" target="_blank" rel="noopener nofollow">Web oficial</a>` : ''}`, { maxWidth: 270 })
+      .addTo(favorites);
+  });
+  const note = el?.closest('.layout__main')?.querySelector('[data-transit-favs]');
+  if (note) {
+    note.textContent = rows.length
+      ? `${plural(rows.length, 'guardado', 'guardados')} de ${city} en el mapa.`
+      : `Aquí solo salen los alojamientos y actividades guardados de ${city}. Todavía no hay ninguno.`;
   }
 }
 
@@ -1559,20 +1720,21 @@ async function setMapMode(root, mode) {
   });
   const { map, prices, monuments, transit } = cityMap;
   map.closePopup();
-  [prices, monuments, transit.bus, transit.tram, transit.metro].forEach((layer) => map.removeLayer(layer));
+  [prices, monuments, cityMap.favorites, transit.bus, transit.tram, transit.metro].forEach((layer) => map.removeLayer(layer));
   root.querySelector('[data-transit-kinds]').hidden = mode !== 'transit';
   if (mode === 'prices') {
     prices.addTo(map);
     mapNote(root, `${plural(cityMap.markers.size, 'alojamiento', 'alojamientos')} con precio en el mapa, por noche y por persona.`);
     return;
   }
-  monuments.addTo(map);
   if (mode === 'transit') {
+    cityMap.favorites.addTo(map);
+    paintTransitFavorites();
     showTransitKinds(root);
-    loadMonuments(root);
     await loadTransit(root);
     return;
   }
+  monuments.addTo(map);
   await loadMonuments(root);
   if (cityMap.mode === 'monuments' && cityMap.monumentsData) {
     mapNote(root, cityMap.monumentsData.length
@@ -1723,6 +1885,7 @@ function exploreSearch(code) {
   state.dest = { code: d.code, city: d.city, country: d.country, airport: '' };
   const single = oneWay || !d.returnDate;
   $('tripType').value = single ? 'oneway' : 'round';
+  syncMulti();
   state.start = d.date;
   state.end = single ? null : d.returnDate;
   $('origin').value = placeLabel(state.origin);
@@ -1874,7 +2037,7 @@ function paintTripTotal(s) {
   if (flight !== null) parts.push(`vuelo desde ${money(flight)}`);
   if (stay) parts.push(`alojamiento desde ${money(night)} la noche × ${plural(stay, 'noche', 'noches')}`);
   const both = flight !== null && stay;
-  el.innerHTML = `<b>${both ? `Viaje completo desde ${esc(money(flight + night * stay))} por persona` : 'Precio orientativo por persona'}</b>
+  el.innerHTML = `<b>${both ? `${s.leg ? 'Esta parada' : 'Viaje completo'} desde ${esc(money(flight + night * stay))} por persona` : 'Precio orientativo por persona'}</b>
     <span>${esc(parts.join(' + '))}. Sale del vuelo más barato y del alojamiento más barato de los consultados hasta ahora.</span>`;
   el.hidden = false;
 }
@@ -1901,7 +2064,7 @@ const PLAN_GROUPS = [
   { id: 'ocio', label: 'Ocio y mercados', color: '#1f78b4', kinds: ['espectaculo', 'ocio', 'familiar', 'mercado'] },
 ];
 const planColor = (kind) => (PLAN_GROUPS.find((g) => g.kinds.includes(kind)) || PLAN_GROUPS[0]).color;
-const planMap = { map: null, plans: null, hotelsLayer: null, rail: null, bus: null, center: null, hotels: null, hotelsTrip: null, railData: false, busData: false };
+const planMap = { map: null, plans: null, hotelsLayer: null, center: null, hotels: null, hotelsTrip: null, trip: null };
 
 function planPopup(a, city) {
   const links = reviewLinks(a, city);
@@ -1912,7 +2075,8 @@ function planPopup(a, city) {
     ${kmHtml(a)}
     <a class="btn btn--out" href="${esc(links.google)}" target="_blank" rel="noopener">Reseñas en Google</a>
     <a class="btn btn--out" href="${esc(links.tripadvisor)}" target="_blank" rel="noopener">Reseñas en TripAdvisor</a>
-    ${a.website ? `<a class="btn btn--out" href="${esc(a.website)}" target="_blank" rel="noopener nofollow">Web oficial</a>` : ''}`;
+    ${a.website ? `<a class="btn btn--out" href="${esc(a.website)}" target="_blank" rel="noopener nofollow">Web oficial</a>` : ''}
+    <button type="button" class="btn" data-save-plan="${esc(a.name)}">${findActivity(a, city) ? 'Guardado ✓' : 'Guardar'}</button>`;
 }
 
 function paintPlanHotels() {
@@ -1929,32 +2093,6 @@ function paintPlanHotels() {
   });
 }
 
-async function togglePlanTransit(root, part, on) {
-  const layer = planMap[part];
-  if (!on) { planMap.map.removeLayer(layer); return; }
-  layer.addTo(planMap.map);
-  const flag = `${part}Data`;
-  if (planMap[flag]) return;
-  planMap[flag] = true;
-  const note = root.querySelector('[data-plan-note]');
-  note.textContent = 'Cargando el transporte…';
-  try {
-    const q = new URLSearchParams({ lat: planMap.center.lat, lon: planMap.center.lon });
-    const body = await fetchTransit(q, part);
-    planMap.renderer = planMap.renderer || L.canvas({ tolerance: 6 });
-    body.lines.forEach((line) => {
-      const look = TRANSIT_LOOK[line.kind] || TRANSIT_LOOK.bus;
-      L.polyline(line.paths, { renderer: planMap.renderer, color: line.color || look.fallback, weight: look.weight, opacity: look.opacity })
-        .bindPopup(`<b class="map__title">${esc(look.label)} ${esc(line.ref)}</b>${line.name ? `<span class="map__sub">${esc(line.name)}</span>` : ''}`)
-        .addTo(layer);
-    });
-    note.textContent = body.lines.length ? '' : 'No hay datos de estas líneas en esta ciudad.';
-  } catch {
-    planMap[flag] = false;
-    note.textContent = 'No se ha podido cargar el transporte. Se puede volver a intentar en un momento.';
-  }
-}
-
 function drawPlanMap(rows, city, frame) {
   const { map, plans } = planMap;
   if (!map) return;
@@ -1964,6 +2102,10 @@ function drawPlanMap(rows, city, frame) {
     L.circleMarker([a.lat, a.lon], { renderer: planMap.dots, radius: 6, color: '#fff', weight: 1.5, fillColor: planColor(a.kind), fillOpacity: 0.95 })
       .bindTooltip(a.name)
       .bindPopup(() => planPopup(a, city), { maxWidth: 270, minWidth: 230 })
+      .on('popupopen', (e) => {
+        // Leaflet no deja que los clics de un globo lleguen a la página: se atiende aquí.
+        e.popup.getElement().querySelector('[data-save-plan]')?.addEventListener('click', (click) => toggleActivity(a, planMap.trip, click.currentTarget));
+      })
       .addTo(plans);
   });
   if (frame && rows.length) map.fitBounds(L.latLngBounds(rows.map((a) => [a.lat, a.lon])), { padding: [24, 24], maxZoom: 15 });
@@ -1982,11 +2124,6 @@ function setupPlanMap(el, center) {
   planMap.map.setView([center.lat, center.lon], 13);
   planMap.plans = L.layerGroup().addTo(planMap.map);
   planMap.hotelsLayer = L.layerGroup();
-  planMap.rail = L.layerGroup();
-  planMap.bus = L.layerGroup();
-  planMap.railData = false;
-  planMap.busData = false;
-  planMap.renderer = null;
   planMap.dots = null;
   L.circleMarker([center.lat, center.lon], { radius: 4, color: '#fff', weight: 2, fillColor: '#3a2314', fillOpacity: 1, interactive: false }).addTo(planMap.map);
   paintPlanHotels();
@@ -2025,11 +2162,13 @@ function planHtml(a, city) {
         <a class="btn btn--out" href="${esc(links.google)}" target="_blank" rel="noopener">Reseñas en Google<span class="sr"> (se abre en una pestaña nueva)</span></a>
         <a class="btn btn--out" href="${esc(links.tripadvisor)}" target="_blank" rel="noopener">Reseñas en TripAdvisor<span class="sr"> (se abre en una pestaña nueva)</span></a>
         ${a.website ? `<a class="linkbtn" href="${esc(a.website)}" target="_blank" rel="noopener nofollow">Web oficial<span class="sr"> (se abre en una pestaña nueva)</span></a>` : ''}
+        <button type="button" class="linkbtn" data-save-plan="${esc(a.name)}">${findActivity(a, city) ? 'Guardado ✓' : 'Guardar'}</button>
       </div>
     </article>`;
 }
 
-function renderPlans(el, items, city, center) {
+function renderPlans(el, items, city, center, s) {
+  planMap.trip = s;
   const count = (fn) => items.filter(fn).length;
   const groups = PLAN_GROUPS.filter((g) => items.some((a) => g.kinds.includes(a.kind)));
   const kinds = Object.keys(PLAN_KINDS).filter((k) => items.some((a) => a.kind === k));
@@ -2052,8 +2191,6 @@ function renderPlans(el, items, city, center) {
           <div class="plan-layers" role="group" aria-label="Qué ver en el mapa">
             ${groups.map((g) => `<label class="plan-layer"><input type="checkbox" data-group="${g.id}" checked><i style="background:${g.color}"></i>${esc(g.label)}</label>`).join('')}
             <label class="plan-layer"><input type="checkbox" data-overlay="hotels"><i class="plan-layer__hotel"></i>Alojamientos</label>
-            <label class="plan-layer"><input type="checkbox" data-overlay="rail"><i class="plan-layer__line"></i>Metro y tranvía</label>
-            <label class="plan-layer"><input type="checkbox" data-overlay="bus"><i class="plan-layer__line plan-layer__line--bus"></i>Autobús</label>
           </div>
           <div class="map map--city" data-plan-map role="region" aria-label="Mapa de planes"></div>
           <p class="map__note" data-plan-note role="status"></p>
@@ -2107,6 +2244,12 @@ function renderPlans(el, items, city, center) {
   setupPlanMap(el, center);
   let framed = false;
   wireControls(el, view, draw);
+  el.addEventListener('click', (e) => {
+    const save = e.target.closest('.list [data-save-plan]');
+    if (!save) return;
+    const item = items.find((a) => a.name === save.dataset.savePlan);
+    if (item) toggleActivity(item, s, save);
+  });
   el.querySelector('.plan-layers')?.addEventListener('change', (e) => {
     const group = e.target.dataset.group;
     const overlay = e.target.dataset.overlay;
@@ -2122,8 +2265,6 @@ function renderPlans(el, items, city, center) {
       } else {
         planMap.map.removeLayer(planMap.hotelsLayer);
       }
-    } else if (overlay) {
-      togglePlanTransit(el, overlay, e.target.checked);
     }
   });
   draw();
@@ -2145,7 +2286,7 @@ async function loadPlans(s) {
       el.innerHTML = '<div class="empty"><b>Todavía no hay planes de esta ciudad</b>Se van añadiendo más ciudades poco a poco.</div>';
       return;
     }
-    renderPlans(el, body.activities, s.dest.city, body.center);
+    renderPlans(el, body.activities, s.dest.city, body.center, s);
   } catch {
     if (run === plansRun) el.innerHTML = '<div class="empty"><b>No se han podido cargar los planes</b>Se puede volver a intentar en un momento.</div>';
   }
@@ -2167,12 +2308,12 @@ async function loadOffers(s) {
 
   const base = { origin: s.origin.code, dest: s.dest.code, direct };
   try {
-    const trip = await fetchDay({ ...base, depart: s.start, ...(s.end ? { return: s.end } : {}) });
+    const trip = await fetchDay({ ...base, depart: s.start, ...(s.end && !s.leg ? { return: s.end } : {}) });
     if (stale()) return;
     let lists = [];
     if (trip.offers.length) {
       lists = [{ title: '', offers: trip.offers }];
-    } else if (s.end) {
+    } else if (s.end && !s.leg) {
       // Sin precio del viaje completo: se muestra cada tramo por separado.
       const [out, back] = await Promise.all([
         fetchDay({ ...base, depart: s.start }),
@@ -2195,20 +2336,89 @@ async function loadOffers(s) {
   }
 }
 
-function renderResults(s) {
+/* Un viaje con varios destinos se ve parada a parada, cada una con su vuelo, alojamiento y planes. */
+function tripStages(s) {
+  const places = [s.dest, ...s.stops.map((x) => x.place)];
+  const dates = [s.start, ...s.stops.map((x) => x.date), s.end];
+  const stages = places.map((place, i) => ({
+    mode: 'flights', leg: true, direct: s.direct, pax: s.pax, origin: i ? places[i - 1] : s.origin, dest: place, start: dates[i], end: dates[i + 1],
+  }));
+  stages.push({ mode: 'flights', leg: true, back: true, direct: s.direct, pax: s.pax, origin: places[places.length - 1], dest: s.origin, start: s.end, end: null });
+  return stages;
+}
+
+async function paintTripFlights(stages, run) {
+  const el = $('tripFlights');
+  const prices = await Promise.all(stages.map((stage) => fetchDay({ origin: stage.origin.code, dest: stage.dest.code, direct: stage.direct ? 1 : 0, depart: stage.start })
+    .then((body) => (body.offers.length ? Math.min(...body.offers.map((o) => o.price)) : null))
+    .catch(() => null)));
+  if (run !== tripRun || !el.isConnected) return;
+  const missing = prices.filter((p) => p === null).length;
+  const sum = prices.reduce((total, p) => total + (p || 0), 0);
+  el.innerHTML = missing === prices.length
+    ? '<b>Sin precios recientes de vuelos para este viaje</b>'
+    : `<b>${missing ? 'Vuelos con precio' : 'Todos los vuelos'} desde ${esc(money(sum))} por persona</b>
+      <span>${missing ? `Faltan ${esc(plural(missing, 'tramo', 'tramos'))} sin precio reciente. ` : ''}Cada tramo se compra aparte. El alojamiento se ve en cada parada.</span>`;
+  el.hidden = false;
+  stages.forEach((stage, i) => {
+    const tag = document.querySelector(`[data-stage="${i}"] small`);
+    if (tag && prices[i] !== null) tag.textContent = `${showDate(stage.start)} · ${money(prices[i])}`;
+  });
+}
+
+let tripRun = 0;
+function renderTrip(s) {
+  const stages = tripStages(s);
+  const run = ++tripRun;
+  const res = $('results');
+  const names = [s.origin, s.dest, ...s.stops.map((x) => x.place), s.origin].map((p) => p.city).join(' → ');
+  res.innerHTML = `
+    <div class="summary">
+      <div><h2>${esc(names)}</h2><p>${esc(`${showDate(s.start)} – ${showDate(s.end)}`)} · ${esc(paxSummary())}</p></div>
+      <span class="summary__actions"><button type="button" class="btn btn--out" id="newSearch">Nueva búsqueda</button></span>
+    </div>
+    <p class="trip-total" id="tripFlights" role="status" hidden></p>
+    <div class="stages" role="group" aria-label="Paradas del viaje">
+      ${stages.map((stage, i) => `<button type="button" class="stage${i ? '' : ' is-on'}" data-stage="${i}" aria-pressed="${!i}"><b>${esc(stage.back ? `Vuelta a ${stage.dest.city}` : `${i + 1}. ${stage.dest.city}`)}</b><small>${esc(showDate(stage.start))}</small></button>`).join('')}
+    </div>
+    <div id="stage"></div>`;
+  res.hidden = false;
+  $('home').hidden = true;
+  $('newSearch').addEventListener('click', goHome);
+  const show = (i) => {
+    res.querySelectorAll('[data-stage]').forEach((b) => {
+      const on = Number(b.dataset.stage) === i;
+      b.classList.toggle('is-on', on);
+      b.setAttribute('aria-pressed', String(on));
+    });
+    renderResults(stages[i], $('stage'));
+  };
+  res.querySelector('.stages').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-stage]');
+    if (b) show(Number(b.dataset.stage));
+  });
+  show(0);
+  paintTripFlights(stages, run);
+  res.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderResults(s, target = null) {
+  if (s.stops?.length) { renderTrip(s); return; }
   planMap.hotels = null;
   planMap.hotelsTrip = null;
   const flights = s.mode === 'flights';
   const title = flights ? `${s.origin.city} → ${s.dest.city}` : `Alojamiento en ${s.dest.city}`;
-  const dates = s.end ? `${showDate(s.start)} – ${showDate(s.end)}` : `${showDate(s.start)} · solo ida`;
+  const dates = s.leg
+    ? (s.end ? `Vuelo el ${showDate(s.start)} · estancia hasta el ${showDate(s.end)}` : `Vuelo el ${showDate(s.start)}`)
+    : (s.end ? `${showDate(s.start)} – ${showDate(s.end)}` : `${showDate(s.start)} · solo ida`);
   const extra = !flights ? ` · ${plural(nights(), 'noche', 'noches')}` : (s.direct ? ' · vuelos directos' : '');
 
   const withHotels = !flights || (s.end && s.end !== s.start && s.dest.city !== s.dest.code);
   const hotelsTitle = `Hoteles y apartamentos en ${s.dest.city}`;
   const hotelsHtml = withHotels
     ? `<section class="offers" id="sectionStays" aria-labelledby="hotelsTitle"><div class="block__head"><h2 id="hotelsTitle">${esc(hotelsTitle)}</h2></div><div id="hotels"></div></section>`
-    : (flights && !s.end ? '<p class="savehint">Para ver alojamientos hace falta una fecha de vuelta.</p>' : '');
-  const withPlans = s.dest.city !== s.dest.code;
+    : (flights && !s.end && !s.leg ? '<p class="savehint">Para ver alojamientos hace falta una fecha de vuelta.</p>' : '');
+  const withPlans = s.dest.city !== s.dest.code && !s.back;
   const plansHtml = withPlans
     ? `<section class="offers" id="sectionPlans" aria-labelledby="plansTitle"><div class="block__head"><h2 id="plansTitle">${esc(`Planes en ${s.dest.city}`)}</h2></div><div id="plans"></div></section>`
     : '';
@@ -2216,14 +2426,14 @@ function renderResults(s) {
   tripTotal.flight = null;
   tripTotal.night = null;
 
-  const res = $('results');
+  const res = target || $('results');
   res.innerHTML = `
     <div class="summary">
       <div><h2>${esc(title)}</h2><p>${esc(dates + extra)} · ${esc(paxSummary())}</p></div>
-      <span class="summary__actions">
+      ${s.leg ? '' : `<span class="summary__actions">
         ${flights ? '<button type="button" class="btn" id="saveTrip"></button>' : ''}
         <button type="button" class="btn btn--out" id="newSearch">Nueva búsqueda</button>
-      </span>
+      </span>`}
     </div>
     <p class="trip-total" id="tripTotal" role="status" hidden></p>
     ${jumps.length > 1 ? `<nav class="jumps" aria-label="Partes del viaje">${jumps.map(([id, label]) => `<button type="button" class="pilltab" data-jump="${id}">${esc(label)}</button>`).join('')}</nav>` : ''}
@@ -2234,16 +2444,16 @@ function renderResults(s) {
     <p class="legal" id="legal">TopTravel no vende billetes ni alojamientos y no procesa pagos: la reserva y el pago se hacen en la web del vendedor.</p>`;
   res.hidden = false;
   $('home').hidden = true;
-  $('newSearch').addEventListener('click', goHome);
+  if (!s.leg) $('newSearch').addEventListener('click', goHome);
   res.querySelector('.jumps')?.addEventListener('click', (e) => {
     const b = e.target.closest('[data-jump]');
     if (b) $(b.dataset.jump).scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
-  if (flights) wireSaveTrip(s);
+  if (flights && !s.leg) wireSaveTrip(s);
   if (flights) loadOffers(s);
   if (withHotels) loadHotels(s);
   if (withPlans) loadPlans(s);
-  res.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (!target) res.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function goHome() {
@@ -2275,6 +2485,7 @@ function restore(r) {
   state.dest = r.dest;
   state.pax = { ...r.pax };
   $('tripType').value = r.mode === 'flights' && !r.end ? 'oneway' : 'round';
+  syncMulti();
   $('optDirect').checked = Boolean(r.direct);
   const expired = r.start < todayIso();
   state.start = expired ? null : r.start;
@@ -2457,8 +2668,10 @@ function init() {
 
   $('tripType').addEventListener('change', () => {
     if (isOneWay()) state.end = null;
+    syncMulti();
     renderDates();
   });
+  $('multiAdd').addEventListener('click', addStopRow);
 
   $('swapBtn').addEventListener('click', () => {
     const origin = state.origin ?? resolvePlace('origin', $('origin'));
@@ -2540,7 +2753,7 @@ function init() {
     closePops();
     if (!validate()) return;
     const s = snapshot();
-    saveRecent(s);
+    if (!s.stops) saveRecent(s);
     renderResults(s);
   });
 
@@ -2566,6 +2779,17 @@ function init() {
   });
 
   $('dlg').addEventListener('click', (e) => {
+    const tab = e.target.closest('[data-saved-tab]');
+    if (tab) {
+      savedTab = tab.dataset.savedTab;
+      $('dlg').querySelectorAll('[data-saved-tab]').forEach((b) => {
+        const on = b === tab;
+        b.classList.toggle('is-on', on);
+        b.setAttribute('aria-selected', String(on));
+      });
+      $('dlg').querySelectorAll('[data-saved-panel]').forEach((panel) => { panel.hidden = panel.dataset.savedPanel !== savedTab; });
+      return;
+    }
     const pick = e.target.closest('[data-pick]');
     const unfav = e.target.closest('[data-unfav]');
     if (pick) {

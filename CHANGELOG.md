@@ -6,6 +6,12 @@ Cada versión tiene tres números, por ejemplo 1.2.3:
 - **El segundo** cambia al añadir algo nuevo, como más ciudades o una función.
 - **El tercero** cambia al corregir un error o hacer un retoque.
 
+## 1.5.0 · 6 de noviembre de 2026
+
+- Opción «Varios destinos»: hasta 5 destinos en un mismo viaje, cada uno con su vuelo, su alojamiento y sus planes.
+- Guardados se divide en tres apartados: vuelos, alojamiento y actividades. Las actividades ya se pueden guardar.
+- El mapa de transporte solo muestra las líneas y los alojamientos y actividades guardados de esa ciudad.
+
 ## 1.4.0 · 6 de noviembre de 2026
 
 - Mapa de planes en cada destino: los filtros cambian a la vez el mapa y la lista.
