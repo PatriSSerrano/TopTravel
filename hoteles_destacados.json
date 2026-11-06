@@ -7824,8 +7824,8 @@
    {
     "name": "Le Mount Stephen",
     "key": "g155032-d12294679",
-    "lat": null,
-    "lon": null
+    "lat": 45.49917,
+    "lon": -73.575775
    },
    {
     "name": "The Ritz-Carlton, Montreal",
@@ -7836,14 +7836,14 @@
    {
     "name": "Vogue Hotel Montreal Downtown, Curio Collection by Hilton",
     "key": "g155032-d183258",
-    "lat": null,
-    "lon": null
+    "lat": 45.49832,
+    "lon": -73.57573
    },
    {
     "name": "Best Western Ville-Marie Montreal Hotel & Suites",
     "key": "g155032-d183235",
-    "lat": null,
-    "lon": null
+    "lat": 45.502186,
+    "lon": -73.576744
    },
    {
     "name": "Novotel Montreal Centre",
@@ -7860,14 +7860,14 @@
    {
     "name": "Le Square Phillips Hotel & Suites",
     "key": "g155032-d259456",
-    "lat": null,
-    "lon": null
+    "lat": 45.503654,
+    "lon": -73.5672
    },
    {
     "name": "Hotel Birks Montreal",
     "key": "g155032-d14134983",
-    "lat": null,
-    "lon": null
+    "lat": 45.5034,
+    "lon": -73.568756
    },
    {
     "name": "Hôtel Place d'Armes",
@@ -7878,14 +7878,14 @@
    {
     "name": "Doubletree By Hilton Montreal",
     "key": "g155032-d183609",
-    "lat": null,
-    "lon": null
+    "lat": 45.507442,
+    "lon": -73.56442
    },
    {
     "name": "Courtyard by Marriott Montreal Downtown",
     "key": "g155032-d4752984",
-    "lat": null,
-    "lon": null
+    "lat": 45.50525,
+    "lon": -73.56436
    }
   ]
  },
@@ -7903,20 +7903,20 @@
    {
     "name": "The Alest Hotel",
     "key": "g150800-d23639320",
-    "lat": null,
-    "lon": null
+    "lat": 19.430101,
+    "lon": -99.194275
    },
    {
     "name": "Marquis SkySuites",
     "key": "g150800-d152470",
-    "lat": null,
-    "lon": null
+    "lat": 19.424967,
+    "lon": -99.173485
    },
    {
     "name": "Isaaya Hotel Boutique",
     "key": "g150800-d155740",
-    "lat": null,
-    "lon": null
+    "lat": 19.394102,
+    "lon": -99.175545
    },
    {
     "name": "Hotel Catedral",
@@ -7939,14 +7939,14 @@
    {
     "name": "NH Collection Mexico City Reforma",
     "key": "g150800-d152467",
-    "lat": null,
-    "lon": null
+    "lat": 19.424047,
+    "lon": -99.164894
    },
    {
     "name": "Mondrian Mexico City Condesa",
     "key": "g150800-d25107216",
-    "lat": null,
-    "lon": null
+    "lat": 19.407843,
+    "lon": -99.168724
    },
    {
     "name": "Hotel Geneve Mexico City",
@@ -8024,14 +8024,14 @@
    {
     "name": "Mahekal Beach Resort",
     "key": "g150812-d156853",
-    "lat": null,
-    "lon": null
+    "lat": 20.633879,
+    "lon": -87.063774
    },
    {
     "name": "Hyatt Vivid Playa del Carmen",
     "key": "g150812-d530483",
-    "lat": null,
-    "lon": null
+    "lat": 20.629679,
+    "lon": -87.0678
    },
    {
     "name": "Ocean Riviera Paradise",
@@ -8042,8 +8042,8 @@
    {
     "name": "Hotel Xcaret México",
     "key": "g150812-d13189438",
-    "lat": null,
-    "lon": null
+    "lat": 20.58664,
+    "lon": -87.11209
    },
    {
     "name": "Paradisus Playa del Carmen - Riviera Maya",
@@ -8060,8 +8060,8 @@
    {
     "name": "Secrets Moxché Playa del Carmen",
     "key": "g150812-d23901017",
-    "lat": null,
-    "lon": null
+    "lat": 20.66059,
+    "lon": -87.04224
    }
   ]
  },

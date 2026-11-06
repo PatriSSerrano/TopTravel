@@ -589,11 +589,15 @@
   addEventListener('resize', () => { resize(); readScroll(); });
   addEventListener('scroll', readScroll, { passive: true });
   document.addEventListener('toptravel:tema', readLook);
-  ['portadacoliseo', 'roma2', 'portadasanpedro'].forEach((name) => {
-    photos[name] = new Image();
-    photos[name].src = `assets/${name}${innerWidth < 900 ? '-m' : ''}.jpg`;
-  });
   fetch('vendor/globo.json').then((r) => r.json()).then((data) => { globe = data; }).catch(() => {});
-  fetch('vendor/roma.json').then((r) => r.json()).then((data) => { city = prepareCity(data); }).catch(() => {});
+  // El número obliga a pedir los datos nuevos cuando cambian: el navegador los guarda un día.
+  fetch('vendor/roma.json?v=2').then((r) => r.json()).then((data) => {
+    city = prepareCity(data);
+    // Las fotos salen de los propios datos: así nunca pueden quedar desparejadas.
+    data.monuments.filter((item) => item.photo).forEach((item) => {
+      photos[item.photo] = new Image();
+      photos[item.photo].src = `assets/${item.photo}${innerWidth < 900 ? '-m' : ''}.jpg`;
+    });
+  }).catch(() => {});
   requestAnimationFrame(frame);
 })();
