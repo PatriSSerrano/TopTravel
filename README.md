@@ -43,7 +43,7 @@ Funciona en ordenador, tableta y móvil.
 
 - **Los precios son orientativos.** El precio final se confirma siempre antes de comprar o reservar.
 - **No todos los alojamientos tienen precio.** De momento lo tienen 342 hoteles de 26 ciudades.
-- **Las ciudades más buscadas salen al momento.** En las demás, la primera búsqueda puede tardar un par de minutos y las siguientes ya son inmediatas.
+- **Las ciudades más buscadas salen al momento.** En las demás, la primera búsqueda puede tardar algo más, con una cuenta atrás en pantalla, y las siguientes ya son inmediatas.
 - **Los avisos se ven dentro de la web.** El envío por correo llegará más adelante.
 
 ## Privacidad y seguridad

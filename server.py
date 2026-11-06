@@ -87,8 +87,11 @@ AIRLINE_SITES = {
 }
 OVERPASS_URLS = (
     "https://overpass-api.de/api/interpreter",
+    "https://overpass.private.coffee/api/interpreter",
     "https://overpass.kumi.systems/api/interpreter",
 )
+OVERPASS_MAIN_TIMEOUT = 110
+OVERPASS_BACKUP_TIMEOUT = 45  # si el principal falla, los de reserva no deben alargar la espera
 LEGAL_PAGES = {"/privacidad": "privacidad.html", "/aviso-legal": "aviso-legal.html"}
 ASSET = re.compile(r"^/assets/[a-z0-9]+\.jpg$")
 
@@ -699,7 +702,8 @@ def overpass_slow(query):
     for url in OVERPASS_URLS:
         try:
             request = urllib.request.Request(url, data=body, headers={"User-Agent": "TopTravel/1.0"})
-            with _overpass_slots, urllib.request.urlopen(request, timeout=110) as response:
+            timeout = OVERPASS_MAIN_TIMEOUT if url == OVERPASS_URLS[0] else OVERPASS_BACKUP_TIMEOUT
+            with _overpass_slots, urllib.request.urlopen(request, timeout=timeout) as response:
                 raw = response.read(OVERPASS_MAX_BYTES + 1)
                 if len(raw) > OVERPASS_MAX_BYTES:
                     raise Unavailable("too_big")  # sin reintentar: el otro servidor daría lo mismo
@@ -714,7 +718,7 @@ def overpass_slow(query):
     raise Unavailable("upstream") from last_error
 
 
-def build_transit(lat, lon):
+def build_transit(lat, lon, part=None):
     # El recorrido se recorta a la zona del mapa: si no, una ciudad pesa decenas de MB.
     margin_lat = (MAP_RADIUS_KM + 1) / 110.574
     margin_lon = (MAP_RADIUS_KM + 1) / (111.32 * math.cos(math.radians(lat)))
@@ -726,10 +730,12 @@ def build_transit(lat, lon):
             f"(around:{MAP_RADIUS_KM * 1000},{lat},{lon});out geom({box});"
         )
 
-    elements = routes("subway|light_rail|monorail|tram")
+    # Metro y tranvía pesan poco; los autobuses son lo lento y se pueden pedir aparte.
+    elements = routes("subway|light_rail|monorail|tram") if part != "bus" else []
     partial = False
     try:
-        elements = elements + routes("bus|trolleybus")
+        if part != "rail":
+            elements = elements + routes("bus|trolleybus")
     except Unavailable:
         partial = True  # sin autobuses de momento: el metro y el tranvía sí se muestran
     best = {}
@@ -773,7 +779,12 @@ def api_transit(q):
     center = read_center(q)
     if not center:
         return 400, {"error": "bad_request"}
-    return 200, cached_map_data(f"t|{center[0]}|{center[1]}", lambda: build_transit(*center))
+    key = f"t|{center[0]}|{center[1]}"
+    part = q.get("part") if q.get("part") in ("rail", "bus") else None
+    # Si la ciudad ya está preparada entera, sale todo de una vez.
+    if not part or map_path(key).exists():
+        return 200, cached_map_data(key, lambda: build_transit(*center))
+    return 200, cached_map_data(f"{key}|{part}", lambda: build_transit(*center, part))
 
 
 def api_rates(q):
@@ -1192,6 +1203,16 @@ class Handler(BaseHTTPRequestHandler):
             super().log_message(fmt, *args)
 
 
+def watch_restart_flag():
+    """Al subir código nuevo, este archivo pide reiniciar: el alojamiento vuelve a arrancar la web."""
+    flag = ROOT / "data" / "reiniciar"
+    while True:
+        time.sleep(5)
+        if flag.exists():
+            flag.unlink(missing_ok=True)
+            os._exit(0)
+
+
 class Server(ThreadingHTTPServer):
     daemon_threads = True
 
@@ -1214,6 +1235,8 @@ def main():
     parser.add_argument("--behind-proxy", action="store_true", help="confía en las cabeceras X-Forwarded-* del proxy")
     args = parser.parse_args()
     TRUST_PROXY = args.behind_proxy
+    if TRUST_PROXY:
+        threading.Thread(target=watch_restart_flag, daemon=True).start()
     state = "activados" if settings()["TRAVELPAYOUTS_TOKEN"] else "sin activar (falta la clave en .env)"
     print(f"TopTravel en http://localhost:{args.port} · precios {state}", flush=True)
     (ServerV6 if ":" in args.host else Server)((args.host, args.port), Handler).serve_forever()

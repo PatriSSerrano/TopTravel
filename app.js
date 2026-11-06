@@ -1278,6 +1278,18 @@ function addZones(map, center, furthest) {
   L.circleMarker([center.lat, center.lon], { radius: 4, color: '#fff', weight: 2, fillColor: '#3a2314', fillOpacity: 1, interactive: false }).addTo(map);
 }
 
+/* Cuenta atrás orientativa: si se agota, lo dice en vez de quedarse en cero. */
+function countdown(seconds, paint) {
+  let left = seconds;
+  const tick = () => {
+    paint(left > 0 ? `quedan unos ${left} s` : 'está tardando un poco más de lo normal');
+    left -= 1;
+  };
+  tick();
+  const id = setInterval(tick, 1000);
+  return () => clearInterval(id);
+}
+
 function mapNote(root, text) {
   const note = root.querySelector('[data-map-note]');
   if (note) note.textContent = text;
@@ -1348,11 +1360,16 @@ function monumentPopup(m) {
     <a class="map__credit" href="${esc(m.credit)}" target="_blank" rel="noopener">Foto y licencia: Wikimedia Commons</a>`;
 }
 
+// Tiempos habituales la primera vez en una ciudad. Las ciudades preparadas salen al momento.
+const WAIT_SECONDS = { hotels: 30, monuments: 20, rail: 35, bus: 70 };
+
 async function loadMonuments(root) {
   const { center, run } = cityMap;
   if (cityMap.monumentsData || !center) return;
   const q = new URLSearchParams({ lat: center.lat, lon: center.lon });
-  mapNote(root, 'Buscando monumentos… La primera vez en una ciudad puede tardar hasta un minuto.');
+  const stop = countdown(WAIT_SECONDS.monuments, (left) => {
+    if (run === cityMap.run && cityMap.mode === 'monuments') mapNote(root, `Buscando monumentos: ${left}.`);
+  });
   try {
     const r = await fetch(`/api/monuments?${q}`);
     const body = await r.json();
@@ -1367,6 +1384,8 @@ async function loadMonuments(root) {
     });
   } catch {
     if (run === cityMap.run && cityMap.mode !== 'prices') mapNote(root, 'No se han podido cargar los monumentos. Se puede volver a intentar en un momento.');
+  } finally {
+    stop();
   }
 }
 
@@ -1376,31 +1395,77 @@ const TRANSIT_LOOK = {
   bus: { label: 'Autobús', weight: 1.3, opacity: 0.45, fallback: '#3a5a8c' },
 };
 
+function drawTransitLines(lines) {
+  cityMap.transitRenderer = cityMap.transitRenderer || L.canvas({ tolerance: 6 });
+  ['bus', 'tram', 'metro'].forEach((kind) => {
+    const look = TRANSIT_LOOK[kind];
+    lines.filter((l) => l.kind === kind).forEach((line) => {
+      L.polyline(line.paths, { renderer: cityMap.transitRenderer, color: line.color || look.fallback, weight: look.weight, opacity: look.opacity })
+        .bindPopup(`<b class="map__title">${esc(look.label)} ${esc(line.ref)}</b>${line.name ? `<span class="map__sub">${esc(line.name)}</span>` : ''}`)
+        .addTo(cityMap.transit[kind]);
+    });
+  });
+}
+
+async function fetchTransit(q, part) {
+  const r = await fetch(`/api/transit?${q}&part=${part}`);
+  const body = await r.json();
+  if (!r.ok) throw new Error(body.error);
+  return body;
+}
+
 async function loadTransit(root) {
   const { center, run } = cityMap;
-  if (cityMap.transitData || !center) return;
+  if (cityMap.transitData || cityMap.transitLoading || !center) return;
+  cityMap.transitLoading = true;
   const q = new URLSearchParams({ lat: center.lat, lon: center.lon });
-  mapNote(root, 'Buscando líneas de transporte… La primera vez en una ciudad puede tardar un par de minutos.');
+  const current = () => run === cityMap.run;
+  let stop = countdown(WAIT_SECONDS.rail, (left) => {
+    if (current() && cityMap.mode === 'transit') mapNote(root, `Buscando metro y tranvía: ${left}.`);
+  });
   try {
-    const r = await fetch(`/api/transit?${q}`);
-    const body = await r.json();
-    if (!r.ok) throw new Error(body.error);
-    if (run !== cityMap.run) return;
-    cityMap.transitData = body.lines;
-    cityMap.transitPartial = Boolean(body.partial);
-    const renderer = L.canvas({ tolerance: 6 });
-    ['bus', 'tram', 'metro'].forEach((kind) => {
-      const look = TRANSIT_LOOK[kind];
-      body.lines.filter((l) => l.kind === kind).forEach((line) => {
-        L.polyline(line.paths, { renderer, color: line.color || look.fallback, weight: look.weight, opacity: look.opacity })
-          .bindPopup(`<b class="map__title">${esc(look.label)} ${esc(line.ref)}</b>${line.name ? `<span class="map__sub">${esc(line.name)}</span>` : ''}`)
-          .addTo(cityMap.transit[kind]);
-      });
-    });
+    // Primero lo rápido: así hay líneas en el mapa en segundos.
+    const rail = await fetchTransit(q, 'rail');
+    stop();
+    if (!current()) return;
+    cityMap.transitData = rail.lines;
+    cityMap.transitPartial = Boolean(rail.partial);
+    drawTransitLines(rail.lines);
+    if (rail.lines.some((l) => l.kind === 'bus')) {
+      showTransitKinds(root);
+      return;
+    }
+    cityMap.busLoading = true;
     showTransitKinds(root);
+    stop = countdown(WAIT_SECONDS.bus, (left) => {
+      if (current() && cityMap.mode === 'transit') mapNote(root, `${transitSummary(cityMap.transitData)} Buscando autobuses: ${left}.`);
+    });
+    try {
+      const bus = await fetchTransit(q, 'bus');
+      if (!current()) return;
+      const lines = bus.lines.filter((l) => l.kind === 'bus');
+      cityMap.transitData = [...cityMap.transitData, ...lines];
+      cityMap.transitPartial = Boolean(bus.partial);
+      drawTransitLines(lines);
+    } catch {
+      if (current()) cityMap.transitPartial = true;
+    }
+    if (current()) {
+      cityMap.busLoading = false;
+      stop();
+      showTransitKinds(root);
+    }
   } catch {
-    if (run === cityMap.run && cityMap.mode === 'transit') mapNote(root, 'No se ha podido cargar el transporte. El servicio de mapas puede estar saturado. Se puede volver a intentar en un momento.');
+    if (current() && cityMap.mode === 'transit') mapNote(root, 'No se ha podido cargar el transporte. El servicio de mapas puede estar saturado. Se puede volver a intentar en un momento.');
+  } finally {
+    stop();
+    if (current()) cityMap.transitLoading = false;
   }
+}
+
+function transitSummary(lines) {
+  const n = (kind) => lines.filter((l) => l.kind === kind).length;
+  return `${n('metro')} de metro, ${n('tram')} de tranvía y ${n('bus')} de autobús en unos 7 km alrededor del centro. Al pulsar una línea se ve su nombre.`;
 }
 
 function showTransitKinds(root) {
@@ -1412,9 +1477,9 @@ function showTransitKinds(root) {
     else cityMap.map.removeLayer(group);
   });
   if (!lines) return;
-  const n = (kind) => lines.filter((l) => l.kind === kind).length;
+  if (cityMap.busLoading) return; // la cuenta atrás de los autobuses ya escribe la nota
   mapNote(root, lines.length
-    ? `${n('metro')} de metro, ${n('tram')} de tranvía y ${n('bus')} de autobús en unos 7 km alrededor del centro. Al pulsar una línea se ve su nombre.${cityMap.transitPartial ? ' Los autobuses no han cargado: el servicio de mapas está saturado.' : ''}`
+    ? `${transitSummary(lines)}${cityMap.transitPartial ? ' Los autobuses no han cargado: el servicio de mapas está saturado.' : ''}`
     : 'No se han encontrado líneas de transporte en esta zona.');
 }
 
@@ -1700,7 +1765,11 @@ async function loadHotels(s) {
   if (!el) return;
   const run = ++hotelsRun;
   const place = s.dest.country ? `${s.dest.city}, ${s.dest.country}` : s.dest.city;
-  el.innerHTML = '<p class="count">Buscando alojamientos… La primera vez en una ciudad puede tardar hasta medio minuto.</p><div class="list"><div class="skel"></div><div class="skel"></div></div>';
+  el.innerHTML = '<p class="count"><span data-wait></span></p><div class="list"><div class="skel"></div><div class="skel"></div></div>';
+  const stop = countdown(WAIT_SECONDS.hotels, (left) => {
+    const wait = el.querySelector('[data-wait]');
+    if (wait) wait.textContent = `Buscando alojamientos: ${left}.`;
+  });
   try {
     const r = await fetch(`/api/hotels?${new URLSearchParams({ place })}`);
     const body = await r.json();
@@ -1713,6 +1782,8 @@ async function loadHotels(s) {
     renderHotelResults(el, body.hotels, s, body.center);
   } catch {
     if (run === hotelsRun) el.innerHTML = '<div class="empty"><b>No se han podido cargar los alojamientos</b>Se puede volver a intentar en un momento.</div>';
+  } finally {
+    stop();
   }
 }
 

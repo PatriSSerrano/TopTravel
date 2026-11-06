@@ -28,4 +28,6 @@ if [ "$WITH_ENV" = "--con-env" ]; then
   grep -E '^(TRAVELPAYOUTS_TOKEN|CONTACT_EMAIL|SMTP_[A-Z]+|MAIL_FROM|SITE_URL|HOTEL_PRICES|NOMINATIM)=' .env     | "${SSH[@]}" "$HOST" 'umask 077; cat > toptravel/.env'
 fi
 
-echo "Archivos subidos. Falta reiniciar el sitio para que use el código nuevo."
+# La web comprueba este archivo cada 5 segundos y se reinicia sola con el código nuevo.
+"${SSH[@]}" "$HOST" 'touch toptravel/data/reiniciar'
+echo "Archivos subidos. La web se reinicia sola en unos segundos."

@@ -17,6 +17,16 @@ CITIES = [
     "Berlín, Alemania", "Praga, República Checa", "Viena, Austria", "Milán, Italia", "Venecia, Italia",
     "Florencia, Italia", "Dublín, Irlanda", "Budapest, Hungría", "Atenas, Grecia", "Estambul, Turquía",
     "Dubái, Emiratos Árabes Unidos", "Bangkok, Tailandia", "Oporto, Portugal",
+    "Oslo, Noruega", "Copenhague, Dinamarca", "Estocolmo, Suecia", "Helsinki, Finlandia", "Reikiavik, Islandia",
+    "Varsovia, Polonia", "Cracovia, Polonia", "Gdansk, Polonia", "Bucarest, Rumanía", "Sofía, Bulgaria", "Zagreb, Croacia",
+    "Dubrovnik, Croacia", "Split, Croacia", "Belgrado, Serbia", "Liubliana, Eslovenia", "Bratislava, Eslovaquia",
+    "Sarajevo, Bosnia y Herzegovina", "Tirana, Albania", "Skopie, Macedonia del Norte", "Tallin, Estonia", "Riga, Letonia",
+    "Vilna, Lituania", "Kiev, Ucrania", "Bruselas, Bélgica", "Brujas, Bélgica", "Zúrich, Suiza", "Ginebra, Suiza",
+    "Luxemburgo, Luxemburgo", "La Valeta, Malta", "Montecarlo, Mónaco", "Múnich, Alemania", "Hamburgo, Alemania",
+    "Fráncfort, Alemania", "Colonia, Alemania", "Nápoles, Italia", "Turín, Italia", "Bolonia, Italia", "Niza, Francia",
+    "Lyon, Francia", "Marsella, Francia", "Burdeos, Francia", "Edimburgo, Reino Unido", "Mánchester, Reino Unido",
+    "Glasgow, Reino Unido", "Salzburgo, Austria", "Salónica, Grecia", "Santorini, Grecia", "Bilbao, España",
+    "Granada, España", "Palma de Mallorca, España", "San Sebastián, España",
 ]
 PAUSE_SECONDS = 20
 BUSY_PAUSE_SECONDS = 150  # si un servicio pide esperar, se le deja respirar
