@@ -674,3 +674,27 @@ dialog .favs li:has(.history) { flex-wrap: wrap; }
 .advice--buy { border-left-color: var(--orange); }
 .advice--wait { border-left-color: var(--mustard); }
 .savehint { margin: 10px 2px 0; font-size: 14px; color: var(--muted); }
+
+/* Viaje completo y planes */
+.trip-total { display: flex; flex-direction: column; gap: 4px; margin: 0 0 14px; padding: 16px 20px; background: var(--peach); color: var(--brown-900); border-radius: var(--radius); }
+.trip-total[hidden] { display: none; }
+.trip-total b { font-size: 20px; letter-spacing: -.01em; }
+.trip-total span { font-size: 13px; }
+.jumps { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+.jumps .pilltab { border-color: var(--line-strong); color: var(--ink); }
+.jumps .pilltab:hover { background: var(--soft); }
+.offers { scroll-margin-top: 12px; }
+.plan { display: grid; grid-template-columns: auto 1fr 210px; gap: 16px; padding: 16px 20px; align-items: start; }
+.plan:not(:has(.plan__img)) { grid-template-columns: 1fr 210px; }
+.plan__img { width: 160px; height: 120px; object-fit: cover; border-radius: 12px; }
+.plan .hotel__buy { display: flex; flex-direction: column; gap: 8px; }
+.plan .hotel__buy .btn, .plan .hotel__buy .linkbtn { text-align: center; }
+.plan__credit { font-size: 12px; color: var(--muted); }
+.plan__people { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.plan__people input { width: 76px; padding: 6px 8px; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--surface); color: var(--ink); }
+.plan__hint { font-size: 12px; color: var(--muted); margin: 4px 0 0; }
+[data-theme="dark"] .trip-total { background: var(--soft); color: var(--ink); }
+@media (max-width: 760px) {
+  .plan, .plan:not(:has(.plan__img)) { grid-template-columns: 1fr; }
+  .plan__img { width: 100%; height: 160px; }
+}

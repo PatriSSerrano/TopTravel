@@ -6,6 +6,13 @@ Cada versión tiene tres números, por ejemplo 1.2.3:
 - **El segundo** cambia al añadir algo nuevo, como más ciudades o una función.
 - **El tercero** cambia al corregir un error o hacer un retoque.
 
+## 1.3.0 · 6 de noviembre de 2026
+
+- Una sola búsqueda para el vuelo y el alojamiento, con el precio orientativo del viaje completo. La opción «Sin vuelo» deja buscar solo el alojamiento.
+- Nuevo apartado de planes en cada destino: bares, discotecas, restaurantes, museos, monumentos, miradores y sitios poco conocidos.
+- Filtros de planes: gratis o de pago, distancia, transporte público, personas, tipo de plan y presupuesto.
+- Enlaces desde cada plan a sus reseñas en Google y TripAdvisor.
+
 ## 1.2.0 · 6 de noviembre de 2026
 
 - Toda Europa y Norteamérica: 102 ciudades y más de 1.250 hoteles con precio.

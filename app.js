@@ -431,7 +431,7 @@ function renderPax() {
     ['children', 'Niños', '2 a 11 años'],
     ['infants', 'Bebés', 'Menos de 2 años'],
   ];
-  if (!flights) rows.push(['rooms', 'Habitaciones', '']);
+  rows.push(['rooms', 'Habitaciones', '']);
   const rowHtml = rows.map(([k, label, sub]) => `
     <div class="row">
       <div><b>${label}</b>${sub ? `<span>${sub}</span>` : ''}</div>
@@ -456,7 +456,7 @@ function paxSummary() {
   const people = plural(p.adults, 'adulto', 'adultos')
     + (p.children ? ` · ${plural(p.children, 'niño', 'niños')}` : '')
     + (p.infants ? ` · ${plural(p.infants, 'bebé', 'bebés')}` : '');
-  if (state.mode === 'flights') return `${people} · ${CABINS.find((c) => c.id === p.cabin).label}`;
+  if (state.mode === 'flights') return `${people} · ${p.rooms} hab. · ${CABINS.find((c) => c.id === p.cabin).label}`;
   return `${people} · ${plural(p.rooms, 'habitación', 'habitaciones')}`;
 }
 
@@ -513,17 +513,13 @@ function openPax() {
 function setMode(mode) {
   state.mode = mode;
   document.body.dataset.mode = mode;
-  document.querySelectorAll('.pilltab').forEach((b) => b.classList.toggle('is-on', b.dataset.mode === mode));
   const flights = mode === 'flights';
-  $('heroTitle').textContent = flights ? 'El vuelo más barato, día a día.' : 'Alojamientos con su precio y su distancia al centro.';
-  $('heroSub').textContent = flights
-    ? 'Se muestra el precio de cada día del mes para elegir la mejor fecha.'
-    : 'En el mapa se ve el precio de cada alojamiento y lo cerca que está del centro.';
+  $('optNoFlight').checked = !flights;
   $('destLabel').textContent = flights ? 'A' : 'Destino';
   $('dest').placeholder = flights ? 'País, ciudad o aeropuerto' : 'Ciudad, zona o alojamiento';
   $('startLabel').textContent = flights ? 'Ida' : 'Llegada';
   $('endLabel').textContent = flights ? 'Vuelta' : 'Salida';
-  $('paxLabel').textContent = flights ? 'Viajeros y cabina' : 'Huéspedes y habitaciones';
+  $('paxLabel').textContent = flights ? 'Viajeros y habitaciones' : 'Huéspedes y habitaciones';
   if (state.pax.rooms > state.pax.adults) state.pax.rooms = state.pax.adults;
   if (state.start && state.end && state.start === state.end && !flights) state.end = null;
   $('origin').value = placeLabel(state.origin);
@@ -1790,6 +1786,11 @@ async function loadVisibleRates(root, s, rows = []) {
   const pending = [...new Set([...visible, ...onMap])].slice(0, MAX_RATE_REQUESTS);
   const paint = (key, rates) => {
     root.querySelectorAll(`[data-rates="${key}"]`).forEach((el) => { el.innerHTML = ratesHtml(rates, s); });
+    if (rates && rates.length) {
+      const night = perPerson(rates[0].rate, s);
+      tripTotal.night = tripTotal.night === null ? night : Math.min(tripTotal.night, night);
+      paintTripTotal(s);
+    }
     paintPriceMarker(key, rates);
   };
   const next = async () => {
@@ -1857,6 +1858,156 @@ async function loadHotels(s) {
   }
 }
 
+/* ---------- Total del viaje ---------- */
+const tripTotal = { flight: null, night: null };
+
+function paintTripTotal(s) {
+  const el = $('tripTotal');
+  if (!el) return;
+  const { flight, night } = tripTotal;
+  const stay = night !== null && s.end ? Math.round((fromIso(s.end) - fromIso(s.start)) / 864e5) : 0;
+  if (flight === null && !stay) { el.hidden = true; return; }
+  const parts = [];
+  if (flight !== null) parts.push(`vuelo desde ${money(flight)}`);
+  if (stay) parts.push(`alojamiento desde ${money(night)} la noche × ${plural(stay, 'noche', 'noches')}`);
+  const both = flight !== null && stay;
+  el.innerHTML = `<b>${both ? `Viaje completo desde ${esc(money(flight + night * stay))} por persona` : 'Precio orientativo por persona'}</b>
+    <span>${esc(parts.join(' + '))}. Sale del vuelo más barato y del alojamiento más barato de los consultados hasta ahora.</span>`;
+  el.hidden = false;
+}
+
+/* ---------- Planes: qué hacer en el destino ---------- */
+const PLAN_KINDS = {
+  bar: 'Bares', discoteca: 'Discotecas', restaurante: 'Restaurantes', cafeteria: 'Cafeterías', museo: 'Museos', monumento: 'Monumentos',
+  sitio: 'Sitios que ver', mirador: 'Miradores', arte: 'Arte en la calle', naturaleza: 'Parques y naturaleza', playa: 'Playas',
+  espectaculo: 'Teatro y cine', cultura: 'Cultura', ocio: 'Ocio', familiar: 'Zoos y parques', mercado: 'Mercados',
+};
+const PLAN_KIND_ONE = {
+  bar: 'Bar', discoteca: 'Discoteca', restaurante: 'Restaurante', cafeteria: 'Cafetería', museo: 'Museo', monumento: 'Monumento',
+  sitio: 'Sitio que ver', mirador: 'Mirador', arte: 'Arte en la calle', naturaleza: 'Parque o naturaleza', playa: 'Playa',
+  espectaculo: 'Teatro o cine', cultura: 'Cultura', ocio: 'Ocio', familiar: 'Zoo o parque', mercado: 'Mercado',
+};
+const PLANS_STEP = 12;
+const STOP_NEAR_M = 500;
+
+function reviewLinks(a, city) {
+  const q = `${a.name}, ${city}`;
+  const google = `https://www.google.com/maps/search/?${new URLSearchParams({ api: 1, query: q })}`;
+  const tripadvisor = `https://www.tripadvisor.es/Search?${new URLSearchParams({ q })}`;
+  return { google, tripadvisor };
+}
+
+function planHtml(a, city) {
+  const links = reviewLinks(a, city);
+  const chips = [];
+  if (a.free === true) chips.push('<span class="ok">Gratis</span>');
+  else if (a.free === false) chips.push('<span>De pago</span>');
+  else chips.push('<span>Precio sin confirmar</span>');
+  chips.push(`<span>Presupuesto ${esc(a.budget)}</span>`);
+  if (typeof a.km === 'number') chips.push(`<span>${esc(String(a.km).replace('.', ','))} km del centro</span>`);
+  if (typeof a.stop_m === 'number' && a.stop_m <= STOP_NEAR_M) chips.push(`<span>Parada a ${esc(String(a.stop_m))} m</span>`);
+  if (a.capacity) chips.push(`<span>Aforo: ${esc(String(a.capacity))}</span>`);
+  if (a.wheelchair === 'yes') chips.push('<span>Accesible en silla de ruedas</span>');
+  if (a.gem) chips.push('<span class="ok">Poco conocido</span>');
+  return `
+    <article class="card plan">
+      ${a.image ? `<img class="plan__img" src="${esc(a.image)}" alt="" loading="lazy" width="160" height="120">` : ''}
+      <div class="hotel__body">
+        <span class="stay__type">${esc(PLAN_KIND_ONE[a.kind] || 'Plan')}${a.cuisine ? ` · ${esc(a.cuisine.replaceAll(';', ', ').replaceAll('_', ' '))}` : ''}</span>
+        <h3 class="stay__name">${esc(a.name)}</h3>
+        <div class="chips">${chips.join('')}</div>
+        ${a.opening_hours ? `<span class="stay__loc"><span>Horario: ${esc(a.opening_hours)}</span></span>` : ''}
+        ${a.credit ? `<a class="plan__credit" href="${esc(a.credit)}" target="_blank" rel="noopener">Foto y licencia: Wikimedia Commons</a>` : ''}
+      </div>
+      <div class="hotel__buy">
+        <a class="btn btn--out" href="${esc(links.google)}" target="_blank" rel="noopener">Reseñas en Google<span class="sr"> (se abre en una pestaña nueva)</span></a>
+        <a class="btn btn--out" href="${esc(links.tripadvisor)}" target="_blank" rel="noopener">Reseñas en TripAdvisor<span class="sr"> (se abre en una pestaña nueva)</span></a>
+        ${a.website ? `<a class="linkbtn" href="${esc(a.website)}" target="_blank" rel="noopener nofollow">Web oficial<span class="sr"> (se abre en una pestaña nueva)</span></a>` : ''}
+      </div>
+    </article>`;
+}
+
+function renderPlans(el, items, city) {
+  const count = (fn) => items.filter(fn).length;
+  const kinds = Object.keys(PLAN_KINDS).filter((k) => items.some((a) => a.kind === k));
+  const radios = (name, options) => options.map(([value, label, fn], i) => optHtml('radio', name, value, label, fn ? count(fn) : items.length, i === 0)).join('');
+  el.innerHTML = `
+    <div class="layout">
+      ${filtersHtml(
+        fieldsetHtml('Qué hacer', kinds.map((k) => optHtml('checkbox', 'p_kind', k, PLAN_KINDS[k], count((a) => a.kind === k), true)).join(''))
+        + fieldsetHtml('Precio', radios('p_free', [['any', 'Cualquiera'], ['yes', 'Gratis', (a) => a.free === true], ['no', 'De pago', (a) => a.free === false]]))
+        + fieldsetHtml('Tipo de plan', radios('p_plan', [['any', 'Cualquiera'], ['pareja', 'En pareja', (a) => a.plans.includes('pareja')], ['amigos', 'Con amigos', (a) => a.plans.includes('amigos')], ['familia', 'En familia', (a) => a.plans.includes('familia')]]))
+        + fieldsetHtml('Presupuesto', radios('p_budget', [['any', 'Cualquiera'], ['bajo', 'Bajo', (a) => a.budget === 'bajo'], ['medio', 'Medio', (a) => a.budget === 'medio'], ['alto', 'Alto', (a) => a.budget === 'alto']]))
+        + fieldsetHtml('Distancia al centro', radios('p_km', [['any', 'Cualquiera'], ['1', 'Hasta 1 km', (a) => a.km <= 1], ['3', 'Hasta 3 km', (a) => a.km <= 3], ['5', 'Hasta 5 km', (a) => a.km <= 5]]))
+        + fieldsetHtml('Transporte público', optHtml('checkbox', 'p_stop', '1', `Parada a menos de ${STOP_NEAR_M} m`, count((a) => typeof a.stop_m === 'number' && a.stop_m <= STOP_NEAR_M)))
+        + fieldsetHtml('Personas', '<label class="opt plan__people"><span>Máximo de personas</span><input type="number" name="p_people" min="1" max="500" inputmode="numeric"></label><p class="plan__hint">Se quitan los sitios cuyo aforo conocido es menor. Pocos sitios indican su aforo.</p>')
+        + fieldsetHtml('Sitios poco conocidos', optHtml('checkbox', 'p_gem', '1', 'Solo poco conocidos', count((a) => a.gem))),
+      )}
+      <div class="layout__main">
+        ${sortbarHtml([{ id: 'near', label: 'Más cerca' }, { id: 'known', label: 'Más conocidos' }])}
+        <p class="count" data-count></p>
+        <div class="list" data-results></div>
+        <button type="button" class="btn btn--out btn--block more">Ver más planes</button>
+        <p class="count">El precio, el presupuesto y el tipo de plan son orientativos: si el sitio no lo indica, se deducen de su tipo. «Poco conocido» significa que no tiene ficha en Wikipedia ni en Wikidata. Conviene confirmar los horarios antes de ir.</p>
+        <p class="legal">Datos: © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">colaboradores de OpenStreetMap</a> y <a href="https://www.wikidata.org" target="_blank" rel="noopener">Wikidata</a>. Las reseñas son de Google y TripAdvisor y se leen en sus webs.</p>
+      </div>
+    </div>`;
+
+  const view = { sort: 'near', step: PLANS_STEP, limit: PLANS_STEP };
+  const nearest = (a, b) => (a.km ?? 99) - (b.km ?? 99);
+  const sorters = { near: nearest, known: (a, b) => Number(b.known) - Number(a.known) || Boolean(b.image) - Boolean(a.image) || nearest(a, b) };
+
+  const draw = () => {
+    const form = el.querySelector('form');
+    const chosen = new Set([...form.querySelectorAll('[name=p_kind]:checked')].map((i) => i.value));
+    const free = form.elements.p_free.value;
+    const plan = form.elements.p_plan.value;
+    const budget = form.elements.p_budget.value;
+    const km = form.elements.p_km.value;
+    const stop = form.elements.p_stop.checked;
+    const people = Number(form.elements.p_people.value) || 0;
+    const gem = form.elements.p_gem.checked;
+    const rows = items.filter((a) => chosen.has(a.kind)
+      && (free === 'any' || a.free === (free === 'yes'))
+      && (plan === 'any' || a.plans.includes(plan))
+      && (budget === 'any' || a.budget === budget)
+      && (km === 'any' || a.km <= Number(km))
+      && (!stop || (typeof a.stop_m === 'number' && a.stop_m <= STOP_NEAR_M))
+      && (!people || !a.capacity || a.capacity >= people)
+      && (!gem || a.gem)).sort(sorters[view.sort]);
+    el.querySelector('[data-count]').textContent = `${rows.length} de ${items.length} planes`;
+    el.querySelector('[data-results]').innerHTML = rows.length
+      ? rows.slice(0, view.limit).map((a) => planHtml(a, city)).join('')
+      : noMatchHtml;
+    el.querySelector('.more').hidden = rows.length <= view.limit;
+  };
+
+  wireControls(el, view, draw);
+  draw();
+}
+
+let plansRun = 0;
+async function loadPlans(s) {
+  const el = $('plans');
+  if (!el) return;
+  const run = ++plansRun;
+  const place = s.dest.country ? `${s.dest.city}, ${s.dest.country}` : s.dest.city;
+  el.innerHTML = '<div class="list"><div class="skel"></div><div class="skel"></div></div>';
+  try {
+    const r = await fetch(`/api/activities?${new URLSearchParams({ place })}`);
+    const body = await r.json();
+    if (run !== plansRun) return;
+    if (!r.ok) throw new Error(body.error || 'error');
+    if (!body.activities.length) {
+      el.innerHTML = '<div class="empty"><b>Todavía no hay planes de esta ciudad</b>Se van añadiendo más ciudades poco a poco.</div>';
+      return;
+    }
+    renderPlans(el, body.activities, s.dest.city);
+  } catch {
+    if (run === plansRun) el.innerHTML = '<div class="empty"><b>No se han podido cargar los planes</b>Se puede volver a intentar en un momento.</div>';
+  }
+}
+
 let offersRun = 0;
 async function loadOffers(s) {
   const el = $('offers');
@@ -1890,7 +2041,11 @@ async function loadOffers(s) {
         { title: 'Vuelta (se compra aparte)', offers: back.offers },
       ].filter((l) => l.offers.length);
     }
-    if (lists.length) renderFlightResults(el, lists);
+    if (lists.length) {
+      tripTotal.flight = lists.reduce((sum, l) => sum + Math.min(...l.offers.map((o) => o.price)), 0);
+      paintTripTotal(s);
+      renderFlightResults(el, lists);
+    }
     else el.innerHTML = message('Sin precios recientes para estas fechas', 'En el calendario aparecen marcados los días con precio.');
   } catch {
     if (!stale()) el.innerHTML = message('Precios no disponibles ahora mismo', 'Se puede volver a intentar en un momento.');
@@ -1906,8 +2061,15 @@ function renderResults(s) {
   const withHotels = !flights || (s.end && s.end !== s.start && s.dest.city !== s.dest.code);
   const hotelsTitle = `Hoteles y apartamentos en ${s.dest.city}`;
   const hotelsHtml = withHotels
-    ? `<section class="offers" aria-labelledby="hotelsTitle"><div class="block__head"><h2 id="hotelsTitle">${esc(hotelsTitle)}</h2></div><div id="hotels"></div></section>`
+    ? `<section class="offers" id="sectionStays" aria-labelledby="hotelsTitle"><div class="block__head"><h2 id="hotelsTitle">${esc(hotelsTitle)}</h2></div><div id="hotels"></div></section>`
+    : (flights && !s.end ? '<p class="savehint">Para ver alojamientos hace falta una fecha de vuelta.</p>' : '');
+  const withPlans = s.dest.city !== s.dest.code;
+  const plansHtml = withPlans
+    ? `<section class="offers" id="sectionPlans" aria-labelledby="plansTitle"><div class="block__head"><h2 id="plansTitle">${esc(`Planes en ${s.dest.city}`)}</h2></div><div id="plans"></div></section>`
     : '';
+  const jumps = [flights && ['sectionFlights', 'Vuelos'], withHotels && ['sectionStays', 'Alojamiento'], withPlans && ['sectionPlans', 'Planes']].filter(Boolean);
+  tripTotal.flight = null;
+  tripTotal.night = null;
 
   const res = $('results');
   res.innerHTML = `
@@ -1918,16 +2080,24 @@ function renderResults(s) {
         <button type="button" class="btn btn--out" id="newSearch">Nueva búsqueda</button>
       </span>
     </div>
+    <p class="trip-total" id="tripTotal" role="status" hidden></p>
+    ${jumps.length > 1 ? `<nav class="jumps" aria-label="Partes del viaje">${jumps.map(([id, label]) => `<button type="button" class="pilltab" data-jump="${id}">${esc(label)}</button>`).join('')}</nav>` : ''}
     ${account.insights ? `<p class="savehint">Al guardar ${flights ? 'este vuelo' : 'un alojamiento'} se ve en Guardados un gráfico con la evolución de su precio y una recomendación de cuándo comprar.</p>` : ''}
-    ${flights ? '<section class="offers" aria-label="Vuelos encontrados"><div id="offers"></div></section>' : hotelsHtml}
+    ${flights ? '<section class="offers" id="sectionFlights" aria-labelledby="flightsTitle"><div class="block__head"><h2 id="flightsTitle">Vuelos</h2></div><div id="offers"></div></section>' : hotelsHtml}
     ${flights ? hotelsHtml : ''}
+    ${plansHtml}
     <p class="legal" id="legal">TopTravel no vende billetes ni alojamientos y no procesa pagos: la reserva y el pago se hacen en la web del vendedor.</p>`;
   res.hidden = false;
   $('home').hidden = true;
   $('newSearch').addEventListener('click', goHome);
+  res.querySelector('.jumps')?.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-jump]');
+    if (b) $(b.dataset.jump).scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
   if (flights) wireSaveTrip(s);
   if (flights) loadOffers(s);
   if (withHotels) loadHotels(s);
+  if (withPlans) loadPlans(s);
   res.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -2128,17 +2298,17 @@ function toast(message) {
 /* ---------- Eventos ---------- */
 // Si no hay logo de una aerolínea, queda su código sobre el círculo de color.
 document.addEventListener('error', (e) => {
-  if (e.target.classList?.contains('air__logo')) e.target.remove();
+  if (e.target.classList?.contains('air__logo') || e.target.classList?.contains('plan__img')) e.target.remove();
 }, true);
 
 function init() {
   setupCombo('origin', $('origin'), $('originList'), $('segOrigin'));
   setupCombo('dest', $('dest'), $('destList'), $('segDest'));
 
-  document.querySelectorAll('.pilltab').forEach((b) => b.addEventListener('click', () => {
-    setMode(b.dataset.mode);
+  $('optNoFlight').addEventListener('change', (e) => {
+    setMode(e.target.checked ? 'stays' : 'flights');
     goHome();
-  }));
+  });
 
   $('tripType').addEventListener('change', () => {
     if (isOneWay()) state.end = null;

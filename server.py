@@ -835,6 +835,80 @@ def api_monuments(q):
     return 200, cached_map_data(f"m|{center[0]}|{center[1]}", lambda: build_monuments(*center))
 
 
+# Lo que OpenStreetMap no dice de cada sitio se deduce de su tipo, y la web avisa de que es orientativo.
+FREE_BY_KIND = {"naturaleza", "mirador", "arte", "playa", "mercado"}
+PAID_BY_KIND = {"bar", "discoteca", "restaurante", "cafeteria", "espectaculo", "ocio", "familiar"}
+BUDGET_BY_KIND = {
+    "bar": "bajo", "cafeteria": "bajo", "mercado": "bajo", "museo": "bajo", "monumento": "bajo", "sitio": "bajo", "cultura": "bajo",
+    "naturaleza": "bajo", "mirador": "bajo", "arte": "bajo", "playa": "bajo",
+    "restaurante": "medio", "discoteca": "medio", "espectaculo": "medio", "ocio": "medio", "familiar": "alto",
+}
+PLANS_BY_KIND = {
+    "bar": ["pareja", "amigos"], "discoteca": ["amigos"], "restaurante": ["pareja", "amigos", "familia"], "cafeteria": ["pareja", "amigos"],
+    "museo": ["pareja", "amigos", "familia"], "monumento": ["pareja", "amigos", "familia"], "sitio": ["pareja", "amigos", "familia"],
+    "cultura": ["pareja", "amigos"], "mirador": ["pareja", "amigos", "familia"], "arte": ["pareja", "amigos"],
+    "naturaleza": ["pareja", "amigos", "familia"], "playa": ["pareja", "amigos", "familia"], "espectaculo": ["pareja", "amigos", "familia"],
+    "ocio": ["amigos", "familia"], "familiar": ["familia"], "mercado": ["pareja", "amigos", "familia"],
+}
+GEM_KINDS = {"sitio", "mirador", "arte", "monumento", "naturaleza", "cultura", "museo", "mercado"}
+
+
+def describe_activity(item):
+    """Deja solo lo que necesita la web. Los datos de OpenStreetMap los escribe cualquiera: se comprueban."""
+    kind = item["kind"]
+    fee = str(item.get("fee", "")).casefold()
+    if fee == "no":
+        free = True
+    elif fee == "yes" or item.get("charge"):
+        free = False
+    else:
+        free = True if kind in FREE_BY_KIND else (False if kind in PAID_BY_KIND else None)
+    known = bool(item.get("wikipedia") or item.get("wikidata") or item.get("image"))
+    capacity = str(item.get("capacity", ""))
+    website = str(item.get("website", ""))
+    result = {
+        "name": item["name"], "kind": kind, "lat": item["lat"], "lon": item["lon"], "km": item.get("km"), "stop_m": item.get("stop_m"),
+        "free": free, "budget": "bajo" if free else BUDGET_BY_KIND.get(kind, "medio"), "plans": PLANS_BY_KIND.get(kind, []),
+        "known": known, "gem": kind in GEM_KINDS and not known, "capacity": int(capacity) if capacity.isdigit() else None,
+    }
+    if website.lower().startswith(("https://", "http://")):
+        result["website"] = website
+    for key in ("opening_hours", "cuisine", "image", "credit"):
+        if item.get(key):
+            result[key] = item[key]
+    if item.get("wheelchair") in ("yes", "limited", "no"):
+        result["wheelchair"] = item["wheelchair"]
+    return result
+
+
+def read_map(key):
+    try:
+        return json.loads(gzip.decompress(map_path(key).read_bytes()))
+    except (OSError, ValueError):
+        return None
+
+
+def api_activities(q):
+    """Planes guardados de una ciudad, con sus monumentos. No se pide nada a servicios externos."""
+    point = geocode_local(q.get("place", "")[:200])
+    plans = None
+    if point:
+        center = (round(point[0], 2), round(point[1], 2))
+        plans = read_map(f"a|{center[0]}|{center[1]}")
+    if not plans:
+        return 200, {"available": False, "activities": []}
+    items = plans["activities"]
+    by_name = {plain_name(item["name"]): item for item in items}
+    for monument in (read_map(f"m|{center[0]}|{center[1]}") or {}).get("monuments", []):
+        same = by_name.get(plain_name(monument["name"]))
+        if same:
+            same.update({"image": monument["image"], "credit": monument["credit"], "wikidata": same.get("wikidata") or "si"})
+        else:
+            km = round(distance_km(point[0], point[1], monument["lat"], monument["lon"]), 2)
+            items.append({**monument, "kind": "monumento", "km": km, "stop_m": None})
+    return 200, {"available": True, "activities": [describe_activity(item) for item in items]}
+
+
 TRANSIT_KINDS = {"subway": "metro", "light_rail": "metro", "monorail": "metro", "tram": "tram", "bus": "bus", "trolleybus": "bus"}
 
 
@@ -1092,7 +1166,7 @@ def api_explore(q):
     }
 
 
-ROUTES = {"/api/calendar": api_calendar, "/api/day": api_day, "/api/hotels": api_hotels, "/api/explore": api_explore, "/api/rates": api_rates, "/api/monuments": api_monuments, "/api/transit": api_transit}
+ROUTES = {"/api/calendar": api_calendar, "/api/day": api_day, "/api/hotels": api_hotels, "/api/explore": api_explore, "/api/rates": api_rates, "/api/monuments": api_monuments, "/api/transit": api_transit, "/api/activities": api_activities}
 
 
 def lowest_price(params):
@@ -1130,7 +1204,7 @@ PRIVATE_POST = {
 MAX_BODY = 16 * 1024
 
 # Peticiones por minuto y por visitante en lo que llama a servicios externos.
-RATE_LIMITS = {"/logos": 240, "/api/register": 10, "/api/login": 20, "/api/recover": 10, "/api/calendar": 120, "/api/day": 120, "/api/explore": 60, "/api/hotels": 20, "/api/rates": 90, "/api/monuments": 20, "/api/transit": 20}
+RATE_LIMITS = {"/logos": 240, "/api/register": 10, "/api/login": 20, "/api/recover": 10, "/api/calendar": 120, "/api/day": 120, "/api/explore": 60, "/api/hotels": 20, "/api/rates": 90, "/api/monuments": 20, "/api/transit": 20, "/api/activities": 30}
 _hits = {}
 _hits_lock = threading.Lock()
 

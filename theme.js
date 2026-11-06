@@ -1,7 +1,7 @@
 /* Modo claro u oscuro. Se carga antes que la página para que no parpadee al abrirla. */
 (() => {
   // Número de versión de la web: se cambia aquí y en CHANGELOG.md al publicar.
-  const VERSION = '1.2.0';
+  const VERSION = '1.3.0';
   const KEY = 'toptravel-tema';
   const root = document.documentElement;
   const read = () => {
