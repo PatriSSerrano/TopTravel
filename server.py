@@ -65,6 +65,8 @@ STATIC = {
     "/vendor/leaflet.css": ("vendor/leaflet.css", "text/css; charset=utf-8"),
     "/vendor/world.json": ("vendor/world.json", "application/json; charset=utf-8"),
     "/vendor/labels.json": ("vendor/labels.json", "application/json; charset=utf-8"),
+    "/vendor/globo.json": ("vendor/globo.json", "application/json; charset=utf-8"),
+    "/vendor/roma.json": ("vendor/roma.json", "application/json; charset=utf-8"),
 }
 
 IATA = re.compile(r"^[A-Z]{3}$")

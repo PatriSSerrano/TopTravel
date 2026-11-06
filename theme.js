@@ -18,7 +18,9 @@
     });
   };
 
-  root.dataset.theme = read() === 'dark' ? 'dark' : 'light';
+  // La portada se presenta en oscuro salvo que ya se haya elegido otra cosa.
+  const saved = read() || root.dataset.defaultTheme;
+  root.dataset.theme = saved === 'dark' ? 'dark' : 'light';
 
   document.addEventListener('DOMContentLoaded', () => {
     paintMeta();
