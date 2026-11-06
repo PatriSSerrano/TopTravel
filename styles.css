@@ -738,3 +738,4 @@ dialog .favs li:has(.history) { flex-wrap: wrap; }
 .pin-fav--stay { background: #3a2314; }
 .pin-fav--activity { background: #d35400; }
 .transit-favs { flex-basis: 100%; font-weight: 500; color: var(--muted); }
+.stay__name a, .map__title a { color: inherit; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }

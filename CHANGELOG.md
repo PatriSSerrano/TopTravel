@@ -6,6 +6,10 @@ Cada versión tiene tres números, por ejemplo 1.2.3:
 - **El segundo** cambia al añadir algo nuevo, como más ciudades o una función.
 - **El tercero** cambia al corregir un error o hacer un retoque.
 
+## 1.5.1 · 6 de noviembre de 2026
+
+- Al pulsar el nombre de un plan, se abre en Google. Se quitan los botones de reseñas.
+
 ## 1.5.0 · 6 de noviembre de 2026
 
 - Opción «Varios destinos»: hasta 5 destinos en un mismo viaje, cada uno con su vuelo, su alojamiento y sus planes.

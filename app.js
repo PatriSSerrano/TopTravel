@@ -1205,14 +1205,11 @@ function renderSaved() {
   const flights = account.saved.filter((x) => x.kind === 'flight');
   const stays = account.saved.filter((x) => x.kind === 'stay');
   const activities = account.saved.filter((x) => x.kind === 'activity');
-  const activityRows = activities.map((x) => {
-    const links = reviewLinks(x.data, x.data.city);
-    return `
+  const activityRows = activities.map((x) => `
     <li>
       <span>${esc(x.data.name)}<small>${esc(PLAN_KIND_ONE[x.data.type] || 'Actividad')} · ${esc(x.data.city)}</small></span>
-      <span class="saved__acts"><a class="btn btn--out" href="${esc(links.google)}" target="_blank" rel="noopener">Reseñas</a>${x.data.website ? `<a class="btn btn--out" href="${esc(x.data.website)}" target="_blank" rel="noopener nofollow">Web</a>` : ''}<button type="button" class="linkbtn" data-remove-saved="${x.id}">Quitar</button></span>
-    </li>`;
-  }).join('');
+      <span class="saved__acts"><a class="btn btn--out" href="${esc(googleLink(x.data, x.data.city))}" target="_blank" rel="noopener">Ver en Google</a>${x.data.website ? `<a class="btn btn--out" href="${esc(x.data.website)}" target="_blank" rel="noopener nofollow">Web</a>` : ''}<button type="button" class="linkbtn" data-remove-saved="${x.id}">Quitar</button></span>
+    </li>`).join('');
   const flightRows = (list) => list.map((x) => `
     <li>
       <span>${esc(x.data.origin.city)} → ${esc(x.data.dest.city)}<small>${esc(datesText(x.data.start, x.data.end))} · ${x.lastPrice === null ? 'sin precio aún' : `último precio ${esc(money(x.lastPrice))}`}</small></span>
@@ -2067,14 +2064,11 @@ const planColor = (kind) => (PLAN_GROUPS.find((g) => g.kinds.includes(kind)) || 
 const planMap = { map: null, plans: null, hotelsLayer: null, center: null, hotels: null, hotelsTrip: null, trip: null };
 
 function planPopup(a, city) {
-  const links = reviewLinks(a, city);
   const price = a.free === true ? 'Gratis' : (a.free === false ? 'De pago' : 'Precio sin confirmar');
   return `${a.image ? `<img class="map__photo" src="${esc(a.image)}" alt="" width="240" height="160" loading="lazy">` : ''}
-    <b class="map__title">${esc(a.name)}</b>
+    <b class="map__title"><a href="${esc(googleLink(a, city))}" target="_blank" rel="noopener">${esc(a.name)}<span class="sr"> (se abre en Google, en una pestaña nueva)</span></a></b>
     <span class="map__sub">${esc(PLAN_KIND_ONE[a.kind] || 'Plan')} · ${esc(price)}</span>
     ${kmHtml(a)}
-    <a class="btn btn--out" href="${esc(links.google)}" target="_blank" rel="noopener">Reseñas en Google</a>
-    <a class="btn btn--out" href="${esc(links.tripadvisor)}" target="_blank" rel="noopener">Reseñas en TripAdvisor</a>
     ${a.website ? `<a class="btn btn--out" href="${esc(a.website)}" target="_blank" rel="noopener nofollow">Web oficial</a>` : ''}
     <button type="button" class="btn" data-save-plan="${esc(a.name)}">${findActivity(a, city) ? 'Guardado ✓' : 'Guardar'}</button>`;
 }
@@ -2129,15 +2123,9 @@ function setupPlanMap(el, center) {
   paintPlanHotels();
 }
 
-function reviewLinks(a, city) {
-  const q = `${a.name}, ${city}`;
-  const google = `https://www.google.com/maps/search/?${new URLSearchParams({ api: 1, query: q })}`;
-  const tripadvisor = `https://www.tripadvisor.es/Search?${new URLSearchParams({ q })}`;
-  return { google, tripadvisor };
-}
+const googleLink = (a, city) => `https://www.google.com/maps/search/?${new URLSearchParams({ api: 1, query: `${a.name}, ${city}` })}`;
 
 function planHtml(a, city) {
-  const links = reviewLinks(a, city);
   const chips = [];
   if (a.free === true) chips.push('<span class="ok">Gratis</span>');
   else if (a.free === false) chips.push('<span>De pago</span>');
@@ -2153,14 +2141,12 @@ function planHtml(a, city) {
       ${a.image ? `<img class="plan__img" src="${esc(a.image)}" alt="" loading="lazy" width="160" height="120">` : ''}
       <div class="hotel__body">
         <span class="stay__type">${esc(PLAN_KIND_ONE[a.kind] || 'Plan')}${a.cuisine ? ` · ${esc(a.cuisine.replaceAll(';', ', ').replaceAll('_', ' '))}` : ''}</span>
-        <h3 class="stay__name">${esc(a.name)}</h3>
+        <h3 class="stay__name"><a href="${esc(googleLink(a, city))}" target="_blank" rel="noopener">${esc(a.name)}<span class="sr"> (se abre en Google, en una pestaña nueva)</span></a></h3>
         <div class="chips">${chips.join('')}</div>
         ${a.opening_hours ? `<span class="stay__loc"><span>Horario: ${esc(a.opening_hours)}</span></span>` : ''}
         ${a.credit ? `<a class="plan__credit" href="${esc(a.credit)}" target="_blank" rel="noopener">Foto y licencia: Wikimedia Commons</a>` : ''}
       </div>
       <div class="hotel__buy">
-        <a class="btn btn--out" href="${esc(links.google)}" target="_blank" rel="noopener">Reseñas en Google<span class="sr"> (se abre en una pestaña nueva)</span></a>
-        <a class="btn btn--out" href="${esc(links.tripadvisor)}" target="_blank" rel="noopener">Reseñas en TripAdvisor<span class="sr"> (se abre en una pestaña nueva)</span></a>
         ${a.website ? `<a class="linkbtn" href="${esc(a.website)}" target="_blank" rel="noopener nofollow">Web oficial<span class="sr"> (se abre en una pestaña nueva)</span></a>` : ''}
         <button type="button" class="linkbtn" data-save-plan="${esc(a.name)}">${findActivity(a, city) ? 'Guardado ✓' : 'Guardar'}</button>
       </div>
@@ -2201,7 +2187,7 @@ function renderPlans(el, items, city, center, s) {
         <div class="list" data-results></div>
         <button type="button" class="btn btn--out btn--block more">Ver más planes</button>
         <p class="count">El precio, el presupuesto y el tipo de plan son orientativos: si el sitio no lo indica, se deducen de su tipo. «Poco conocido» significa que no tiene ficha en Wikipedia ni en Wikidata. Conviene confirmar los horarios antes de ir.</p>
-        <p class="legal">Datos: © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">colaboradores de OpenStreetMap</a> y <a href="https://www.wikidata.org" target="_blank" rel="noopener">Wikidata</a>. Las reseñas son de Google y TripAdvisor y se leen en sus webs.</p>
+        <p class="legal">Datos: © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">colaboradores de OpenStreetMap</a> y <a href="https://www.wikidata.org" target="_blank" rel="noopener">Wikidata</a>. Al pulsar el nombre de un plan, se abre en Google.</p>
       </div>
     </div>`;
 
