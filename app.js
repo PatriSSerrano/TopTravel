@@ -1850,6 +1850,9 @@ async function loadHotels(s) {
       el.innerHTML = '<div class="empty"><b>No se han encontrado alojamientos en esa zona</b>La búsqueda funciona mejor con el nombre de la ciudad.</div>';
       return;
     }
+    planMap.hotels = body.hotels;
+    planMap.hotelsTrip = s;
+    paintPlanHotels();
     renderHotelResults(el, body.hotels, s, body.center);
   } catch {
     if (run === hotelsRun) el.innerHTML = '<div class="empty"><b>No se han podido cargar los alojamientos</b>Se puede volver a intentar en un momento.</div>';
@@ -1889,6 +1892,105 @@ const PLAN_KIND_ONE = {
 };
 const PLANS_STEP = 12;
 const STOP_NEAR_M = 500;
+// Grupos del mapa: cada uno enciende o apaga varios tipos de plan a la vez.
+const PLAN_GROUPS = [
+  { id: 'ver', label: 'Monumentos y museos', color: '#d35400', kinds: ['monumento', 'museo', 'sitio', 'cultura', 'arte', 'mirador'] },
+  { id: 'salir', label: 'Bares y discotecas', color: '#8e3b8a', kinds: ['bar', 'discoteca'] },
+  { id: 'comer', label: 'Restaurantes y cafeterías', color: '#b8860b', kinds: ['restaurante', 'cafeteria'] },
+  { id: 'aire', label: 'Parques y playas', color: '#2e9e4f', kinds: ['naturaleza', 'playa'] },
+  { id: 'ocio', label: 'Ocio y mercados', color: '#1f78b4', kinds: ['espectaculo', 'ocio', 'familiar', 'mercado'] },
+];
+const planColor = (kind) => (PLAN_GROUPS.find((g) => g.kinds.includes(kind)) || PLAN_GROUPS[0]).color;
+const planMap = { map: null, plans: null, hotelsLayer: null, rail: null, bus: null, center: null, hotels: null, hotelsTrip: null, railData: false, busData: false };
+
+function planPopup(a, city) {
+  const links = reviewLinks(a, city);
+  const price = a.free === true ? 'Gratis' : (a.free === false ? 'De pago' : 'Precio sin confirmar');
+  return `${a.image ? `<img class="map__photo" src="${esc(a.image)}" alt="" width="240" height="160" loading="lazy">` : ''}
+    <b class="map__title">${esc(a.name)}</b>
+    <span class="map__sub">${esc(PLAN_KIND_ONE[a.kind] || 'Plan')} · ${esc(price)}</span>
+    ${kmHtml(a)}
+    <a class="btn btn--out" href="${esc(links.google)}" target="_blank" rel="noopener">Reseñas en Google</a>
+    <a class="btn btn--out" href="${esc(links.tripadvisor)}" target="_blank" rel="noopener">Reseñas en TripAdvisor</a>
+    ${a.website ? `<a class="btn btn--out" href="${esc(a.website)}" target="_blank" rel="noopener nofollow">Web oficial</a>` : ''}`;
+}
+
+function paintPlanHotels() {
+  const { hotelsLayer, hotels, hotelsTrip } = planMap;
+  if (!hotelsLayer || !hotels) return;
+  hotelsLayer.clearLayers();
+  const from = planMap.center ? L.latLng(planMap.center.lat, planMap.center.lon) : null;
+  hotels.filter((h) => typeof h.lat === 'number' && typeof h.lon === 'number').forEach((h) => {
+    if (from) h.km = from.distanceTo([h.lat, h.lon]) / 1000;
+    const icon = L.divIcon({ className: 'pin-hotel', iconSize: [9, 9], iconAnchor: [4, 4] });
+    L.marker([h.lat, h.lon], { icon, title: h.name, alt: h.name })
+      .bindPopup(() => hotelPopup(h, hotelsTrip, rateCache.get(rateId(h.key, hotelsTrip))), { maxWidth: 270, minWidth: 230 })
+      .addTo(hotelsLayer);
+  });
+}
+
+async function togglePlanTransit(root, part, on) {
+  const layer = planMap[part];
+  if (!on) { planMap.map.removeLayer(layer); return; }
+  layer.addTo(planMap.map);
+  const flag = `${part}Data`;
+  if (planMap[flag]) return;
+  planMap[flag] = true;
+  const note = root.querySelector('[data-plan-note]');
+  note.textContent = 'Cargando el transporte…';
+  try {
+    const q = new URLSearchParams({ lat: planMap.center.lat, lon: planMap.center.lon });
+    const body = await fetchTransit(q, part);
+    planMap.renderer = planMap.renderer || L.canvas({ tolerance: 6 });
+    body.lines.forEach((line) => {
+      const look = TRANSIT_LOOK[line.kind] || TRANSIT_LOOK.bus;
+      L.polyline(line.paths, { renderer: planMap.renderer, color: line.color || look.fallback, weight: look.weight, opacity: look.opacity })
+        .bindPopup(`<b class="map__title">${esc(look.label)} ${esc(line.ref)}</b>${line.name ? `<span class="map__sub">${esc(line.name)}</span>` : ''}`)
+        .addTo(layer);
+    });
+    note.textContent = body.lines.length ? '' : 'No hay datos de estas líneas en esta ciudad.';
+  } catch {
+    planMap[flag] = false;
+    note.textContent = 'No se ha podido cargar el transporte. Se puede volver a intentar en un momento.';
+  }
+}
+
+function drawPlanMap(rows, city, frame) {
+  const { map, plans } = planMap;
+  if (!map) return;
+  plans.clearLayers();
+  planMap.dots = planMap.dots || L.canvas({ tolerance: 5 });
+  rows.forEach((a) => {
+    L.circleMarker([a.lat, a.lon], { renderer: planMap.dots, radius: 6, color: '#fff', weight: 1.5, fillColor: planColor(a.kind), fillOpacity: 0.95 })
+      .bindTooltip(a.name)
+      .bindPopup(() => planPopup(a, city), { maxWidth: 270, minWidth: 230 })
+      .addTo(plans);
+  });
+  if (frame && rows.length) map.fitBounds(L.latLngBounds(rows.map((a) => [a.lat, a.lon])), { padding: [24, 24], maxZoom: 15 });
+}
+
+function setupPlanMap(el, center) {
+  const box = el.querySelector('[data-plan-map]');
+  if (!center || !hasMaps()) {
+    el.querySelector('[data-plan-map-block]').hidden = true;
+    planMap.map = null;
+    return;
+  }
+  if (planMap.map) planMap.map.remove();
+  planMap.map = newMap(box);
+  planMap.center = center;
+  planMap.map.setView([center.lat, center.lon], 13);
+  planMap.plans = L.layerGroup().addTo(planMap.map);
+  planMap.hotelsLayer = L.layerGroup();
+  planMap.rail = L.layerGroup();
+  planMap.bus = L.layerGroup();
+  planMap.railData = false;
+  planMap.busData = false;
+  planMap.renderer = null;
+  planMap.dots = null;
+  L.circleMarker([center.lat, center.lon], { radius: 4, color: '#fff', weight: 2, fillColor: '#3a2314', fillOpacity: 1, interactive: false }).addTo(planMap.map);
+  paintPlanHotels();
+}
 
 function reviewLinks(a, city) {
   const q = `${a.name}, ${city}`;
@@ -1927,8 +2029,9 @@ function planHtml(a, city) {
     </article>`;
 }
 
-function renderPlans(el, items, city) {
+function renderPlans(el, items, city, center) {
   const count = (fn) => items.filter(fn).length;
+  const groups = PLAN_GROUPS.filter((g) => items.some((a) => g.kinds.includes(a.kind)));
   const kinds = Object.keys(PLAN_KINDS).filter((k) => items.some((a) => a.kind === k));
   const radios = (name, options) => options.map(([value, label, fn], i) => optHtml('radio', name, value, label, fn ? count(fn) : items.length, i === 0)).join('');
   el.innerHTML = `
@@ -1941,9 +2044,21 @@ function renderPlans(el, items, city) {
         + fieldsetHtml('Distancia al centro', radios('p_km', [['any', 'Cualquiera'], ['1', 'Hasta 1 km', (a) => a.km <= 1], ['3', 'Hasta 3 km', (a) => a.km <= 3], ['5', 'Hasta 5 km', (a) => a.km <= 5]]))
         + fieldsetHtml('Transporte público', optHtml('checkbox', 'p_stop', '1', `Parada a menos de ${STOP_NEAR_M} m`, count((a) => typeof a.stop_m === 'number' && a.stop_m <= STOP_NEAR_M)))
         + fieldsetHtml('Personas', '<label class="opt plan__people"><span>Máximo de personas</span><input type="number" name="p_people" min="1" max="500" inputmode="numeric"></label><p class="plan__hint">Se quitan los sitios cuyo aforo conocido es menor. Pocos sitios indican su aforo.</p>')
+        + fieldsetHtml('Accesibilidad', optHtml('checkbox', 'p_wheel', '1', 'Accesible en silla de ruedas', count((a) => a.wheelchair === 'yes')))
         + fieldsetHtml('Sitios poco conocidos', optHtml('checkbox', 'p_gem', '1', 'Solo poco conocidos', count((a) => a.gem))),
       )}
       <div class="layout__main">
+        <div data-plan-map-block>
+          <div class="plan-layers" role="group" aria-label="Qué ver en el mapa">
+            ${groups.map((g) => `<label class="plan-layer"><input type="checkbox" data-group="${g.id}" checked><i style="background:${g.color}"></i>${esc(g.label)}</label>`).join('')}
+            <label class="plan-layer"><input type="checkbox" data-overlay="hotels"><i class="plan-layer__hotel"></i>Alojamientos</label>
+            <label class="plan-layer"><input type="checkbox" data-overlay="rail"><i class="plan-layer__line"></i>Metro y tranvía</label>
+            <label class="plan-layer"><input type="checkbox" data-overlay="bus"><i class="plan-layer__line plan-layer__line--bus"></i>Autobús</label>
+          </div>
+          <div class="map map--city" data-plan-map role="region" aria-label="Mapa de planes"></div>
+          <p class="map__note" data-plan-note role="status"></p>
+          <p class="count">El mapa y la lista muestran lo mismo: los filtros cambian los dos.</p>
+        </div>
         ${sortbarHtml([{ id: 'near', label: 'Más cerca' }, { id: 'known', label: 'Más conocidos' }])}
         <p class="count" data-count></p>
         <div class="list" data-results></div>
@@ -1967,6 +2082,7 @@ function renderPlans(el, items, city) {
     const stop = form.elements.p_stop.checked;
     const people = Number(form.elements.p_people.value) || 0;
     const gem = form.elements.p_gem.checked;
+    const wheel = form.elements.p_wheel.checked;
     const rows = items.filter((a) => chosen.has(a.kind)
       && (free === 'any' || a.free === (free === 'yes'))
       && (plan === 'any' || a.plans.includes(plan))
@@ -1974,7 +2090,13 @@ function renderPlans(el, items, city) {
       && (km === 'any' || a.km <= Number(km))
       && (!stop || (typeof a.stop_m === 'number' && a.stop_m <= STOP_NEAR_M))
       && (!people || !a.capacity || a.capacity >= people)
+      && (!wheel || a.wheelchair === 'yes')
       && (!gem || a.gem)).sort(sorters[view.sort]);
+    el.querySelectorAll('[data-group]').forEach((box) => {
+      box.checked = PLAN_GROUPS.find((g) => g.id === box.dataset.group).kinds.every((k) => !kinds.includes(k) || chosen.has(k));
+    });
+    drawPlanMap(rows, city, !framed);
+    framed = true;
     el.querySelector('[data-count]').textContent = `${rows.length} de ${items.length} planes`;
     el.querySelector('[data-results]').innerHTML = rows.length
       ? rows.slice(0, view.limit).map((a) => planHtml(a, city)).join('')
@@ -1982,7 +2104,28 @@ function renderPlans(el, items, city) {
     el.querySelector('.more').hidden = rows.length <= view.limit;
   };
 
+  setupPlanMap(el, center);
+  let framed = false;
   wireControls(el, view, draw);
+  el.querySelector('.plan-layers')?.addEventListener('change', (e) => {
+    const group = e.target.dataset.group;
+    const overlay = e.target.dataset.overlay;
+    if (group) {
+      const { kinds: inGroup } = PLAN_GROUPS.find((g) => g.id === group);
+      el.querySelectorAll('[name=p_kind]').forEach((box) => { if (inGroup.includes(box.value)) box.checked = e.target.checked; });
+      view.limit = view.step;
+      draw();
+    } else if (overlay === 'hotels') {
+      if (e.target.checked) {
+        planMap.hotelsLayer.addTo(planMap.map);
+        el.querySelector('[data-plan-note]').textContent = planMap.hotels ? '' : 'Los alojamientos salen al buscar con fecha de vuelta.';
+      } else {
+        planMap.map.removeLayer(planMap.hotelsLayer);
+      }
+    } else if (overlay) {
+      togglePlanTransit(el, overlay, e.target.checked);
+    }
+  });
   draw();
 }
 
@@ -2002,7 +2145,7 @@ async function loadPlans(s) {
       el.innerHTML = '<div class="empty"><b>Todavía no hay planes de esta ciudad</b>Se van añadiendo más ciudades poco a poco.</div>';
       return;
     }
-    renderPlans(el, body.activities, s.dest.city);
+    renderPlans(el, body.activities, s.dest.city, body.center);
   } catch {
     if (run === plansRun) el.innerHTML = '<div class="empty"><b>No se han podido cargar los planes</b>Se puede volver a intentar en un momento.</div>';
   }
@@ -2053,6 +2196,8 @@ async function loadOffers(s) {
 }
 
 function renderResults(s) {
+  planMap.hotels = null;
+  planMap.hotelsTrip = null;
   const flights = s.mode === 'flights';
   const title = flights ? `${s.origin.city} → ${s.dest.city}` : `Alojamiento en ${s.dest.city}`;
   const dates = s.end ? `${showDate(s.start)} – ${showDate(s.end)}` : `${showDate(s.start)} · solo ida`;

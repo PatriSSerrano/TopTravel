@@ -126,7 +126,8 @@ def main():
     route_tags, way_routes, lodging_ways, activity_ways = {}, {}, {}, {}
 
     def note_activity(tags, kind, lat, lon):
-        item = {"name": tags["name"][:120], "kind": kind, "lat": round(lat, 5), "lon": round(lon, 5)}
+        # El nombre en español o inglés, si lo hay: en Bangkok o Tokio el local no se puede leer.
+        item = {"name": (tags.get("name:es") or tags.get("name:en") or tags["name"])[:120], "kind": kind, "lat": round(lat, 5), "lon": round(lon, 5)}
         for key in ACTIVITY_TAGS:
             if tags.get(key):
                 item[key.replace("contact:", "")] = tags[key][:200]

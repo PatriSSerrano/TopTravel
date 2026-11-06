@@ -6,6 +6,12 @@ Cada versión tiene tres números, por ejemplo 1.2.3:
 - **El segundo** cambia al añadir algo nuevo, como más ciudades o una función.
 - **El tercero** cambia al corregir un error o hacer un retoque.
 
+## 1.4.0 · 6 de noviembre de 2026
+
+- Mapa de planes en cada destino: los filtros cambian a la vez el mapa y la lista.
+- Se puede elegir qué ver en el mapa: monumentos y museos, bares y discotecas, restaurantes, parques y playas, ocio, alojamientos, metro y tranvía, y autobús.
+- Nuevo filtro de accesibilidad en silla de ruedas.
+
 ## 1.3.0 · 6 de noviembre de 2026
 
 - Una sola búsqueda para el vuelo y el alojamiento, con el precio orientativo del viaje completo. La opción «Sin vuelo» deja buscar solo el alojamiento.

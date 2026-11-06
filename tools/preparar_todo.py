@@ -12,9 +12,16 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "tools"))
 import ciudades  # noqa: E402
+import server  # noqa: E402
 
 DONE = ROOT / "data" / "ciudades-hechas.txt"
 AGENT = {"User-Agent": "TopTravel/1.0"}
+
+
+def has_plans(city):
+    """Los planes se guardan los últimos: si están, esa ciudad ya está completa."""
+    point = server.geocode_local(ciudades.place_of(city))
+    return bool(point) and server.map_path(f"a|{round(point[0], 2)}|{round(point[1], 2)}").exists()
 
 
 def url_of(source):
@@ -28,10 +35,9 @@ def main():
     sys.stdout.reconfigure(encoding="utf-8")
     folder = pathlib.Path(sys.argv[1])
     folder.mkdir(exist_ok=True)
-    done = set(DONE.read_text(encoding="utf-8").splitlines()) if DONE.exists() else set()
     sources = {}
     for city, (_, source) in ciudades.CITIES.items():
-        if city not in done:
+        if not has_plans(city):
             sources.setdefault(source, []).append(city)
     print(f"{len(sources)} extractos para {sum(map(len, sources.values()))} ciudades", flush=True)
     # Primero los pequeños: así la mayoría de ciudades queda lista antes.

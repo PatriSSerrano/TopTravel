@@ -906,7 +906,7 @@ def api_activities(q):
         else:
             km = round(distance_km(point[0], point[1], monument["lat"], monument["lon"]), 2)
             items.append({**monument, "kind": "monumento", "km": km, "stop_m": None})
-    return 200, {"available": True, "activities": [describe_activity(item) for item in items]}
+    return 200, {"available": True, "center": {"lat": point[0], "lon": point[1]}, "activities": [describe_activity(item) for item in items]}
 
 
 TRANSIT_KINDS = {"subway": "metro", "light_rail": "metro", "monorail": "metro", "tram": "tram", "bus": "bus", "trolleybus": "bus"}
