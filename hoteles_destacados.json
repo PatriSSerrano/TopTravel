@@ -365,8 +365,8 @@
    {
     "name": "The Bryant Park Hotel",
     "key": "g60763-d224214",
-    "lat": null,
-    "lon": null
+    "lat": 40.752895,
+    "lon": -73.983696
    },
    {
     "name": "LUMA Hotel Times Square",
@@ -389,8 +389,8 @@
    {
     "name": "The Langham New York Fifth Avenue",
     "key": "g60763-d1776857",
-    "lat": null,
-    "lon": null
+    "lat": 40.75007,
+    "lon": -73.983765
    },
    {
     "name": "The Bayard Hotel",
@@ -419,8 +419,8 @@
    {
     "name": "YOTEL New York Times Square",
     "key": "g60763-d2079052",
-    "lat": null,
-    "lon": null
+    "lat": 40.75916,
+    "lon": -73.99546
    },
    {
     "name": "Park Central Hotel New York",
@@ -437,8 +437,8 @@
    {
     "name": "Embassy Suites By Hilton New York Manhattan Times Square",
     "key": "g60763-d11998087",
-    "lat": null,
-    "lon": null
+    "lat": 40.75134,
+    "lon": -73.98582
    }
   ]
  },
@@ -1834,8 +1834,8 @@
    {
     "name": "Hotel Grande Bretagne, a Luxury Collection Hotel, Athens",
     "key": "g189400-d198715",
-    "lat": null,
-    "lon": null
+    "lat": 37.97636,
+    "lon": 23.73529
    },
    {
     "name": "Periscope Hotel",
@@ -1895,8 +1895,8 @@
    {
     "name": "Golden Horn Bosphorus Hotel",
     "key": "g293974-d4990603",
-    "lat": null,
-    "lon": null
+    "lat": 41.014698,
+    "lon": 28.978865
    },
    {
     "name": "Conrad Istanbul Bosphorus",
@@ -1925,8 +1925,8 @@
    {
     "name": "Ciragan Palace Kempinski Istanbul",
     "key": "g293974-d294616",
-    "lat": null,
-    "lon": null
+    "lat": 41.043983,
+    "lon": 29.016144
    },
    {
     "name": "Divan Istanbul",
@@ -1937,8 +1937,8 @@
    {
     "name": "Seven Hills Palace Hotel & Spa",
     "key": "g293974-d17323488",
-    "lat": null,
-    "lon": null
+    "lat": 41.002853,
+    "lon": 28.978506
    },
    {
     "name": "The And Hotel",
@@ -1949,8 +1949,8 @@
    {
     "name": "Union Hotel Port",
     "key": "g293974-d21364648",
-    "lat": null,
-    "lon": null
+    "lat": 41.032257,
+    "lon": 28.988804
    },
    {
     "name": "Romance Istanbul Hotel",
@@ -2830,8 +2830,8 @@
    {
     "name": "JW Marriott Bucharest Grand Hotel",
     "key": "g294458-d299811",
-    "lat": null,
-    "lon": null
+    "lat": 44.425407,
+    "lon": 26.077038
    },
    {
     "name": "Grand Hotel Bucharest",
@@ -2860,8 +2860,8 @@
    {
     "name": "Peakture Hotel",
     "key": "g294458-d586717",
-    "lat": null,
-    "lon": null
+    "lat": 44.435684,
+    "lon": 26.1048
    },
    {
     "name": "Capitol Hotel",
@@ -2890,8 +2890,8 @@
    {
     "name": "Mercure Bucharest City Center",
     "key": "g294458-d7156058",
-    "lat": null,
-    "lon": null
+    "lat": 44.44285,
+    "lon": 26.096146
    },
    {
     "name": "Park Inn by Radisson Bucharest Hotel & Residence",
@@ -4094,14 +4094,14 @@
    {
     "name": "Daios Luxury Living",
     "key": "g189473-d634323",
-    "lat": null,
-    "lon": null
+    "lat": 40.628853,
+    "lon": 22.945784
    },
    {
     "name": "ONOMA Hotel",
     "key": "g189473-d23121957",
-    "lat": null,
-    "lon": null
+    "lat": 40.642498,
+    "lon": 22.931751
    },
    {
     "name": "Electra Palace Thessaloniki",
@@ -4112,8 +4112,8 @@
    {
     "name": "Makedonia Palace",
     "key": "g189473-d253419",
-    "lat": null,
-    "lon": null
+    "lat": 40.618263,
+    "lon": 22.952707
    },
    {
     "name": "Mediterranean Palace Hotel",
@@ -4124,14 +4124,14 @@
    {
     "name": "Imperial Plus Urban Smart Hotel Thessaloniki",
     "key": "g189473-d19484799",
-    "lat": null,
-    "lon": null
+    "lat": 40.639446,
+    "lon": 22.937046
    },
    {
     "name": "City Hotel Thessaloniki",
     "key": "g189473-d228894",
-    "lat": null,
-    "lon": null
+    "lat": 40.63387,
+    "lon": 22.94009
    },
    {
     "name": "Noa Hotel",
@@ -4148,14 +4148,14 @@
    {
     "name": "Urban Donkey",
     "key": "g189473-d14465614",
-    "lat": null,
-    "lon": null
+    "lat": 40.644405,
+    "lon": 22.937347
    },
    {
     "name": "City Plaza",
     "key": "g189473-d17762265",
-    "lat": null,
-    "lon": null
+    "lat": 40.64247,
+    "lon": 22.940407
    },
    {
     "name": "Stay Hybrid Hostel",
@@ -4166,8 +4166,8 @@
    {
     "name": "Pillow Urban Stay",
     "key": "g189473-d20992734",
-    "lat": null,
-    "lon": null
+    "lat": 40.627773,
+    "lon": 22.949207
    }
   ]
  },
@@ -5576,38 +5576,38 @@
    {
     "name": "AX The Saint John",
     "key": "g190328-d12428155",
-    "lat": null,
-    "lon": null
+    "lat": 35.89872,
+    "lon": 14.515121
    },
    {
     "name": "The Cumberland By Neu Collective",
     "key": "g190328-d1628241",
-    "lat": null,
-    "lon": null
+    "lat": 35.896862,
+    "lon": 14.512763
    },
    {
     "name": "The Gomerino Hotel",
     "key": "g190328-d23481121",
-    "lat": null,
-    "lon": null
+    "lat": 35.897686,
+    "lon": 14.514841
    },
    {
     "name": "The Embassy Valletta Hotel",
     "key": "g190328-d20170571",
-    "lat": null,
-    "lon": null
+    "lat": 35.898758,
+    "lon": 14.512385
    },
    {
     "name": "Palazzo Rosaria Boutique Hotel",
     "key": "g190328-d18178530",
-    "lat": null,
-    "lon": null
+    "lat": 35.897045,
+    "lon": 14.511239
    },
    {
     "name": "The Capital Boutique Valletta",
     "key": "g190328-d26344833",
-    "lat": null,
-    "lon": null
+    "lat": 35.89967,
+    "lon": 14.513685
    },
    {
     "name": "Luciano Al Porto Boutique",
@@ -6251,8 +6251,8 @@
    {
     "name": "GREGORY Boutique Hotel",
     "key": "g294456-d23930386",
-    "lat": null,
-    "lon": null
+    "lat": 47.020737,
+    "lon": 28.825788
    },
    {
     "name": "Radisson Blu Leogrand Hotel, Chisinau",
@@ -6263,8 +6263,8 @@
    {
     "name": "Courtyard by Marriott Chisinau",
     "key": "g294456-d17810753",
-    "lat": null,
-    "lon": null
+    "lat": 47.005367,
+    "lon": 28.84078
    },
    {
     "name": "City Park Hotel",
@@ -6275,8 +6275,8 @@
    {
     "name": "Hotel Tulip Residence",
     "key": "g294456-d1431784",
-    "lat": null,
-    "lon": null
+    "lat": 46.9922,
+    "lon": 28.83694
    },
    {
     "name": "Amazing ionika hostel",
@@ -6317,8 +6317,8 @@
    {
     "name": "Mercure Chisinau Center Jazz Hotel",
     "key": "g294456-d1236591",
-    "lat": null,
-    "lon": null
+    "lat": 47.024685,
+    "lon": 28.838402
    },
    {
     "name": "Luna Hotel",
@@ -6354,8 +6354,8 @@
    {
     "name": "NH Andorra La Vella",
     "key": "g190392-d498831",
-    "lat": null,
-    "lon": null
+    "lat": 42.50903,
+    "lon": 1.529149
    },
    {
     "name": "Hotel Acta Arthotel",
@@ -6372,8 +6372,8 @@
    {
     "name": "Yomo Centric",
     "key": "g190392-d508010",
-    "lat": null,
-    "lon": null
+    "lat": 42.50827,
+    "lon": 1.53142
    },
    {
     "name": "Hotel Pyrenees",
@@ -6384,8 +6384,8 @@
    {
     "name": "Casa Serras Andorra",
     "key": "g190392-d33500831",
-    "lat": null,
-    "lon": null
+    "lat": 42.508015,
+    "lon": 1.524792
    },
    {
     "name": "Andorra Park Hotel",
@@ -6396,8 +6396,8 @@
    {
     "name": "Barri Antic Hostal & Pub",
     "key": "g190392-d5566652",
-    "lat": null,
-    "lon": null
+    "lat": 42.5069,
+    "lon": 1.521012
    },
    {
     "name": "Hotel Starc by Pierre & Vacances Premium",
@@ -6408,14 +6408,14 @@
    {
     "name": "Glaner Hotel Cafe",
     "key": "g190392-d19412962",
-    "lat": null,
-    "lon": null
+    "lat": 42.508465,
+    "lon": 1.532719
    },
    {
     "name": "Hotel Magic Andorra la Vella by Nexta",
     "key": "g190392-d282534",
-    "lat": null,
-    "lon": null
+    "lat": 42.50933,
+    "lon": 1.530239
    }
   ]
  },
@@ -6433,14 +6433,14 @@
    {
     "name": "Leonardo Boutique Hotel Larnaca",
     "key": "g190379-d21506063",
-    "lat": null,
-    "lon": null
+    "lat": 34.914352,
+    "lon": 33.633846
    },
    {
     "name": "La Veranda De Larnaca Hotel",
     "key": "g190379-d21491455",
-    "lat": null,
-    "lon": null
+    "lat": 34.89262,
+    "lon": 33.63527
    },
    {
     "name": "Sun Hall Hotel",
@@ -6457,8 +6457,8 @@
    {
     "name": "Mercure Larnaca Finikoudes Beach",
     "key": "g190379-d28028112",
-    "lat": null,
-    "lon": null
+    "lat": 34.915474,
+    "lon": 33.634712
    },
    {
     "name": "The Josephine Boutique Hotel",
@@ -6481,14 +6481,14 @@
    {
     "name": "St George Rent Rooms",
     "key": "g190379-d4155378",
-    "lat": null,
-    "lon": null
+    "lat": 34.910984,
+    "lon": 33.635845
    },
    {
     "name": "Les Palmiers Apartments",
     "key": "g190379-d6355851",
-    "lat": null,
-    "lon": null
+    "lat": 34.914005,
+    "lon": 33.63738
    },
    {
     "name": "Jimmy's Suites",
@@ -6597,8 +6597,8 @@
    {
     "name": "Concorde Tower Hotel & Casino",
     "key": "g190383-d23137585",
-    "lat": null,
-    "lon": null
+    "lat": 35.20842,
+    "lon": 33.322174
    },
    {
     "name": "Merit Lefkosa Hotel",
@@ -6621,8 +6621,8 @@
    {
     "name": "Alya Rooms",
     "key": "g190383-d23681246",
-    "lat": null,
-    "lon": null
+    "lat": 35.190342,
+    "lon": 33.349323
    },
    {
     "name": "The Landmark Nicosia, Autograph Collection",
@@ -6639,14 +6639,14 @@
    {
     "name": "Gul Hanim House Boutique Hotel",
     "key": "g190383-d10514824",
-    "lat": null,
-    "lon": null
+    "lat": 35.181072,
+    "lon": 33.363884
    },
    {
     "name": "Hypnos Boutique Hotel",
     "key": "g190383-d13944385",
-    "lat": null,
-    "lon": null
+    "lat": 35.169178,
+    "lon": 33.335438
    },
    {
     "name": "Amyth of Nicosia",
@@ -6657,8 +6657,8 @@
    {
     "name": "The Sendal Boutique Hotel",
     "key": "g190383-d26637037",
-    "lat": null,
-    "lon": null
+    "lat": 35.17,
+    "lon": 33.3629
    }
   ]
  },
@@ -6670,8 +6670,8 @@
    {
     "name": "Downtown LA Proper Hotel",
     "key": "g32655-d19900021",
-    "lat": null,
-    "lon": null
+    "lat": 34.039375,
+    "lon": -118.25898
    },
    {
     "name": "Inn at Playa del Rey",
@@ -6682,8 +6682,8 @@
    {
     "name": "Omni Los Angeles Hotel At California Plaza",
     "key": "g32655-d77804",
-    "lat": null,
-    "lon": null
+    "lat": 34.05252,
+    "lon": -118.25047
    },
    {
     "name": "Sheraton Grand Los Angeles",
@@ -6815,8 +6815,8 @@
    {
     "name": "InterContinental Mark Hopkins San Francisco by IHG",
     "key": "g60713-d115623",
-    "lat": null,
-    "lon": null
+    "lat": 37.791553,
+    "lon": -122.41039
    },
    {
     "name": "Argonaut Hotel",
@@ -6870,8 +6870,8 @@
    {
     "name": "Courtyard by Marriott Las Vegas Convention Center",
     "key": "g45963-d91783",
-    "lat": null,
-    "lon": null
+    "lat": 36.129875,
+    "lon": -115.15485
    },
    {
     "name": "Four Seasons Hotel Las Vegas",
@@ -6894,14 +6894,14 @@
    {
     "name": "Palms Casino Resort",
     "key": "g45963-d208820",
-    "lat": null,
-    "lon": null
+    "lat": 36.114334,
+    "lon": -115.19879
    },
    {
     "name": "Fontainebleau Las Vegas",
     "key": "g45963-d26850750",
-    "lat": null,
-    "lon": null
+    "lat": 36.137398,
+    "lon": -115.15944
    },
    {
     "name": "The Orleans Hotel & Casino",
@@ -6931,8 +6931,8 @@
    {
     "name": "Intercontinental Miami By IHG",
     "key": "g34438-d85029",
-    "lat": null,
-    "lon": null
+    "lat": 25.772188,
+    "lon": -80.185905
    },
    {
     "name": "Miami Marriott Biscayne Bay",
@@ -6955,8 +6955,8 @@
    {
     "name": "Hampton Inn By Hilton Coconut Grove Coral Gables Miami",
     "key": "g34438-d224246",
-    "lat": null,
-    "lon": null
+    "lat": 25.738605,
+    "lon": -80.23919
    },
    {
     "name": "Hampton Inn & Suites by Hilton Miami Airport South - Blue Lagoon",
@@ -6985,8 +6985,8 @@
    {
     "name": "Gale Miami Hotel & Residences",
     "key": "g34438-d27533830",
-    "lat": null,
-    "lon": null
+    "lat": 25.780243,
+    "lon": -80.19108
    },
    {
     "name": "citizenM Miami Worldcenter",
@@ -7046,20 +7046,20 @@
    {
     "name": "InterContinental Chicago Magnificent Mile by IHG",
     "key": "g35805-d87620",
-    "lat": null,
-    "lon": null
+    "lat": 41.89114,
+    "lon": -87.62387
    },
    {
     "name": "Hampton Inn Chicago Downtown/Magnificent Mile",
     "key": "g35805-d1052716",
-    "lat": null,
-    "lon": null
+    "lat": 41.8952,
+    "lon": -87.62305
    },
    {
     "name": "LondonHouse Chicago, Curio Collection by Hilton",
     "key": "g35805-d9145578",
-    "lat": null,
-    "lon": null
+    "lat": 41.887833,
+    "lon": -87.62543
    },
    {
     "name": "Silversmith Hotel Chicago Downtown",
@@ -7222,14 +7222,14 @@
    {
     "name": "The Revere Hotel Boston Common",
     "key": "g60745-d89600",
-    "lat": null,
-    "lon": null
+    "lat": 42.350388,
+    "lon": -71.06745
    },
    {
     "name": "Cambria Hotel Boston Downtown",
     "key": "g60745-d15618152",
-    "lat": null,
-    "lon": null
+    "lat": 42.343216,
+    "lon": -71.05699
    },
    {
     "name": "Hilton Boston Park Plaza",
@@ -7277,20 +7277,20 @@
    {
     "name": "The Ven at Embassy Row, Washington, D.C., a Tribute Portfolio Hotel",
     "key": "g28970-d84060",
-    "lat": null,
-    "lon": null
+    "lat": 38.91068,
+    "lon": -77.04555
    },
    {
     "name": "Hilton Club The District Washington D.C.",
     "key": "g28970-d10207731",
-    "lat": null,
-    "lon": null
+    "lat": 38.907482,
+    "lon": -77.049805
    },
    {
     "name": "The Dupont Circle",
     "key": "g28970-d84058",
-    "lat": null,
-    "lon": null
+    "lat": 38.910484,
+    "lon": -77.042854
    },
    {
     "name": "The Georgetown Inn",
@@ -7325,8 +7325,8 @@
    {
     "name": "Motto By Hilton Washington DC Downtown",
     "key": "g28970-d12100637",
-    "lat": null,
-    "lon": null
+    "lat": 38.899952,
+    "lon": -77.02118
    },
    {
     "name": "Embassy Suites by Hilton Washington DC Convention Center",
@@ -7374,14 +7374,14 @@
    {
     "name": "Staypineapple, University Inn, University District",
     "key": "g60878-d100581",
-    "lat": null,
-    "lon": null
+    "lat": 47.658165,
+    "lon": -122.317474
    },
    {
     "name": "Best Western Plus Pioneer Square Hotel Downtown",
     "key": "g60878-d72572",
-    "lat": null,
-    "lon": null
+    "lat": 47.601555,
+    "lon": -122.33527
    },
    {
     "name": "The Edgewater Hotel",
@@ -7434,8 +7434,8 @@
    {
     "name": "Crowne Plaza Seattle-downtown By IHG",
     "key": "g60878-d100527",
-    "lat": null,
-    "lon": null
+    "lat": 47.608208,
+    "lon": -122.332115
    }
   ]
  },
@@ -7447,8 +7447,8 @@
    {
     "name": "Ashton's Bed and Breakfast",
     "key": "g60864-d76973",
-    "lat": null,
-    "lon": null
+    "lat": 29.972263,
+    "lon": -90.07258
    }
   ]
  },
@@ -7508,8 +7508,8 @@
    {
     "name": "Sheraton Waikiki Beach Resort",
     "key": "g60982-d87108",
-    "lat": null,
-    "lon": null
+    "lat": 21.276909,
+    "lon": -157.82971
    },
    {
     "name": "Prince Waikiki",
@@ -7557,8 +7557,8 @@
    {
     "name": "Holiday Inn Express San Diego Airport-old Town By IHG",
     "key": "g60750-d79985",
-    "lat": null,
-    "lon": null
+    "lat": 32.745007,
+    "lon": -117.18669
    },
    {
     "name": "Best Western San Diego/Miramar Hotel",
@@ -7569,8 +7569,8 @@
    {
     "name": "Best Western Plus Island Palms Hotel & Marina",
     "key": "g60750-d79954",
-    "lat": null,
-    "lon": null
+    "lat": 32.713722,
+    "lon": -117.2271
    },
    {
     "name": "Best Western Plus Bayside Inn",
@@ -7581,8 +7581,8 @@
    {
     "name": "Best Western San Diego Zoo/SeaWorld Inn & Suites",
     "key": "g60750-d79981",
-    "lat": null,
-    "lon": null
+    "lat": 32.76056,
+    "lon": -117.1886
    },
    {
     "name": "Kings Inn San Diego",
@@ -7617,8 +7617,8 @@
    {
     "name": "The Lafayette Hotel And Club",
     "key": "g60750-d80618",
-    "lat": null,
-    "lon": null
+    "lat": 32.7547,
+    "lon": -117.14067
    }
   ]
  },
@@ -7636,8 +7636,8 @@
    {
     "name": "1 Hotel Toronto",
     "key": "g155019-d1456256",
-    "lat": null,
-    "lon": null
+    "lat": 43.64305,
+    "lon": -79.40163
    },
    {
     "name": "One King West Hotel & Residence",
@@ -7696,20 +7696,20 @@
    {
     "name": "Doubletree By Hilton Hotel Toronto Downtown",
     "key": "g155019-d186919",
-    "lat": null,
-    "lon": null
+    "lat": 43.654644,
+    "lon": -79.38604
    },
    {
     "name": "Intercontinental Toronto Centre By IHG",
     "key": "g155019-d181962",
-    "lat": null,
-    "lon": null
+    "lat": 43.64453,
+    "lon": -79.38558
    },
    {
     "name": "Hotel X Toronto, A Destination By Hyatt Hotel",
     "key": "g155019-d13234261",
-    "lat": null,
-    "lon": null
+    "lat": 43.632545,
+    "lon": -79.41164
    }
   ]
  },
@@ -7751,8 +7751,8 @@
    {
     "name": "The Westin Bayshore, Vancouver",
     "key": "g154943-d156094",
-    "lat": null,
-    "lon": null
+    "lat": 49.29299,
+    "lon": -123.12926
    },
    {
     "name": "The Sutton Place Hotel Vancouver",
@@ -7763,8 +7763,8 @@
    {
     "name": "The St. Regis Hotel",
     "key": "g154943-d156565",
-    "lat": null,
-    "lon": null
+    "lat": 49.282963,
+    "lon": -123.11572
    },
    {
     "name": "Hotel Willo",
@@ -7781,8 +7781,8 @@
    {
     "name": "The Pinnacle Hotel Harbourfront",
     "key": "g154943-d182542",
-    "lat": null,
-    "lon": null
+    "lat": 49.28835,
+    "lon": -123.12051
    },
    {
     "name": "L'Hermitage Hotel",

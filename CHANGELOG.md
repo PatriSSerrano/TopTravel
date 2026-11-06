@@ -6,6 +6,11 @@ Cada versión tiene tres números, por ejemplo 1.2.3:
 - **El segundo** cambia al añadir algo nuevo, como más ciudades o una función.
 - **El tercero** cambia al corregir un error o hacer un retoque.
 
+## 1.9.2 · 7 de noviembre de 2026
+
+- Fotos nuevas del Coliseo y de la basílica de San Pedro en la portada.
+- Las fotos de la portada ya no se cortan en pantallas medianas.
+
 ## 1.9.1 · 7 de noviembre de 2026
 
 - La web aguanta mejor muchas visitas a la vez y gasta menos datos: los mapas y la mayoría de precios se cargan al llegar a ellos.

@@ -91,7 +91,7 @@ def build_city():
     streets = [p for paths in background[:MAX_BACKGROUND_LINES] for p in paths]
     streets = [simplify(p, 0.03) for p in streets]
 
-    wanted = {"Coliseo": "roma", "Fontana di Trevi": "roma2", "basílica de San Pedro": "roma3"}
+    wanted = {"Coliseo": "portadacoliseo", "Fontana di Trevi": "roma2", "basílica de San Pedro": "portadasanpedro"}
     monuments = []
     for item in read_map("m|41.89|12.48")["monuments"]:
         entry = {"km": to_km(item["lat"], item["lon"]), "name": item["name"][0].upper() + item["name"][1:]}

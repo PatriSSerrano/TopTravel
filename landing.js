@@ -476,7 +476,8 @@
       const img = photos[item.photo];
       if (open <= 0 || !img || !img.complete || !img.naturalWidth) return;
       const from = toScreen(cam, item.km);
-      const x = lerp(from.x, places[i][0], open);
+      // Que ninguna tarjeta se salga de la pantalla, sea cual sea su tamaño.
+      const x = lerp(from.x, clamp(places[i][0], 12, w - size - 12), open);
       const y = lerp(from.y, places[i][1], open);
       const edge = size * open;
       ctx.globalAlpha = open;
@@ -588,7 +589,7 @@
   addEventListener('resize', () => { resize(); readScroll(); });
   addEventListener('scroll', readScroll, { passive: true });
   document.addEventListener('toptravel:tema', readLook);
-  ['roma', 'roma2', 'roma3'].forEach((name) => {
+  ['portadacoliseo', 'roma2', 'portadasanpedro'].forEach((name) => {
     photos[name] = new Image();
     photos[name].src = `assets/${name}${innerWidth < 900 ? '-m' : ''}.jpg`;
   });
