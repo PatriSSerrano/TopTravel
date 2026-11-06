@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TopTravel · Todo el viaje, en un solo sitio</title>
+  <meta name="description" content="Vuelos, hoteles, monumentos y transporte público en una misma web. Gratis, sin anuncios y sin comisiones.">
+  <meta name="theme-color" content="#f0b000">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%23f0b000'/%3E%3Cpath transform='translate(4 4) rotate(45 12 12)' fill='%233a2314' d='M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z'/%3E%3C/svg%3E">
+  <script src="theme.js"></script>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="landing.css">
+  <script src="landing.js" defer></script>
+</head>
+<body class="lp">
+<header class="lp-nav">
+  <a class="lp-brand" href="/" aria-label="TopTravel, inicio">
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg>
+    TopTravel
+  </a>
+  <nav class="lp-links" aria-label="Secciones">
+    <a href="#vuelos">Vuelos</a>
+    <a href="#alojamientos">Alojamientos</a>
+    <a href="#monumentos">Monumentos</a>
+    <a href="#transporte">Transporte</a>
+  </nav>
+  <button class="themebtn" type="button" data-theme-toggle aria-label="Cambiar a modo oscuro" title="Modo oscuro">
+    <svg class="themebtn__moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    <svg class="themebtn__sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+  </button>
+  <a class="lp-cta lp-cta--small" href="/buscar">Entrar</a>
+</header>
+
+<main>
+  <section class="lp-hero">
+    <img class="lp-hero__img" src="assets/lhero.jpg" alt="Vista de Lisboa al atardecer, con sus tejados y el río" data-parallax>
+    <div class="lp-hero__veil"></div>
+    <div class="lp-hero__text">
+      <p class="lp-eyebrow">TopTravel</p>
+      <h1>Todo el viaje,<br>en un solo sitio.</h1>
+      <p class="lp-hero__sub">Vuelos, hoteles, monumentos y transporte público en una misma web. Gratis, sin anuncios y sin comisiones.</p>
+      <div class="lp-actions">
+        <a class="lp-cta" href="/buscar">Entrar en la web</a>
+        <a class="lp-link" href="#esencial">Ver qué incluye ↓</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="lp-section" id="esencial">
+    <h2 class="lp-title lp-reveal">Lo esencial.</h2>
+    <div class="lp-cards" tabindex="0" aria-label="Lo que incluye TopTravel">
+      <article class="lp-card lp-card--mustard lp-reveal">
+        <p class="lp-card__kicker">Vuelos</p>
+        <h3>El precio de cada día del mes.</h3>
+        <p>Con el día más barato a la vista.</p>
+      </article>
+      <article class="lp-card lp-card--orange lp-reveal">
+        <p class="lp-card__kicker">Mapa del mundo</p>
+        <h3>Adónde volar y por cuánto.</h3>
+        <p>Cientos de destinos con su precio.</p>
+      </article>
+      <article class="lp-card lp-card--brown lp-reveal">
+        <p class="lp-card__kicker">Alojamientos</p>
+        <h3>Hoteles con su precio, en el mapa.</h3>
+        <p>Por noche y por persona.</p>
+      </article>
+      <article class="lp-card lp-card--peach lp-reveal">
+        <p class="lp-card__kicker">Distancias</p>
+        <h3>Lo cerca que queda todo.</h3>
+        <p>A 1 km, a 3 km o más lejos del centro.</p>
+      </article>
+      <article class="lp-card lp-card--mustard lp-reveal">
+        <p class="lp-card__kicker">Monumentos</p>
+        <h3>Los lugares más conocidos.</h3>
+        <p>Con su nombre y su foto.</p>
+      </article>
+      <article class="lp-card lp-card--orange lp-reveal">
+        <p class="lp-card__kicker">Transporte</p>
+        <h3>Metro, tranvía y autobús.</h3>
+        <p>Todas las líneas sobre el mapa.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="lp-story" id="vuelos">
+    <div class="lp-story__text lp-reveal">
+      <p class="lp-eyebrow">Vuelos</p>
+      <h2>Mejor volar el día más barato.</h2>
+      <p>El calendario muestra el precio de cada día del mes. Basta con mirar y elegir la fecha que mejor encaja. Después aparecen los vuelos con su aerolínea, sus escalas y su duración, y un enlace a la web donde se compran.</p>
+    </div>
+    <figure class="lp-shot lp-shot--narrow lp-reveal" data-shot="lcal" data-alt="Calendario de TopTravel con el precio de cada día"></figure>
+  </section>
+
+  <section class="lp-story lp-story--alt">
+    <div class="lp-story__text lp-reveal">
+      <p class="lp-eyebrow">Mapa de precios</p>
+      <h2>El mundo entero, con precio.</h2>
+      <p>Sin destino decidido, el mapa muestra adónde se puede volar y desde cuánto. Al pulsar un precio, empieza la búsqueda.</p>
+    </div>
+    <figure class="lp-shot lp-reveal" data-shot="lworld" data-alt="Mapa del mundo con el precio de volar a cada destino"></figure>
+  </section>
+
+  <section class="lp-story" id="alojamientos">
+    <div class="lp-story__text lp-reveal">
+      <p class="lp-eyebrow">Alojamientos</p>
+      <h2>Los precios, directamente en el mapa.</h2>
+      <p>Cada hotel aparece donde está, con su precio por noche y por persona. Tres anillos indican la distancia al centro, así se ve de un vistazo qué compensa.</p>
+      <ul class="lp-rings">
+        <li><i class="lp-ring lp-ring--near"></i>Cerca: hasta 1 km</li>
+        <li><i class="lp-ring lp-ring--mid"></i>Media: hasta 3 km</li>
+        <li><i class="lp-ring lp-ring--far"></i>Lejos: más de 3 km</li>
+      </ul>
+    </div>
+    <figure class="lp-shot lp-reveal" data-shot="lprices" data-alt="Mapa de Roma con hoteles, precios y anillos de distancia"></figure>
+  </section>
+
+  <section class="lp-story lp-story--alt" id="monumentos">
+    <div class="lp-story__text lp-reveal">
+      <p class="lp-eyebrow">Monumentos</p>
+      <h2>Lo que hay que ver, y a cuánto queda.</h2>
+      <p>Un segundo mapa marca los sitios más conocidos de cada ciudad. Al pulsar un punto aparecen su nombre, su foto y su distancia al centro.</p>
+    </div>
+    <figure class="lp-shot lp-reveal" data-shot="lmonuments" data-alt="Mapa de Roma con monumentos y la foto de uno de ellos"></figure>
+  </section>
+
+  <section class="lp-story" id="transporte">
+    <div class="lp-story__text lp-reveal">
+      <p class="lp-eyebrow">Transporte público</p>
+      <h2>Todas las líneas, sin salir del mapa.</h2>
+      <p>Metro, tranvía y autobús con sus colores reales, junto a los monumentos y los anillos de distancia. Cada tipo se puede mostrar u ocultar.</p>
+    </div>
+    <figure class="lp-shot lp-reveal" data-shot="ltransit" data-alt="Mapa de Roma con las líneas de metro, tranvía y autobús"></figure>
+  </section>
+
+  <section class="lp-section lp-section--grid">
+    <h2 class="lp-title lp-reveal">Y además.</h2>
+    <div class="lp-grid">
+      <article class="lp-tile lp-reveal">
+        <h3>Avisos de precio</h3>
+        <p>Con una cuenta, los vuelos se pueden guardar. Si el precio cambia, llega un aviso.</p>
+      </article>
+      <article class="lp-tile lp-reveal">
+        <h3>La compra, donde conviene</h3>
+        <p>TopTravel no vende nada. Cada enlace lleva a la aerolínea, al hotel o al vendedor.</p>
+      </article>
+      <article class="lp-tile lp-reveal">
+        <h3>Datos cifrados</h3>
+        <p>La conexión va cifrada, igual que los correos y los viajes guardados. La cuenta se puede borrar en cualquier momento.</p>
+      </article>
+      <article class="lp-tile lp-reveal">
+        <h3>Sin ganar dinero</h3>
+        <p>Sin publicidad, sin comisiones y sin enlaces de afiliado. Gratis para quien la usa.</p>
+      </article>
+      <article class="lp-tile lp-reveal">
+        <h3>Hasta 8 meses vista</h3>
+        <p>Vuelos y alojamientos se pueden buscar con unos 8 meses de antelación.</p>
+      </article>
+      <article class="lp-tile lp-reveal">
+        <h3>Toda Europa</h3>
+        <p>Hoteles con precio en más de 70 ciudades, y se siguen añadiendo más.</p>
+      </article>
+      <article class="lp-tile lp-reveal">
+        <h3>Claro u oscuro</h3>
+        <p>La web se ve en mostaza o en marrón, según se prefiera. Un botón arriba lo cambia.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="lp-final">
+    <h2 class="lp-reveal">Empieza por el destino.</h2>
+    <a class="lp-cta lp-reveal" href="/buscar">Entrar en la web</a>
+    <p class="lp-note lp-reveal">Los precios son orientativos. El precio final se confirma en la web de venta.</p>
+  </section>
+</main>
+
+<footer class="lp-foot">
+  <p><a href="/privacidad">Privacidad</a> · <a href="/aviso-legal">Aviso legal</a> · Versión beta</p>
+  <p>Foto de portada: <a href="https://www.pexels.com" rel="noopener">Pexels</a>. Mapas y transporte: © colaboradores de <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap</a>.</p>
+  <p><a href="https://www.linkedin.com/in/patrischz/" rel="noopener">LinkedIn de la desarrolladora: Patricia Sanchez Serrano</a></p>
+</footer>
+</body>
+</html>

@@ -99,7 +99,9 @@ const pad = (n) => String(n).padStart(2, '0');
 const toIso = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 const fromIso = (s) => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
 const todayIso = () => toIso(new Date());
-const maxIso = () => { const d = new Date(); d.setFullYear(d.getFullYear() + 1); return toIso(d); };
+// Se busca hasta unos 8 meses vista: hasta el final del octavo mes a partir del actual.
+const MONTHS_AHEAD = 8;
+const maxIso = () => { const d = new Date(); return toIso(new Date(d.getFullYear(), d.getMonth() + MONTHS_AHEAD + 1, 0)); };
 const fmtDay = new Intl.DateTimeFormat('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
 const fmtMonth = new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric' });
 const showDate = (s) => fmtDay.format(fromIso(s));
@@ -361,7 +363,7 @@ function renderCal() {
   const next = new Date(m.getFullYear(), m.getMonth() + 1, 1);
   const now = new Date();
   const atStart = m.getFullYear() === now.getFullYear() && m.getMonth() === now.getMonth();
-  const atEnd = toIso(next) > maxIso();
+  const atEnd = toIso(new Date(m.getFullYear(), m.getMonth() + 2, 1)) > maxIso();
   const route = calRoute();
   const months = [toIso(m).slice(0, 7), toIso(next).slice(0, 7)];
   if (route) months.forEach((month) => loadMonth(route, month));
@@ -373,6 +375,7 @@ function renderCal() {
     </div>
     <div class="cal__months">${monthHtml(m, route)}${monthHtml(next, route)}</div>
     ${note ? `<p class="cal__note">${esc(note)}</p>` : ''}
+    <p class="cal__note">Se puede buscar hasta ${esc(fmtMonth.format(fromIso(maxIso())))}, unos 8 meses vista.</p>
     <div class="cal__foot">
       <span class="cal__hint">${esc(calHint())}</span>
       <span>
@@ -1224,6 +1227,10 @@ function initAccount() {
 }
 
 /* ---------- Mapas ---------- */
+const cssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const landStyle = () => ({ color: cssVar('--map-border'), weight: 0.6, fillColor: cssVar('--map-land'), fillOpacity: 1 });
+let exploreLand = null;
+document.addEventListener('toptravel:tema', () => { if (exploreLand) exploreLand.setStyle(landStyle()); });
 const hasMaps = () => typeof L !== 'undefined';
 
 function newMap(el, options = {}, tiles = true) {
@@ -1570,7 +1577,7 @@ function declutterPrices() {
 
 function addMapLabels(labels) {
   L.layerGroup(labels.capitals.map((c) => L.circleMarker([c.lat, c.lon], {
-    radius: 2, stroke: false, fillColor: '#5c3a1e', fillOpacity: 1, interactive: false,
+    radius: 2, stroke: false, fillColor: cssVar('--map-dot'), fillOpacity: 1, interactive: false,
   }))).addTo(exploreMap);
   mapLabelLayer = L.layerGroup().addTo(exploreMap);
   const label = (cls, text, lat, lon, w, anchorX) => L.marker([lat, lon], {
@@ -1616,7 +1623,7 @@ async function loadExplore() {
     exploreMap.setView([30, 8], 3);
     exploreMap.attributionControl.addAttribution('Leaflet · Natural Earth');
     fetch('vendor/world.json').then((r) => r.json()).then((world) => {
-      L.geoJSON(world, { interactive: false, style: { color: '#fffaf2', weight: 0.6, fillColor: '#ecdfc6', fillOpacity: 1 } }).addTo(exploreMap);
+      exploreLand = L.geoJSON(world, { interactive: false, style: landStyle }).addTo(exploreMap);
     }).catch(() => {});
     exploreLayer = L.layerGroup().addTo(exploreMap);
     fetch('vendor/labels.json').then((r) => r.json()).then(addMapLabels).catch(() => {});
@@ -1670,7 +1677,7 @@ function initExplore() {
   const select = $('exploreMonth');
   if (!select) return;
   const now = new Date();
-  const months = Array.from({ length: 6 }, (_, i) => new Date(now.getFullYear(), now.getMonth() + i, 1));
+  const months = Array.from({ length: MONTHS_AHEAD + 1 }, (_, i) => new Date(now.getFullYear(), now.getMonth() + i, 1));
   select.innerHTML = '<option value="">Cualquier fecha · ida y vuelta</option>'
     + months.map((m) => `<option value="${toIso(m).slice(0, 7)}">${esc(fmtMonth.format(m))} · solo ida</option>`).join('');
   select.addEventListener('change', loadExplore);

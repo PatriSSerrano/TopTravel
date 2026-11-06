@@ -1,0 +1,35 @@
+/* Modo claro u oscuro. Se carga antes que la página para que no parpadee al abrirla. */
+(() => {
+  const KEY = 'toptravel-tema';
+  const root = document.documentElement;
+  const read = () => {
+    try { return localStorage.getItem(KEY); } catch { return null; }
+  };
+  const paintMeta = () => {
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.content = root.dataset.theme === 'dark' ? '#1c120a' : '#f0b000';
+  };
+  const paintButtons = () => {
+    const dark = root.dataset.theme === 'dark';
+    document.querySelectorAll('[data-theme-toggle]').forEach((button) => {
+      button.setAttribute('aria-pressed', String(dark));
+      button.setAttribute('aria-label', dark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
+      button.title = dark ? 'Modo claro' : 'Modo oscuro';
+    });
+  };
+
+  root.dataset.theme = read() === 'dark' ? 'dark' : 'light';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    paintMeta();
+    paintButtons();
+    document.addEventListener('click', (event) => {
+      if (!event.target.closest('[data-theme-toggle]')) return;
+      root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      try { localStorage.setItem(KEY, root.dataset.theme); } catch { /* sin almacenamiento: dura hasta cerrar */ }
+      paintMeta();
+      paintButtons();
+      document.dispatchEvent(new CustomEvent('toptravel:tema'));
+    });
+  });
+})();

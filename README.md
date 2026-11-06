@@ -41,6 +41,7 @@ Funciona en ordenador, tableta y móvil.
 
 ## Qué conviene saber
 
+- **Las búsquedas alcanzan hasta unos 8 meses vista**, tanto en vuelos como en alojamientos.
 - **Los precios son orientativos.** El precio final se confirma siempre antes de comprar o reservar.
 - **No todos los alojamientos tienen precio.** De momento lo tienen 342 hoteles de 26 ciudades.
 - **Las ciudades más buscadas salen al momento.** En las demás, la primera búsqueda puede tardar algo más, con una cuenta atrás en pantalla, y las siguientes ya son inmediatas.

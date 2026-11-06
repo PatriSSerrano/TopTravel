@@ -20,7 +20,7 @@ import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import date
+from datetime import date, timedelta
 from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -40,6 +40,7 @@ GZIP_MIN_BYTES = 1024
 OVERPASS_MAX_BYTES = int(os.environ.get("OVERPASS_MAX_MB", "80")) * 1024 * 1024
 OVERPASS_SLOTS = int(os.environ.get("OVERPASS_SLOTS", "2"))
 MAP_CACHE_SECONDS = 30 * 86400
+MONTHS_AHEAD = 8
 MAP_RADIUS_KM = 7
 XOTELO_BASE = "https://data.xotelo.com/api"
 XOTELO_LIST_BASE = os.environ.get("XOTELO_LIST_BASE", XOTELO_BASE)
@@ -52,8 +53,12 @@ XOTELO_KEY = re.compile(r"\bg\d+-d\d+\b")
 
 # Solo se sirven estos archivos: .env y server.py nunca salen del ordenador.
 STATIC = {
-    "/": ("index.html", "text/html; charset=utf-8"),
+    "/": ("landing.html", "text/html; charset=utf-8"),
+    "/buscar": ("index.html", "text/html; charset=utf-8"),
     "/index.html": ("index.html", "text/html; charset=utf-8"),
+    "/landing.css": ("landing.css", "text/css; charset=utf-8"),
+    "/landing.js": ("landing.js", "text/javascript; charset=utf-8"),
+    "/theme.js": ("theme.js", "text/javascript; charset=utf-8"),
     "/styles.css": ("styles.css", "text/css; charset=utf-8"),
     "/app.js": ("app.js", "text/javascript; charset=utf-8"),
     "/vendor/leaflet.js": ("vendor/leaflet.js", "text/javascript; charset=utf-8"),
@@ -269,19 +274,25 @@ def offer(row):
     }
 
 
+def search_limit():
+    """Último día que se puede buscar: el final del octavo mes a partir del actual."""
+    today = date.today()
+    months = today.month - 1 + MONTHS_AHEAD + 1
+    return date(today.year + months // 12, months % 12 + 1, 1) - timedelta(days=1)
+
+
 def valid_date(text):
     if not DATE.match(text):
         return False
     try:
-        date.fromisoformat(text)
+        return date.fromisoformat(text) <= search_limit()
     except ValueError:
         return False
-    return True
 
 
 def api_calendar(q):
     origin, dest, month = q.get("origin", ""), q.get("dest", ""), q.get("month", "")
-    if not (IATA.match(origin) and IATA.match(dest) and MONTH.match(month)):
+    if not (IATA.match(origin) and IATA.match(dest) and MONTH.match(month)) or month > search_limit().isoformat()[:7]:
         return 400, {"error": "bad_request"}
     rows = prices_for_dates({
         "origin": origin,
