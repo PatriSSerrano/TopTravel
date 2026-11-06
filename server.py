@@ -14,6 +14,7 @@ import math
 import os
 import re
 import socket
+import sqlite3
 import threading
 import time
 import unicodedata
@@ -101,6 +102,8 @@ OVERPASS_URLS = (
 OVERPASS_MAIN_TIMEOUT = 110
 OVERPASS_BACKUP_TIMEOUT = 45  # si el principal falla, los de reserva no deben alargar la espera
 LEGAL_PAGES = {"/privacidad": "privacidad.html", "/aviso-legal": "aviso-legal.html"}
+PHOTO = re.compile(r"^/fotos/[0-9a-f]{16}\.jpg$")
+PHOTO_DIR = ROOT / "data" / "fotos"
 LOGO = re.compile(r"^/logos/([A-Z0-9]{2})\.png$")
 LOGO_DIR = ROOT / "data" / "logos"
 LOGO_SOURCE = "https://pics.avs.io/120/120/{}.png"
@@ -346,7 +349,7 @@ def history_destinations(origin):
 
 
 def history_month_prices(origin, destination, month):
-    status, body = api_calendar({"origin": origin, "dest": destination, "month": month})
+    status, body = api_calendar({"origin": origin, "dest": destination, "month": month, "historial": True})
     if status != 200:
         raise ValueError("sin datos")
     return body["days"]
@@ -393,6 +396,8 @@ def api_calendar(q):
         price = row.get("price")
         if date.startswith(month) and isinstance(price, (int, float)):
             days[date] = min(days.get(date, price), price)
+    if q.get("direct") != "1" and q.get("historial") is not True:
+        price_collector.note_flights(origin, dest, days)
     return 200, {"days": days}
 
 
@@ -425,8 +430,48 @@ def api_day(q):
     return 200, {"offers": offers}
 
 
+CITIES_DB = ROOT / "data" / "ciudades.db"
+COUNTRY_ALIASES = {"estados unidos": "US", "eeuu": "US", "usa": "US", "holanda": "NL", "inglaterra": "GB", "escocia": "GB", "chequia": "CZ", "emiratos": "AE"}
+
+
+def plain_name(text):
+    return " ".join(unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode().casefold().split())
+
+
+def geocode_local(place):
+    """Busca «Ciudad, País» en la base propia. Entre ciudades con igual nombre, gana la mayor."""
+    if not CITIES_DB.exists():
+        return None
+    city, _, country = place.partition(",")
+    wanted = plain_name(country)
+    codes = [code for code, name in places_or_empty().items() if plain_name(name) == wanted]
+    if wanted in COUNTRY_ALIASES:
+        codes.append(COUNTRY_ALIASES[wanted])
+    query = "SELECT c.lat, c.lon FROM names n JOIN cities c ON c.id = n.city WHERE n.name = ?"
+    params = [plain_name(city)]
+    if codes:
+        query += f" AND c.country IN ({','.join('?' * len(codes))})"
+        params += codes
+    db = sqlite3.connect(f"file:{CITIES_DB}?mode=ro", uri=True)
+    try:
+        row = db.execute(query + " ORDER BY c.population DESC LIMIT 1", params).fetchone()
+    finally:
+        db.close()
+    return (row[0], row[1]) if row else None
+
+
+def places_or_empty():
+    try:
+        return places()["countries"]
+    except Unavailable:
+        return {}
+
+
 def geocode(place):
     global _last_geocode
+    local = geocode_local(place)
+    if local:
+        return local
     if settings()["NOMINATIM"] == "off":
         raise Unavailable("upstream")
     # Nominatim pide un máximo de una petición por segundo.
@@ -835,6 +880,10 @@ def build_transit(lat, lon, part=None):
             elements = elements + routes("bus|trolleybus")
     except Unavailable:
         partial = True  # sin autobuses de momento: el metro y el tranvía sí se muestran
+    return transit_from_elements(elements, partial)
+
+
+def transit_from_elements(elements, partial=False):
     best = {}
     for element in elements:
         tags = element.get("tags", {})
@@ -911,11 +960,44 @@ def api_rates(q):
         key=lambda r: r["rate"],
     )
     data = {"rates": rates}
+    if rates and rooms == 1:
+        price_collector.note_hotel(key, start, rates[0]["rate"])
     with _lock:
         if len(_cache) >= CACHE_MAX:
             _cache.clear()
         _cache[cache_key] = (now + XOTELO_RATES_SECONDS, data)
     return 200, data
+
+
+def lodging_from_elements(elements, point):
+    seen = set()
+    hotels = []
+    for element in elements:
+        hotel = hotel_from(element)
+        if hotel["name"] and hotel["name"].casefold() not in seen:
+            seen.add(hotel["name"].casefold())
+            hotels.append(hotel)
+    hotels.sort(key=lambda h: (-h["stars"], not h["website"], h["name"].casefold()))
+    return {"hotels": hotels[:150], "center": {"lat": point[0], "lon": point[1]} if point else None}
+
+
+def own_city_key(center):
+    return f"propio|{center[0]}|{center[1]}"
+
+
+def store_own_city(center, data):
+    """Alojamientos creados con tools/hacer_mapas.py: no caducan ni dependen de otro servicio."""
+    _hotels.update(load_hotels())
+    _hotels[own_city_key(center)] = (time.time() + 10 * 365 * 86400, data)
+    save_hotels()
+
+
+def own_city_data(place):
+    point = geocode_local(place)
+    if not point:
+        return None
+    hit = _hotels.get(own_city_key((round(point[0], 2), round(point[1], 2))))
+    return hit[1] if hit else None
 
 
 def refresh_lodging(place, key):
@@ -932,6 +1014,9 @@ def lodging_list(q, force=False):
     place = " ".join(q.get("place", "").split())
     if not 2 <= len(place) <= 80:
         return 400, {"error": "bad_request"}
+    own = own_city_data(place)
+    if own:
+        return 200, own
     key = place.casefold()
     now = time.time()
     with _lock:
@@ -953,15 +1038,8 @@ def lodging_list(q, force=False):
         if hit:
             return 200, hit[1]
         raise Unavailable("upstream") from error
-    seen = set()
-    hotels = []
-    for element in elements:
-        hotel = hotel_from(element)
-        if hotel["name"] and hotel["name"].casefold() not in seen:
-            seen.add(hotel["name"].casefold())
-            hotels.append(hotel)
-    hotels.sort(key=lambda h: (-h["stars"], not h["website"], h["name"].casefold()))
-    data = {"hotels": hotels[:150], "center": {"lat": point[0], "lon": point[1]} if point else None}
+    data = lodging_from_elements(elements, point)
+    hotels = data["hotels"]
     if hit and has_coords and len(hit[1]["hotels"]) > len(hotels) and not complete:
         return 200, hit[1]
     with _lock:
@@ -1282,6 +1360,13 @@ class Handler(BaseHTTPRequestHandler):
             if photo.is_file():
                 self.send_static(photo, "image/jpeg", "public, max-age=86400")
                 return
+        if PHOTO.match(parsed.path):
+            photo = PHOTO_DIR / parsed.path.rsplit("/", 1)[1]
+            if photo.is_file():
+                self.send_static(photo, "image/jpeg", "public, max-age=2592000")
+            else:
+                self.send_body(404, b"No encontrado", "text/plain; charset=utf-8")
+            return
         logo = LOGO.match(parsed.path)
         if logo:
             if not within_rate(self.client_ip(), "/logos"):

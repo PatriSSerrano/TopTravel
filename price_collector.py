@@ -3,9 +3,14 @@
 Ninguna fuente gratuita da precios pasados, así que se van guardando desde que la web
 está publicada. Solo se escribe una fila cuando un precio cambia: entre dos filas, el
 precio se mantuvo. Para ver el estado: python tools/ver_historial.py
+
+Tres fuentes: cada día, las rutas desde MAD y BCN y los hoteles de la lista; sin parar,
+una rotación por rutas de grandes aeropuertos del mundo; y cualquier precio que salga
+en una búsqueda de la web.
 """
 import calendar
 import os
+import queue
 import sqlite3
 import threading
 import time
@@ -25,17 +30,34 @@ MAX_ERRORS_IN_A_ROW = 15
 START_DELAY = 300
 CHECK_EVERY = 3600
 
+# Rotación por el mundo. El tope diario y el de disco son lo que evita abusar del servicio
+# gratuito y llenar el alojamiento: con 1 GB, el historial no pasa de la mitad.
+WORLD_HUBS = (
+    "LHR", "LGW", "CDG", "AMS", "FRA", "MUC", "FCO", "MXP", "ZRH", "VIE", "LIS", "OPO", "AGP", "PMI", "ATH", "IST",
+    "DUB", "CPH", "ARN", "OSL", "HEL", "WAW", "PRG", "BUD", "OTP", "BRU", "GVA", "BER", "HAM", "NCE",
+    "JFK", "EWR", "LAX", "SFO", "ORD", "MIA", "ATL", "DFW", "BOS", "SEA", "LAS", "YYZ", "YVR", "YUL", "MEX", "CUN",
+    "GRU", "EZE", "BOG", "SCL", "LIM", "DXB", "DOH", "TLV", "CAI", "JNB", "CMN", "DEL", "BOM", "BKK", "SIN", "KUL",
+    "HKG", "ICN", "NRT", "HND", "PEK", "PVG", "SYD", "MEL", "AKL",
+)
+WORLD_REQUESTS_PER_DAY = 12000
+WORLD_PAUSE = 2.5
+MAX_DB_BYTES = 500 * 1024 * 1024
+
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS flight_prices (
   origin TEXT NOT NULL, destination TEXT NOT NULL, travel_day TEXT NOT NULL,
   seen_day TEXT NOT NULL, price REAL NOT NULL,
   PRIMARY KEY (origin, destination, travel_day, seen_day)
-);
+) WITHOUT ROWID;
 CREATE TABLE IF NOT EXISTS hotel_prices (
   hotel TEXT NOT NULL, check_in TEXT NOT NULL,
   seen_day TEXT NOT NULL, price REAL NOT NULL,
   PRIMARY KEY (hotel, check_in, seen_day)
+) WITHOUT ROWID;
+CREATE TABLE IF NOT EXISTS world_routes (
+  id INTEGER PRIMARY KEY, origin TEXT NOT NULL, destination TEXT NOT NULL, UNIQUE (origin, destination)
 );
+CREATE TABLE IF NOT EXISTS world_state (id INTEGER PRIMARY KEY CHECK (id = 1), position INTEGER NOT NULL, laps INTEGER NOT NULL);
 CREATE TABLE IF NOT EXISTS runs (
   job TEXT NOT NULL, day TEXT NOT NULL, position INTEGER NOT NULL DEFAULT 0, total INTEGER NOT NULL DEFAULT 0,
   requests INTEGER NOT NULL DEFAULT 0, new_rows INTEGER NOT NULL DEFAULT 0, errors INTEGER NOT NULL DEFAULT 0,
@@ -51,11 +73,24 @@ def connect():
     return db
 
 
+def compact_old_tables(db):
+    """Las primeras tablas guardaban cada clave dos veces: se pasan al formato que ocupa menos."""
+    for table, columns in (("flight_prices", "origin, destination, travel_day, seen_day, price"), ("hotel_prices", "hotel, check_in, seen_day, price")):
+        row = db.execute("SELECT sql FROM sqlite_master WHERE name = ?", (table,)).fetchone()
+        if row and "WITHOUT ROWID" not in row["sql"]:
+            db.execute(f"ALTER TABLE {table} RENAME TO {table}_old")
+            db.executescript(SCHEMA)
+            db.execute(f"INSERT INTO {table} ({columns}) SELECT {columns} FROM {table}_old")
+            db.execute(f"DROP TABLE {table}_old")
+            db.commit()
+
+
 def init_db():
     DB_PATH.parent.mkdir(exist_ok=True)
     db = connect()
     try:
         db.execute("PRAGMA journal_mode = WAL")
+        compact_old_tables(db)
         db.executescript(SCHEMA)
         db.commit()
     finally:
@@ -176,13 +211,130 @@ def collect_hotels(hotel_keys, stay_price, today=None, sleep=time.sleep):
     run_job("hoteles", tasks, handle, HOTEL_PAUSE, today, sleep)
 
 
+def has_room():
+    try:
+        return DB_PATH.stat().st_size < MAX_DB_BYTES
+    except OSError:
+        return True
+
+
+def discover_world_routes(db, destinations_of):
+    """Apunta las rutas nuevas de cada aeropuerto. Las ya conocidas no se tocan: la rotación sigue su orden."""
+    for hub in WORLD_HUBS:
+        try:
+            db.executemany("INSERT OR IGNORE INTO world_routes (origin, destination) VALUES (?, ?)", [(hub, code) for code in destinations_of(hub)])
+            db.commit()
+        except Exception as error:
+            print(f"Historial: sin destinos de {hub}: {type(error).__name__}", flush=True)
+
+
+def collect_world(destinations_of, month_prices, today=None, sleep=time.sleep, budget=WORLD_REQUESTS_PER_DAY):
+    """Avanza por todas las rutas y sus meses hasta gastar el cupo del día; mañana sigue donde quedó."""
+    today = today or date.today()
+    day = today.isoformat()
+    months = flight_months(today)
+    db = connect()
+    try:
+        db.execute("INSERT OR IGNORE INTO world_state (id, position, laps) VALUES (1, 0, 0)")
+        db.execute("INSERT OR IGNORE INTO runs (job, day) VALUES ('mundo', ?)", (day,))
+        db.commit()
+        if not db.execute("SELECT 1 FROM world_routes LIMIT 1").fetchone():
+            discover_world_routes(db, destinations_of)
+        routes = db.execute("SELECT origin, destination FROM world_routes ORDER BY id").fetchall()
+        total = len(routes) * len(months)
+        if not total:
+            return
+        db.execute("UPDATE runs SET total = ? WHERE job = 'mundo' AND day = ?", (total, day))
+        in_a_row = 0
+        while has_room() and db.execute("SELECT requests FROM runs WHERE job = 'mundo' AND day = ?", (day,)).fetchone()["requests"] < budget:
+            position = db.execute("SELECT position FROM world_state").fetchone()["position"] % total
+            route = routes[position // len(months)]
+            new_rows, failed = 0, 0
+            try:
+                new_rows = sum(
+                    save_flight(db, route["origin"], route["destination"], travel_day, price, day)
+                    for travel_day, price in month_prices(route["origin"], route["destination"], months[position % len(months)]).items()
+                )
+                in_a_row = 0
+            except Exception:
+                failed = 1
+                in_a_row += 1
+            next_position = position + 1
+            lap = int(next_position >= total)
+            db.execute("UPDATE world_state SET position = ?, laps = laps + ?", (next_position % total, lap))
+            db.execute(
+                "UPDATE runs SET position = ?, requests = requests + 1, new_rows = new_rows + ?, errors = errors + ? WHERE job = 'mundo' AND day = ?",
+                (next_position % total, new_rows, failed, day),
+            )
+            db.commit()
+            if in_a_row >= MAX_ERRORS_IN_A_ROW:
+                print(f"Historial: mundo parado por hoy tras {in_a_row} fallos seguidos", flush=True)
+                db.execute("UPDATE runs SET requests = ? WHERE job = 'mundo' AND day = ?", (budget, day))
+                db.commit()
+                return
+            if lap:
+                discover_world_routes(db, destinations_of)  # vuelta completa: se buscan rutas nuevas
+                return
+            sleep(WORLD_PAUSE)
+    finally:
+        db.close()
+
+
+# ---------- Precios que aparecen en las búsquedas de la web ----------
+_seen = queue.Queue(maxsize=2000)
+_listening = False
+
+
+def note_flights(origin, destination, days):
+    """No bloquea nunca: la búsqueda de una persona no espera a que se escriba el historial."""
+    if _listening and days:
+        try:
+            _seen.put_nowait(("vuelo", origin, destination, dict(days)))
+        except queue.Full:
+            pass
+
+
+def note_hotel(key, check_in, price):
+    if _listening:
+        try:
+            _seen.put_nowait(("hotel", key, check_in, price))
+        except queue.Full:
+            pass
+
+
+def save_noted(db, item, day):
+    if item[0] == "vuelo":
+        return sum(save_flight(db, item[1], item[2], travel_day, price, day) for travel_day, price in item[3].items())
+    return int(save_hotel(db, item[1], item[2], item[3], day))
+
+
+def write_noted():
+    while True:
+        item = _seen.get()
+        try:
+            if has_room():
+                db = connect()
+                try:
+                    save_noted(db, item, date.today().isoformat())
+                    db.commit()
+                finally:
+                    db.close()
+        except Exception as error:
+            print(f"Historial: búsqueda sin guardar: {type(error).__name__}", flush=True)
+
+
 def start(destinations_of, month_prices, hotel_keys, stay_price):
     """Hilo aparte: si la web se reinicia, sigue por donde iba."""
+    global _listening
 
     def loop():
         time.sleep(START_DELAY)
         while True:
-            for job, args in ((collect_flights, (destinations_of, month_prices)), (collect_hotels, (hotel_keys(), stay_price))):
+            for job, args in (
+                (collect_flights, (destinations_of, month_prices)),
+                (collect_hotels, (hotel_keys(), stay_price)),
+                (collect_world, (destinations_of, month_prices)),
+            ):
                 try:
                     job(*args)
                 except Exception as error:  # el historial nunca debe tirar la web
@@ -190,4 +342,6 @@ def start(destinations_of, month_prices, hotel_keys, stay_price):
             time.sleep(CHECK_EVERY)
 
     init_db()
+    _listening = True
+    threading.Thread(target=write_noted, daemon=True).start()
     threading.Thread(target=loop, daemon=True).start()

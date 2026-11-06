@@ -33,8 +33,9 @@ Funciona en ordenador, tableta y móvil.
 | --- | --- |
 | Precios de vuelos | [Travelpayouts](https://www.travelpayouts.com/) |
 | Precios de hoteles | [Xotelo](https://xotelo.com/) |
-| Alojamientos y líneas de transporte | [OpenStreetMap](https://www.openstreetmap.org/copyright) |
-| Monumentos y sus fotos | [Wikidata](https://www.wikidata.org/) y [Wikimedia Commons](https://commons.wikimedia.org/) |
+| Búsqueda de ciudades | Base propia creada con [GeoNames](https://www.geonames.org/) |
+| Alojamientos y líneas de transporte | Base propia creada con [OpenStreetMap](https://www.openstreetmap.org/copyright) |
+| Monumentos y sus fotos | Base propia creada con [Wikidata](https://www.wikidata.org/) y [Wikimedia Commons](https://commons.wikimedia.org/) |
 | Fotos de los destinos | [Pexels](https://www.pexels.com/license/) |
 | Mapa del mundo | [Natural Earth](https://www.naturalearthdata.com/) |
 | Mapas de ciudades | [Leaflet](https://leafletjs.com/) con los mapas de OpenStreetMap |
@@ -43,7 +44,7 @@ Funciona en ordenador, tableta y móvil.
 
 - **Las búsquedas alcanzan hasta unos 8 meses vista**, tanto en vuelos como en alojamientos.
 - **Los precios son orientativos.** El precio final se confirma siempre antes de comprar o reservar.
-- **No todos los alojamientos tienen precio.** De momento lo tienen 342 hoteles de 26 ciudades.
+- **No todos los alojamientos tienen precio.** De momento lo tienen más de 1.250 hoteles de 102 ciudades de Europa, Norteamérica y otros destinos.
 - **Las ciudades más buscadas salen al momento.** En las demás, la primera búsqueda puede tardar algo más, con una cuenta atrás en pantalla, y las siguientes ya son inmediatas.
 - **Los avisos se ven dentro de la web.** El envío por correo llegará más adelante.
 

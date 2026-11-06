@@ -16,8 +16,8 @@ cd "$(dirname "$0")/.."
 # Solo lo que necesita la web. Las cachés se suben para que nadie espere la primera vez;
 # data/toptravel.db nunca se incluye, porque sobrescribiría las cuentas reales.
 FILES=(server.py accounts.py price_collector.py app.js theme.js landing.html landing.css landing.js index.html styles.css privacidad.html aviso-legal.html
-       hoteles_destacados.json xotelo_cities.json assets vendor)
-for cache in data/hotels.json data/places.json data/mapas; do
+       hoteles_destacados.json xotelo_cities.json assets vendor tools/ver_historial.py)
+for cache in data/hotels.json data/places.json data/mapas data/ciudades.db data/fotos; do
   [ -e "$cache" ] && FILES+=("$cache")
 done
 

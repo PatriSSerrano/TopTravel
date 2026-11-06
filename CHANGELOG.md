@@ -6,6 +6,13 @@ Cada versión tiene tres números, por ejemplo 1.2.3:
 - **El segundo** cambia al añadir algo nuevo, como más ciudades o una función.
 - **El tercero** cambia al corregir un error o hacer un retoque.
 
+## 1.2.0 · 6 de noviembre de 2026
+
+- Toda Europa y Norteamérica: 102 ciudades y más de 1.250 hoteles con precio.
+- Las ciudades, los alojamientos, el transporte y los monumentos de esas ciudades salen de una base propia. Cargan al momento y no dependen de otros servicios.
+- Las fotos de los monumentos más conocidos se sirven desde la propia web.
+- El historial de precios cubre también rutas de grandes aeropuertos del mundo y los precios que aparecen en las búsquedas.
+
 ## 1.1.1 · 6 de noviembre de 2026
 
 - Empieza a guardarse un historial propio de precios de vuelos y hoteles. El gráfico y la recomendación se mostrarán cuando tenga datos suficientes.

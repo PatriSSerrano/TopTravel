@@ -6242,5 +6242,2028 @@
     "lon": null
    }
   ]
+ },
+ {
+  "city": "Chisináu",
+  "lat": 47.0245,
+  "lon": 28.8323,
+  "hotels": [
+   {
+    "name": "GREGORY Boutique Hotel",
+    "key": "g294456-d23930386",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Radisson Blu Leogrand Hotel, Chisinau",
+    "key": "g294456-d301283",
+    "lat": 47.024239,
+    "lon": 28.83656
+   },
+   {
+    "name": "Courtyard by Marriott Chisinau",
+    "key": "g294456-d17810753",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "City Park Hotel",
+    "key": "g294456-d8790355",
+    "lat": 47.027232,
+    "lon": 28.836611
+   },
+   {
+    "name": "Hotel Tulip Residence",
+    "key": "g294456-d1431784",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Amazing ionika hostel",
+    "key": "g294456-d10501494",
+    "lat": 47.019826,
+    "lon": 28.825618
+   },
+   {
+    "name": "Bristol Central Park Hotel",
+    "key": "g294456-d10521464",
+    "lat": 47.024803,
+    "lon": 28.836773
+   },
+   {
+    "name": "Vila Iris",
+    "key": "g294456-d1640898",
+    "lat": 46.977457,
+    "lon": 28.87084
+   },
+   {
+    "name": "Flowers Hotel",
+    "key": "g294456-d676872",
+    "lat": 47.015764,
+    "lon": 28.84924
+   },
+   {
+    "name": "Nobil Luxury Boutique Hotel",
+    "key": "g294456-d606205",
+    "lat": 47.022573,
+    "lon": 28.836904
+   },
+   {
+    "name": "Regency Hotel Chisinau",
+    "key": "g294456-d3418767",
+    "lat": 47.025011,
+    "lon": 28.821295
+   },
+   {
+    "name": "Mercure Chisinau Center Jazz Hotel",
+    "key": "g294456-d1236591",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Luna Hotel",
+    "key": "g294456-d1137551",
+    "lat": 47.027897,
+    "lon": 28.819507
+   },
+   {
+    "name": "Villa Natali",
+    "key": "g294456-d1238825",
+    "lat": 47.024896,
+    "lon": 28.8211
+   }
+  ]
+ },
+ {
+  "city": "Andorra la Vella",
+  "lat": 42.4979,
+  "lon": 1.5032,
+  "hotels": [
+   {
+    "name": "Grand Plaza Hotel & Wellness",
+    "key": "g190392-d482747",
+    "lat": 42.506853,
+    "lon": 1.532586
+   },
+   {
+    "name": "Hotel de L'Isard",
+    "key": "g190392-d254825",
+    "lat": 42.507835,
+    "lon": 1.525297
+   },
+   {
+    "name": "NH Andorra La Vella",
+    "key": "g190392-d498831",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Acta Arthotel",
+    "key": "g190392-d289764",
+    "lat": 42.507095,
+    "lon": 1.526865
+   },
+   {
+    "name": "Suites Plaza Hotel & Wellness",
+    "key": "g190392-d229659",
+    "lat": 42.505835,
+    "lon": 1.519948
+   },
+   {
+    "name": "Yomo Centric",
+    "key": "g190392-d508010",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Pyrenees",
+    "key": "g190392-d633405",
+    "lat": 42.507463,
+    "lon": 1.519646
+   },
+   {
+    "name": "Casa Serras Andorra",
+    "key": "g190392-d33500831",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Andorra Park Hotel",
+    "key": "g190392-d258692",
+    "lat": 42.50943,
+    "lon": 1.523672
+   },
+   {
+    "name": "Barri Antic Hostal & Pub",
+    "key": "g190392-d5566652",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Starc by Pierre & Vacances Premium",
+    "key": "g190392-d24177806",
+    "lat": 42.508175,
+    "lon": 1.532936
+   },
+   {
+    "name": "Glaner Hotel Cafe",
+    "key": "g190392-d19412962",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Magic Andorra la Vella by Nexta",
+    "key": "g190392-d282534",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Lárnaca",
+  "lat": 34.9236,
+  "lon": 33.6236,
+  "hotels": [
+   {
+    "name": "Radisson Blu Hotel, Larnaca",
+    "key": "g190379-d15094584",
+    "lat": 34.931457,
+    "lon": 33.637153
+   },
+   {
+    "name": "Leonardo Boutique Hotel Larnaca",
+    "key": "g190379-d21506063",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "La Veranda De Larnaca Hotel",
+    "key": "g190379-d21491455",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Sun Hall Hotel",
+    "key": "g190379-d284198",
+    "lat": 34.916117,
+    "lon": 33.637623
+   },
+   {
+    "name": "Hotel Indigo Larnaca by IHG",
+    "key": "g190379-d19411104",
+    "lat": 34.911418,
+    "lon": 33.632713
+   },
+   {
+    "name": "Mercure Larnaca Finikoudes Beach",
+    "key": "g190379-d28028112",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "The Josephine Boutique Hotel",
+    "key": "g190379-d8552198",
+    "lat": 34.913782,
+    "lon": 33.636531
+   },
+   {
+    "name": "Hotel Opera",
+    "key": "g190379-d4894009",
+    "lat": 34.911232,
+    "lon": 33.635193
+   },
+   {
+    "name": "Livadhiotis City Hotel",
+    "key": "g190379-d597183",
+    "lat": 34.911587,
+    "lon": 33.635959
+   },
+   {
+    "name": "St George Rent Rooms",
+    "key": "g190379-d4155378",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Les Palmiers Apartments",
+    "key": "g190379-d6355851",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Jimmy's Suites",
+    "key": "g190379-d23263112",
+    "lat": 34.916299,
+    "lon": 33.633464
+   }
+  ]
+ },
+ {
+  "city": "Podgorica",
+  "lat": 42.4415,
+  "lon": 19.2621,
+  "hotels": [
+   {
+    "name": "Hilton Podgorica Crna Gora",
+    "key": "g304088-d600703",
+    "lat": 42.439036,
+    "lon": 19.263231
+   },
+   {
+    "name": "Hotel Voco Podgorica  Luxury IHG hotel",
+    "key": "g304088-d11727505",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Crowne Plaza Podgorica By IHG",
+    "key": "g304088-d11668862",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Laguna",
+    "key": "g304088-d1976687",
+    "lat": 42.42373,
+    "lon": 19.236109
+   },
+   {
+    "name": "Hotel Aurel",
+    "key": "g304088-d4089633",
+    "lat": 42.431437,
+    "lon": 19.273152
+   },
+   {
+    "name": "Hotel M",
+    "key": "g304088-d4283016",
+    "lat": 42.42054,
+    "lon": 19.252409
+   },
+   {
+    "name": "Hotel Hemera",
+    "key": "g304088-d5427086",
+    "lat": 42.442253,
+    "lon": 19.261928
+   },
+   {
+    "name": "Hotel Alexandar Lux",
+    "key": "g304088-d2105993",
+    "lat": 42.442983,
+    "lon": 19.26167
+   },
+   {
+    "name": "Perla Residence Hotel & SPA",
+    "key": "g304088-d13951422",
+    "lat": 42.453984,
+    "lon": 19.235881
+   },
+   {
+    "name": "Hotel New Star",
+    "key": "g304088-d6402984",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Crnogorska Kuca",
+    "key": "g304088-d6208099",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Carine Hotel Centar",
+    "key": "g304088-d23960840",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Marienplatz Podgorica",
+    "key": "g304088-d15767902",
+    "lat": 42.442511,
+    "lon": 19.262581
+   }
+  ]
+ },
+ {
+  "city": "Nicosia",
+  "lat": 35.1747,
+  "lon": 33.3639,
+  "hotels": [
+   {
+    "name": "Hilton Nicosia",
+    "key": "g190383-d272800",
+    "lat": 35.163394,
+    "lon": 33.327115
+   },
+   {
+    "name": "Concorde Tower Hotel & Casino",
+    "key": "g190383-d23137585",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Merit Lefkosa Hotel",
+    "key": "g190383-d1770810",
+    "lat": 35.1903,
+    "lon": 33.352248
+   },
+   {
+    "name": "Centrum Hotel",
+    "key": "g190383-d629228",
+    "lat": 35.169995,
+    "lon": 33.361483
+   },
+   {
+    "name": "Grand Pasha Nicosia",
+    "key": "g190383-d1546276",
+    "lat": 35.193599,
+    "lon": 33.347498
+   },
+   {
+    "name": "Alya Rooms",
+    "key": "g190383-d23681246",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "The Landmark Nicosia, Autograph Collection",
+    "key": "g190383-d227149",
+    "lat": 35.159146,
+    "lon": 33.372153
+   },
+   {
+    "name": "Asty Hotel",
+    "key": "g190383-d605863",
+    "lat": 35.168806,
+    "lon": 33.339063
+   },
+   {
+    "name": "Gul Hanim House Boutique Hotel",
+    "key": "g190383-d10514824",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hypnos Boutique Hotel",
+    "key": "g190383-d13944385",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Amyth of Nicosia",
+    "key": "g190383-d32999022",
+    "lat": 35.172042,
+    "lon": 33.367373
+   },
+   {
+    "name": "The Sendal Boutique Hotel",
+    "key": "g190383-d26637037",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Los Ángeles",
+  "lat": 34.0537,
+  "lon": -118.2428,
+  "hotels": [
+   {
+    "name": "Downtown LA Proper Hotel",
+    "key": "g32655-d19900021",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Inn at Playa del Rey",
+    "key": "g32655-d73936",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Omni Los Angeles Hotel At California Plaza",
+    "key": "g32655-d77804",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Sheraton Grand Los Angeles",
+    "key": "g32655-d77798",
+    "lat": 34.047707,
+    "lon": -118.258302
+   },
+   {
+    "name": "Sofitel Los Angeles at Beverly Hills",
+    "key": "g32655-d76083",
+    "lat": 34.076374,
+    "lon": -118.377515
+   },
+   {
+    "name": "W Los Angeles - West Beverly Hills",
+    "key": "g32655-d77700",
+    "lat": 34.062778,
+    "lon": -118.44105
+   },
+   {
+    "name": "The Hills Inn Eagle Rock",
+    "key": "g32655-d76793",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Kimpton Hotel Palomar Los Angeles Beverly Hills",
+    "key": "g32655-d77775",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "The Hollywood Roosevelt",
+    "key": "g32655-d77274",
+    "lat": 34.10093,
+    "lon": -118.341815
+   },
+   {
+    "name": "Hilton Los Angeles/Universal City",
+    "key": "g32655-d78694",
+    "lat": 34.136907,
+    "lon": -118.358349
+   },
+   {
+    "name": "The Garland",
+    "key": "g32655-d78682",
+    "lat": 34.144945,
+    "lon": -118.369418
+   },
+   {
+    "name": "Holiday Inn Los Angeles - Lax Airport By IHG",
+    "key": "g32655-d77923",
+    "lat": 33.946208,
+    "lon": -118.370933
+   },
+   {
+    "name": "Sheraton Universal Hotel",
+    "key": "g32655-d84422",
+    "lat": 34.136712,
+    "lon": -118.359388
+   },
+   {
+    "name": "Cara",
+    "key": "g32655-d133994",
+    "lat": 34.102811,
+    "lon": -118.30906
+   }
+  ]
+ },
+ {
+  "city": "San Francisco",
+  "lat": 37.7879,
+  "lon": -122.4075,
+  "hotels": [
+   {
+    "name": "LUMA Hotel San Francisco",
+    "key": "g60713-d23791488",
+    "lat": 37.774805,
+    "lon": -122.390231
+   },
+   {
+    "name": "1 Hotel San Francisco",
+    "key": "g60713-d506418",
+    "lat": 37.793681,
+    "lon": -122.393215
+   },
+   {
+    "name": "Hotel Drisco Pacific Heights",
+    "key": "g60713-d80983",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Galleria Park Hotel",
+    "key": "g60713-d80990",
+    "lat": 37.789659,
+    "lon": -122.403525
+   },
+   {
+    "name": "Hotel Zoe Fisherman's Wharf",
+    "key": "g60713-d80780",
+    "lat": 37.806154,
+    "lon": -122.414189
+   },
+   {
+    "name": "Hotel Nikko San Francisco",
+    "key": "g60713-d80793",
+    "lat": 37.785813,
+    "lon": -122.409341
+   },
+   {
+    "name": "Handlery Union Square Hotel",
+    "key": "g60713-d81019",
+    "lat": 37.787154,
+    "lon": -122.409079
+   },
+   {
+    "name": "Grand Hyatt San Francisco",
+    "key": "g60713-d80999",
+    "lat": 37.789114,
+    "lon": -122.407238
+   },
+   {
+    "name": "Hotel Riu Plaza Fisherman’s Wharf",
+    "key": "g60713-d81375",
+    "lat": 37.807173,
+    "lon": -122.412901
+   },
+   {
+    "name": "InterContinental Mark Hopkins San Francisco by IHG",
+    "key": "g60713-d115623",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Argonaut Hotel",
+    "key": "g60713-d268533",
+    "lat": 37.807187,
+    "lon": -122.420249
+   },
+   {
+    "name": "Cow Hollow Inn & Suites",
+    "key": "g60713-d112293",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Zephyr San Francisco",
+    "key": "g60713-d81222",
+    "lat": 37.80804,
+    "lon": -122.412872
+   }
+  ]
+ },
+ {
+  "city": "Las Vegas",
+  "lat": 36.1674,
+  "lon": -115.1484,
+  "hotels": [
+   {
+    "name": "Silverton Casino Lodge",
+    "key": "g45963-d97691",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hampton Inn Tropicana",
+    "key": "g45963-d121328",
+    "lat": 36.099625,
+    "lon": -115.183514
+   },
+   {
+    "name": "The Carriage House",
+    "key": "g45963-d91949",
+    "lat": 36.10751,
+    "lon": -115.168028
+   },
+   {
+    "name": "Westgate Las Vegas Resort & Casino",
+    "key": "g45963-d91878",
+    "lat": 36.135655,
+    "lon": -115.151343
+   },
+   {
+    "name": "Courtyard by Marriott Las Vegas Convention Center",
+    "key": "g45963-d91783",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Four Seasons Hotel Las Vegas",
+    "key": "g45963-d91674",
+    "lat": 36.090801,
+    "lon": -115.174749
+   },
+   {
+    "name": "Hyatt Place Las Vegas",
+    "key": "g45963-d91693",
+    "lat": 36.037712,
+    "lon": -115.18292
+   },
+   {
+    "name": "Bellagio",
+    "key": "g45963-d91703",
+    "lat": 36.112319,
+    "lon": -115.178723
+   },
+   {
+    "name": "Palms Casino Resort",
+    "key": "g45963-d208820",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Fontainebleau Las Vegas",
+    "key": "g45963-d26850750",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "The Orleans Hotel & Casino",
+    "key": "g45963-d91907",
+    "lat": 36.10347,
+    "lon": -115.201374
+   },
+   {
+    "name": "Tuscany Suites & Casino",
+    "key": "g45963-d224853",
+    "lat": 36.113156,
+    "lon": -115.159909
+   }
+  ]
+ },
+ {
+  "city": "Miami",
+  "lat": 25.7742,
+  "lon": -80.1936,
+  "hotels": [
+   {
+    "name": "Homewood Suites by Hilton Miami-Airport/Blue Lagoon",
+    "key": "g34438-d217397",
+    "lat": 25.781672,
+    "lon": -80.28453
+   },
+   {
+    "name": "Intercontinental Miami By IHG",
+    "key": "g34438-d85029",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Miami Marriott Biscayne Bay",
+    "key": "g34438-d85031",
+    "lat": 25.790861,
+    "lon": -80.185997
+   },
+   {
+    "name": "Sonesta Miami Airport",
+    "key": "g34438-d87115",
+    "lat": 25.781154,
+    "lon": -80.264864
+   },
+   {
+    "name": "Fortune House Hotel",
+    "key": "g34438-d120376",
+    "lat": 25.759472,
+    "lon": -80.191027
+   },
+   {
+    "name": "Hampton Inn By Hilton Coconut Grove Coral Gables Miami",
+    "key": "g34438-d224246",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hampton Inn & Suites by Hilton Miami Airport South - Blue Lagoon",
+    "key": "g34438-d224248",
+    "lat": 25.779022,
+    "lon": -80.287939
+   },
+   {
+    "name": "Hampton Inn & Suites By Hilton Miami Brickell Downtown",
+    "key": "g34438-d2253238",
+    "lat": 25.762241,
+    "lon": -80.19422
+   },
+   {
+    "name": "Best Western Plus Miami Airport North Hotel & Suites",
+    "key": "g34438-d3782458",
+    "lat": 25.808733,
+    "lon": -80.28559
+   },
+   {
+    "name": "Novotel Miami Brickell",
+    "key": "g34438-d9459135",
+    "lat": 25.759872,
+    "lon": -80.197062
+   },
+   {
+    "name": "Gale Miami Hotel & Residences",
+    "key": "g34438-d27533830",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "citizenM Miami Worldcenter",
+    "key": "g34438-d24958189",
+    "lat": 25.781526,
+    "lon": -80.190761
+   },
+   {
+    "name": "The Elser Hotel Miami",
+    "key": "g34438-d25150899",
+    "lat": 25.778793,
+    "lon": -80.18925
+   }
+  ]
+ },
+ {
+  "city": "Chicago",
+  "lat": 41.8756,
+  "lon": -87.6244,
+  "hotels": [
+   {
+    "name": "Nobu Hotel Chicago",
+    "key": "g35805-d20951654",
+    "lat": 41.884679,
+    "lon": -87.649479
+   },
+   {
+    "name": "Four Seasons Hotel Chicago",
+    "key": "g35805-d114591",
+    "lat": 41.899639,
+    "lon": -87.624884
+   },
+   {
+    "name": "Waldorf Astoria Chicago",
+    "key": "g35805-d1516481",
+    "lat": 41.899743,
+    "lon": -87.627476
+   },
+   {
+    "name": "The Royal Sonesta Chicago Downtown",
+    "key": "g35805-d87603",
+    "lat": 41.887386,
+    "lon": -87.625664
+   },
+   {
+    "name": "Hyatt Regency Chicago",
+    "key": "g35805-d87617",
+    "lat": 41.887481,
+    "lon": -87.622836
+   },
+   {
+    "name": "Hyatt Regency Mccormick Place Chicago",
+    "key": "g35805-d87618",
+    "lat": 41.851972,
+    "lon": -87.617962
+   },
+   {
+    "name": "InterContinental Chicago Magnificent Mile by IHG",
+    "key": "g35805-d87620",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hampton Inn Chicago Downtown/Magnificent Mile",
+    "key": "g35805-d1052716",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "LondonHouse Chicago, Curio Collection by Hilton",
+    "key": "g35805-d9145578",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Silversmith Hotel Chicago Downtown",
+    "key": "g35805-d90975",
+    "lat": 41.881682,
+    "lon": -87.626657
+   },
+   {
+    "name": "Hampton Inn & Suites Chicago-Downtown",
+    "key": "g35805-d111486",
+    "lat": 41.890617,
+    "lon": -87.629198
+   },
+   {
+    "name": "Swissôtel Chicago",
+    "key": "g35805-d114581",
+    "lat": 41.887345,
+    "lon": -87.619525
+   },
+   {
+    "name": "Embassy Suites by Hilton Chicago Downtown Magnificent Mile",
+    "key": "g35805-d223061",
+    "lat": 41.891506,
+    "lon": -87.619669
+   }
+  ]
+ },
+ {
+  "city": "Orlando",
+  "lat": 28.5421,
+  "lon": -81.379,
+  "hotels": [
+   {
+    "name": "Drury Plaza Hotel Orlando - Disney Springs Area",
+    "key": "g34515-d88170",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Castle Hotel, Autograph Collection",
+    "key": "g34515-d85329",
+    "lat": 28.440322,
+    "lon": -81.469212
+   },
+   {
+    "name": "Bryan's Spanish Cove",
+    "key": "g34515-d85275",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Courtyard by Marriott Orlando Lake Buena Vista at Vista Centre",
+    "key": "g34515-d84903",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Embassy Suites By Hilton Orlando Lake Buena Vista Resort",
+    "key": "g34515-d84900",
+    "lat": 28.390624,
+    "lon": -81.494591
+   },
+   {
+    "name": "Embassy Suites by Hilton Orlando International Drive Convention Center",
+    "key": "g34515-d85342",
+    "lat": 28.438161,
+    "lon": -81.47306
+   },
+   {
+    "name": "Buena Vista Suites Orlando",
+    "key": "g34515-d85264",
+    "lat": 28.357966,
+    "lon": -81.495788
+   },
+   {
+    "name": "Universal Cabana Bay Beach Resort",
+    "key": "g34515-d3932244",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Rosen Inn at Pointe Orlando",
+    "key": "g34515-d85401",
+    "lat": 28.432847,
+    "lon": -81.473356
+   },
+   {
+    "name": "DoubleTree by Hilton Hotel at the Entrance to Universal Orlando",
+    "key": "g34515-d123527",
+    "lat": 28.479498,
+    "lon": -81.457139
+   },
+   {
+    "name": "Holiday Inn Orlando - Disney Springs Area by IHG",
+    "key": "g34515-d85981",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "The Grove Resort & Water Park Orlando",
+    "key": "g34515-d10844379",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Universal Endless Summer Resort - Dockside Inn And Suites",
+    "key": "g34515-d17765126",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Boston",
+  "lat": 42.3588,
+  "lon": -71.0578,
+  "hotels": [
+   {
+    "name": "The Verb Hotel",
+    "key": "g60745-d6485213",
+    "lat": 42.345338,
+    "lon": -71.09678
+   },
+   {
+    "name": "Boston Harbor Hotel",
+    "key": "g60745-d89575",
+    "lat": 42.35666,
+    "lon": -71.050316
+   },
+   {
+    "name": "Mandarin Oriental, Boston",
+    "key": "g60745-d1136705",
+    "lat": 42.348687,
+    "lon": -71.0816
+   },
+   {
+    "name": "The Newbury Boston",
+    "key": "g60745-d89615",
+    "lat": 42.352933,
+    "lon": -71.071488
+   },
+   {
+    "name": "The Langham, Boston",
+    "key": "g60745-d114149",
+    "lat": 42.356543,
+    "lon": -71.054641
+   },
+   {
+    "name": "Staypineapple, A Delightful Hotel, South End Boston",
+    "key": "g60745-d89568",
+    "lat": 42.346983,
+    "lon": -71.070505
+   },
+   {
+    "name": "Four Seasons Hotel Boston",
+    "key": "g60745-d89585",
+    "lat": 42.352055,
+    "lon": -71.068135
+   },
+   {
+    "name": "The Revere Hotel Boston Common",
+    "key": "g60745-d89600",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Cambria Hotel Boston Downtown",
+    "key": "g60745-d15618152",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hilton Boston Park Plaza",
+    "key": "g60745-d111418",
+    "lat": 42.350962,
+    "lon": -71.069616
+   },
+   {
+    "name": "The Godfrey Hotel Boston",
+    "key": "g60745-d8316858",
+    "lat": 42.354732,
+    "lon": -71.061488
+   },
+   {
+    "name": "The Revolution Hotel",
+    "key": "g60745-d111413",
+    "lat": 42.346057,
+    "lon": -71.070844
+   },
+   {
+    "name": "Hilton Garden Inn Boston Logan Airport",
+    "key": "g60745-d8142646",
+    "lat": 42.389753,
+    "lon": -71.012215
+   },
+   {
+    "name": "The Dagny",
+    "key": "g60745-d94326",
+    "lat": 42.357333,
+    "lon": -71.053192
+   }
+  ]
+ },
+ {
+  "city": "Washington D. C.",
+  "lat": 38.8951,
+  "lon": -77.0364,
+  "hotels": [
+   {
+    "name": "Phoenix Park Hotel",
+    "key": "g28970-d84041",
+    "lat": 38.897036,
+    "lon": -77.009476
+   },
+   {
+    "name": "The Ven at Embassy Row, Washington, D.C., a Tribute Portfolio Hotel",
+    "key": "g28970-d84060",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hilton Club The District Washington D.C.",
+    "key": "g28970-d10207731",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "The Dupont Circle",
+    "key": "g28970-d84058",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "The Georgetown Inn",
+    "key": "g28970-d84029",
+    "lat": 38.907126,
+    "lon": -77.063439
+   },
+   {
+    "name": "The Watergate Hotel",
+    "key": "g28970-d84026",
+    "lat": 38.899338,
+    "lon": -77.055843
+   },
+   {
+    "name": "Capitol Hill Hotel",
+    "key": "g28970-d84048",
+    "lat": 38.886249,
+    "lon": -77.003121
+   },
+   {
+    "name": "Washington Plaza Hotel",
+    "key": "g28970-d84095",
+    "lat": 38.906196,
+    "lon": -77.030871
+   },
+   {
+    "name": "Hilton Washington DC National Mall The Wharf",
+    "key": "g28970-d13798670",
+    "lat": 38.883905,
+    "lon": -77.023952
+   },
+   {
+    "name": "Motto By Hilton Washington DC Downtown",
+    "key": "g28970-d12100637",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Embassy Suites by Hilton Washington DC Convention Center",
+    "key": "g28970-d574805",
+    "lat": 38.901905,
+    "lon": -77.02629
+   },
+   {
+    "name": "Hotel Washington",
+    "key": "g28970-d1456261",
+    "lat": 38.896916,
+    "lon": -77.033263
+   },
+   {
+    "name": "The Darcy Hotel",
+    "key": "g28970-d120559",
+    "lat": 38.908058,
+    "lon": -77.03543
+   }
+  ]
+ },
+ {
+  "city": "Seattle",
+  "lat": 47.6038,
+  "lon": -122.3301,
+  "hotels": [
+   {
+    "name": "Inn at the Market",
+    "key": "g60878-d100507",
+    "lat": 47.609963,
+    "lon": -122.341456
+   },
+   {
+    "name": "Mayflower Park Hotel",
+    "key": "g60878-d100542",
+    "lat": 47.612168,
+    "lon": -122.338109
+   },
+   {
+    "name": "Hotel Sorrento",
+    "key": "g60878-d100569",
+    "lat": 47.608957,
+    "lon": -122.326929
+   },
+   {
+    "name": "Staypineapple, University Inn, University District",
+    "key": "g60878-d100581",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Best Western Plus Pioneer Square Hotel Downtown",
+    "key": "g60878-d72572",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "The Edgewater Hotel",
+    "key": "g60878-d100567",
+    "lat": 47.612542,
+    "lon": -122.352845
+   },
+   {
+    "name": "MarQueen Hotel",
+    "key": "g60878-d100540",
+    "lat": 47.624864,
+    "lon": -122.35643
+   },
+   {
+    "name": "Warwick Seattle",
+    "key": "g60878-d100505",
+    "lat": 47.613895,
+    "lon": -122.34092
+   },
+   {
+    "name": "Mediterranean Inn",
+    "key": "g60878-d258824",
+    "lat": 47.623045,
+    "lon": -122.356938
+   },
+   {
+    "name": "Silver Cloud Hotel - Seattle Broadway",
+    "key": "g60878-d281658",
+    "lat": 47.611631,
+    "lon": -122.320206
+   },
+   {
+    "name": "Silver Cloud Hotel - Seattle Lake Union",
+    "key": "g60878-d123022",
+    "lat": 47.629723,
+    "lon": -122.329068
+   },
+   {
+    "name": "Silver Cloud Hotel - Seattle Stadium",
+    "key": "g60878-d582371",
+    "lat": 47.592752,
+    "lon": -122.333698
+   },
+   {
+    "name": "The Paramount Hotel",
+    "key": "g60878-d112429",
+    "lat": 47.613134,
+    "lon": -122.333588
+   },
+   {
+    "name": "Crowne Plaza Seattle-downtown By IHG",
+    "key": "g60878-d100527",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Nueva Orleans",
+  "lat": 29.9575,
+  "lon": -90.0629,
+  "hotels": [
+   {
+    "name": "Ashton's Bed and Breakfast",
+    "key": "g60864-d76973",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Honolulu",
+  "lat": 21.3045,
+  "lon": -157.8557,
+  "hotels": [
+   {
+    "name": "The Laylow Waikiki, Autograph Collection",
+    "key": "g60982-d86969",
+    "lat": 21.279252,
+    "lon": -157.826506
+   },
+   {
+    "name": "The Equus",
+    "key": "g60982-d87008",
+    "lat": 21.286603,
+    "lon": -157.839186
+   },
+   {
+    "name": "Romer House Waikiki",
+    "key": "g60982-d86970",
+    "lat": 21.279338,
+    "lon": -157.82511
+   },
+   {
+    "name": "Coconut Waikiki Hotel",
+    "key": "g60982-d86966",
+    "lat": 21.282702,
+    "lon": -157.827633
+   },
+   {
+    "name": "Pacific Monarch Hotel",
+    "key": "g60982-d86973",
+    "lat": 21.27652,
+    "lon": -157.823852
+   },
+   {
+    "name": "Waikiki Circle Hotel",
+    "key": "g60982-d86984",
+    "lat": 21.274923,
+    "lon": -157.824209
+   },
+   {
+    "name": "Halekulani Hotel",
+    "key": "g60982-d90015",
+    "lat": 21.277963,
+    "lon": -157.832367
+   },
+   {
+    "name": "Waikiki Resort Hotel",
+    "key": "g60982-d534764",
+    "lat": 21.275307,
+    "lon": -157.823581
+   },
+   {
+    "name": "Sheraton Waikiki Beach Resort",
+    "key": "g60982-d87108",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Prince Waikiki",
+    "key": "g60982-d87011",
+    "lat": 21.286172,
+    "lon": -157.84002
+   },
+   {
+    "name": "OUTRIGGER Reef Waikiki Beach Resort",
+    "key": "g60982-d87052",
+    "lat": 21.278248,
+    "lon": -157.832792
+   },
+   {
+    "name": "Halepuna Waikiki by Halekulani",
+    "key": "g60982-d114026",
+    "lat": 21.278179,
+    "lon": -157.830794
+   }
+  ]
+ },
+ {
+  "city": "San Diego",
+  "lat": 32.7157,
+  "lon": -117.1638,
+  "hotels": [
+   {
+    "name": "The Wayfarer San Diego",
+    "key": "g60750-d79907",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Catamaran Resort Hotel and Spa",
+    "key": "g60750-d79971",
+    "lat": 32.78959,
+    "lon": -117.252682
+   },
+   {
+    "name": "The Bay Club Hotel & Marina",
+    "key": "g60750-d79868",
+    "lat": 32.715672,
+    "lon": -117.225091
+   },
+   {
+    "name": "Holiday Inn Express San Diego Airport-old Town By IHG",
+    "key": "g60750-d79985",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Best Western San Diego/Miramar Hotel",
+    "key": "g60750-d79921",
+    "lat": 32.892256,
+    "lon": -117.118854
+   },
+   {
+    "name": "Best Western Plus Island Palms Hotel & Marina",
+    "key": "g60750-d79954",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Best Western Plus Bayside Inn",
+    "key": "g60750-d79902",
+    "lat": 32.719577,
+    "lon": -117.167597
+   },
+   {
+    "name": "Best Western San Diego Zoo/SeaWorld Inn & Suites",
+    "key": "g60750-d79981",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Kings Inn San Diego",
+    "key": "g60750-d80223",
+    "lat": 32.758562,
+    "lon": -117.175134
+   },
+   {
+    "name": "Bahia Resort Hotel",
+    "key": "g60750-d83361",
+    "lat": 32.773353,
+    "lon": -117.245921
+   },
+   {
+    "name": "Paradise Point Resort",
+    "key": "g60750-d119728",
+    "lat": 32.775078,
+    "lon": -117.239086
+   },
+   {
+    "name": "Old Town Inn",
+    "key": "g60750-d80255",
+    "lat": 32.751864,
+    "lon": -117.200625
+   },
+   {
+    "name": "The Sofia Hotel",
+    "key": "g60750-d628619",
+    "lat": 32.715974,
+    "lon": -117.164284
+   },
+   {
+    "name": "The Lafayette Hotel And Club",
+    "key": "g60750-d80618",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Toronto",
+  "lat": 43.6535,
+  "lon": -79.3839,
+  "hotels": [
+   {
+    "name": "The Hazelton Hotel",
+    "key": "g155019-d656431",
+    "lat": 43.670892,
+    "lon": -79.393668
+   },
+   {
+    "name": "1 Hotel Toronto",
+    "key": "g155019-d1456256",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "One King West Hotel & Residence",
+    "key": "g155019-d573658",
+    "lat": 43.648861,
+    "lon": -79.378033
+   },
+   {
+    "name": "BISHA, a Luxury Collection Hotel, Toronto",
+    "key": "g155019-d12483976",
+    "lat": 43.645323,
+    "lon": -79.392424
+   },
+   {
+    "name": "Four Seasons Hotel Toronto",
+    "key": "g155019-d155564",
+    "lat": 43.671814,
+    "lon": -79.389858
+   },
+   {
+    "name": "SoHo Hotel Toronto",
+    "key": "g155019-d259397",
+    "lat": 43.644967,
+    "lon": -79.392306
+   },
+   {
+    "name": "Hotel Victoria",
+    "key": "g155019-d155573",
+    "lat": 43.64819,
+    "lon": -79.37767
+   },
+   {
+    "name": "Fairmont Royal York",
+    "key": "g155019-d155495",
+    "lat": 43.645909,
+    "lon": -79.381364
+   },
+   {
+    "name": "Hotel Riu Plaza Toronto",
+    "key": "g155019-d33031851",
+    "lat": 43.647359,
+    "lon": -79.391643
+   },
+   {
+    "name": "Cambridge Suites Toronto",
+    "key": "g155019-d183057",
+    "lat": 43.65167,
+    "lon": -79.377902
+   },
+   {
+    "name": "Union Hotel",
+    "key": "g155019-d33015607",
+    "lat": 43.646314,
+    "lon": -79.383087
+   },
+   {
+    "name": "Doubletree By Hilton Hotel Toronto Downtown",
+    "key": "g155019-d186919",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Intercontinental Toronto Centre By IHG",
+    "key": "g155019-d181962",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel X Toronto, A Destination By Hyatt Hotel",
+    "key": "g155019-d13234261",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Vancouver",
+  "lat": 49.2609,
+  "lon": -123.114,
+  "hotels": [
+   {
+    "name": "Loden Hotel",
+    "key": "g154943-d677531",
+    "lat": 49.287582,
+    "lon": -123.123165
+   },
+   {
+    "name": "Wedgewood Hotel & Spa",
+    "key": "g154943-d156564",
+    "lat": 49.282367,
+    "lon": -123.122777
+   },
+   {
+    "name": "Exchange Hotel Vancouver",
+    "key": "g154943-d14913949",
+    "lat": 49.285615,
+    "lon": -123.115708
+   },
+   {
+    "name": "OPUS Vancouver",
+    "key": "g154943-d224689",
+    "lat": 49.27458,
+    "lon": -123.122482
+   },
+   {
+    "name": "Fairmont Pacific Rim",
+    "key": "g154943-d1485977",
+    "lat": 49.288241,
+    "lon": -123.117099
+   },
+   {
+    "name": "The Westin Bayshore, Vancouver",
+    "key": "g154943-d156094",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "The Sutton Place Hotel Vancouver",
+    "key": "g154943-d155846",
+    "lat": 49.282958,
+    "lon": -123.124276
+   },
+   {
+    "name": "The St. Regis Hotel",
+    "key": "g154943-d156565",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Willo",
+    "key": "g154943-d182556",
+    "lat": 49.27837,
+    "lon": -123.1131
+   },
+   {
+    "name": "Blue Horizon Hotel",
+    "key": "g154943-d182513",
+    "lat": 49.286464,
+    "lon": -123.127255
+   },
+   {
+    "name": "The Pinnacle Hotel Harbourfront",
+    "key": "g154943-d182542",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "L'Hermitage Hotel",
+    "key": "g154943-d1108305",
+    "lat": 49.280522,
+    "lon": -123.116967
+   },
+   {
+    "name": "Samesun Vancouver",
+    "key": "g154943-d264243",
+    "lat": 49.278951,
+    "lon": -123.123211
+   }
+  ]
+ },
+ {
+  "city": "Montreal",
+  "lat": 45.5032,
+  "lon": -73.5698,
+  "hotels": [
+   {
+    "name": "Auberge Du Vieux Port",
+    "key": "g155032-d155204",
+    "lat": 45.506434,
+    "lon": -73.552846
+   },
+   {
+    "name": "Hotel William Gray",
+    "key": "g155032-d10439823",
+    "lat": 45.507444,
+    "lon": -73.553278
+   },
+   {
+    "name": "Warwick Le Crystal - Montréal",
+    "key": "g155032-d24113902",
+    "lat": 45.496587,
+    "lon": -73.572669
+   },
+   {
+    "name": "Le Mount Stephen",
+    "key": "g155032-d12294679",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "The Ritz-Carlton, Montreal",
+    "key": "g155032-d155207",
+    "lat": 45.500086,
+    "lon": -73.577924
+   },
+   {
+    "name": "Vogue Hotel Montreal Downtown, Curio Collection by Hilton",
+    "key": "g155032-d183258",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Best Western Ville-Marie Montreal Hotel & Suites",
+    "key": "g155032-d183235",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Novotel Montreal Centre",
+    "key": "g155032-d155206",
+    "lat": 45.496927,
+    "lon": -73.573399
+   },
+   {
+    "name": "Hôtel Bonaventure Montréal",
+    "key": "g155032-d185718",
+    "lat": 45.498927,
+    "lon": -73.565591
+   },
+   {
+    "name": "Le Square Phillips Hotel & Suites",
+    "key": "g155032-d259456",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Birks Montreal",
+    "key": "g155032-d14134983",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hôtel Place d'Armes",
+    "key": "g155032-d254461",
+    "lat": 45.505498,
+    "lon": -73.557372
+   },
+   {
+    "name": "Doubletree By Hilton Montreal",
+    "key": "g155032-d183609",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Courtyard by Marriott Montreal Downtown",
+    "key": "g155032-d4752984",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Ciudad de México",
+  "lat": 19.3208,
+  "lon": -99.1515,
+  "hotels": [
+   {
+    "name": "Sofitel Mexico City Reforma",
+    "key": "g150800-d17614022",
+    "lat": 19.428723,
+    "lon": -99.166041
+   },
+   {
+    "name": "The Alest Hotel",
+    "key": "g150800-d23639320",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Marquis SkySuites",
+    "key": "g150800-d152470",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Isaaya Hotel Boutique",
+    "key": "g150800-d155740",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Catedral",
+    "key": "g150800-d152474",
+    "lat": 19.435772,
+    "lon": -99.133067
+   },
+   {
+    "name": "Sheraton Maria Isabel Mexico City Reforma",
+    "key": "g150800-d152468",
+    "lat": 19.428166,
+    "lon": -99.167097
+   },
+   {
+    "name": "Hyatt Regency Mexico City",
+    "key": "g150800-d152469",
+    "lat": 19.427407,
+    "lon": -99.192858
+   },
+   {
+    "name": "NH Collection Mexico City Reforma",
+    "key": "g150800-d152467",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Mondrian Mexico City Condesa",
+    "key": "g150800-d25107216",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Geneve Mexico City",
+    "key": "g150800-d156511",
+    "lat": 19.424892,
+    "lon": -99.164102
+   },
+   {
+    "name": "Galería Plaza Reforma",
+    "key": "g150800-d169795",
+    "lat": 19.424907,
+    "lon": -99.167917
+   },
+   {
+    "name": "Camino Real Polanco Mexico",
+    "key": "g150800-d156086",
+    "lat": 19.428141,
+    "lon": -99.178803
+   },
+   {
+    "name": "Hotel Historico Central",
+    "key": "g150800-d8075233",
+    "lat": 19.433127,
+    "lon": -99.138126
+   },
+   {
+    "name": "Hotel Canada Central",
+    "key": "g150800-d249887",
+    "lat": 19.434069,
+    "lon": -99.135717
+   }
+  ]
+ },
+ {
+  "city": "Playa del Carmen",
+  "lat": 20.6463,
+  "lon": -87.0808,
+  "hotels": [
+   {
+    "name": "Grand Velas Riviera Maya",
+    "key": "g150812-d1204526",
+    "lat": 20.675486,
+    "lon": -87.023015
+   },
+   {
+    "name": "Palmaïa - The House of AïA All-Inclusive Wellness Resort",
+    "key": "g150812-d16859032",
+    "lat": 20.597603,
+    "lon": -87.096754
+   },
+   {
+    "name": "Hotel Cielo Playa del Carmen",
+    "key": "g150812-d636215",
+    "lat": 20.624367,
+    "lon": -87.074259
+   },
+   {
+    "name": "Royal Hideaway Playacar - Adults only - All Inclusive",
+    "key": "g150812-d153142",
+    "lat": 20.608708,
+    "lon": -87.088943
+   },
+   {
+    "name": "Allegro Playacar",
+    "key": "g150812-d153965",
+    "lat": 20.609507,
+    "lon": -87.087239
+   },
+   {
+    "name": "Hotel Riu Yucatan",
+    "key": "g150812-d154739",
+    "lat": 20.605159,
+    "lon": -87.092235
+   },
+   {
+    "name": "Mahekal Beach Resort",
+    "key": "g150812-d156853",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hyatt Vivid Playa del Carmen",
+    "key": "g150812-d530483",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Ocean Riviera Paradise",
+    "key": "g150812-d10259725",
+    "lat": 20.669563,
+    "lon": -87.03386
+   },
+   {
+    "name": "Hotel Xcaret México",
+    "key": "g150812-d13189438",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Paradisus Playa del Carmen - Riviera Maya",
+    "key": "g150812-d2299038",
+    "lat": 20.647154,
+    "lon": -87.056712
+   },
+   {
+    "name": "Hotel Grand Sunset Princess",
+    "key": "g150812-d21310222",
+    "lat": 20.672226,
+    "lon": -87.03399
+   },
+   {
+    "name": "Secrets Moxché Playa del Carmen",
+    "key": "g150812-d23901017",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Puerto Vallarta",
+  "lat": 20.6407,
+  "lon": -105.2203,
+  "hotels": [
+   {
+    "name": "Casa Velas",
+    "key": "g150793-d155190",
+    "lat": 20.666567,
+    "lon": -105.25631
+   },
+   {
+    "name": "Velas Vallarta",
+    "key": "g150793-d154767",
+    "lat": 20.665428,
+    "lon": -105.259425
+   },
+   {
+    "name": "Villa Premiere Boutique Hotel & Romantic Getaway",
+    "key": "g150793-d254471",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Posada de Roger",
+    "key": "g150793-d152376",
+    "lat": 20.602398,
+    "lon": -105.236162
+   },
+   {
+    "name": "Los Arcos Suites",
+    "key": "g150793-d152372",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Rosita Hotel",
+    "key": "g150793-d152377",
+    "lat": 20.614842,
+    "lon": -105.23255
+   },
+   {
+    "name": "Villa Del Palmar Beach Resort & Spa",
+    "key": "g150793-d154769",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hyatt Ziva Puerto Vallarta",
+    "key": "g150793-d481596",
+    "lat": 20.584305,
+    "lon": -105.243759
+   },
+   {
+    "name": "Playa Los Arcos Hotel Beach Resort & Spa",
+    "key": "g150793-d152387",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Krystal Vallarta",
+    "key": "g150793-d155676",
+    "lat": 20.647305,
+    "lon": -105.240932
+   },
+   {
+    "name": "Sheraton Buganvilias Puerto Vallarta",
+    "key": "g150793-d154751",
+    "lat": 20.625723,
+    "lon": -105.231167
+   },
+   {
+    "name": "Hilton Vallarta Riviera All-inclusive Resort",
+    "key": "g150793-d8154349",
+    "lat": 20.569292,
+    "lon": -105.250535
+   }
+  ]
+ },
+ {
+  "city": "Pristina",
+  "lat": 42.6639,
+  "lon": 21.1641,
+  "hotels": [
+   {
+    "name": "Swiss Diamond Hotel Prishtina",
+    "key": "g295385-d2476250",
+    "lat": 42.662689,
+    "lon": 21.163842
+   },
+   {
+    "name": "City Inn",
+    "key": "g295385-d15101107",
+    "lat": 42.663944,
+    "lon": 21.161957
+   },
+   {
+    "name": "Hotel Sirius",
+    "key": "g295385-d2692237",
+    "lat": 42.661746,
+    "lon": 21.165353
+   },
+   {
+    "name": "Hotel Prima",
+    "key": "g295385-d3502191",
+    "lat": 42.66803,
+    "lon": 21.162326
+   },
+   {
+    "name": "Mercure Prishtina City",
+    "key": "g295385-d27421016",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Grand Boutique Hotel",
+    "key": "g295385-d21160141",
+    "lat": 42.65729,
+    "lon": 21.154636
+   },
+   {
+    "name": "Four Points by Sheraton Prishtina City",
+    "key": "g295385-d21121492",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Courtyard by Marriott Prishtina",
+    "key": "g295385-d28145958",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Parlament",
+    "key": "g295385-d2314385",
+    "lat": 42.665494,
+    "lon": 21.166761
+   },
+   {
+    "name": "Best Western Hotel Galla",
+    "key": "g295385-d14183986",
+    "lat": 42.585294,
+    "lon": 21.027424
+   }
+  ]
+ },
+ {
+  "city": "San Marino",
+  "lat": 43.9364,
+  "lon": 12.4467,
+  "hotels": [
+   {
+    "name": "Grand Hotel San Marino",
+    "key": "g187809-d249113",
+    "lat": 43.933581,
+    "lon": 12.449153
+   },
+   {
+    "name": "Hotel Joli",
+    "key": "g187809-d669686",
+    "lat": 43.93209,
+    "lon": 12.448475
+   },
+   {
+    "name": "Hotel La Grotta",
+    "key": "g187809-d482799",
+    "lat": 43.935678,
+    "lon": 12.447434
+   },
+   {
+    "name": "Hotel Titano",
+    "key": "g187809-d249114",
+    "lat": 43.936049,
+    "lon": 12.446947
+   },
+   {
+    "name": "Titano Suites",
+    "key": "g187809-d7331559",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Rosa",
+    "key": "g187809-d485486",
+    "lat": 43.935051,
+    "lon": 12.448779
+   },
+   {
+    "name": "Hotel Cesare",
+    "key": "g187809-d455146",
+    "lat": 43.93503,
+    "lon": 12.448403
+   },
+   {
+    "name": "Hotel La Rocca",
+    "key": "g187809-d2019489",
+    "lat": null,
+    "lon": null
+   }
+  ]
  }
 ]
