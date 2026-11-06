@@ -5,6 +5,7 @@ Uso: python server.py [--host 0.0.0.0] [--port 8000] [--behind-proxy]
 La clave se lee de .env en cada petición: no hace falta reiniciar al añadirla.
 """
 import argparse
+import collections
 import concurrent.futures
 import gzip
 import hashlib
@@ -32,7 +33,7 @@ import price_collector
 ROOT = Path(__file__).resolve().parent
 API_BASE = os.environ.get("TP_API_BASE", "https://api.travelpayouts.com")
 CACHE_SECONDS = 1800
-CACHE_MAX = 500
+CACHE_MAX = 1500
 MAX_TRIP_DAYS = 30
 MAP_CACHE_FILE = ROOT / "data" / "mapas.json"  # formato antiguo: se convierte al arrancar
 MAP_DIR = ROOT / "data" / "mapas"
@@ -48,7 +49,12 @@ XOTELO_BASE = "https://data.xotelo.com/api"
 XOTELO_LIST_BASE = os.environ.get("XOTELO_LIST_BASE", XOTELO_BASE)
 XOTELO_LIST_OK_SECONDS = 7 * 86400
 XOTELO_LIST_RETRY_SECONDS = 1800
-XOTELO_RATES_SECONDS = 3600
+XOTELO_RATES_SECONDS = 6 * 3600
+# Topes para que un pico de visitas no agote los servicios gratuitos ni el servidor.
+XOTELO_PER_MINUTE = 60
+TRAVELPAYOUTS_PER_MINUTE = 200
+MAX_ACTIVE_CONNECTIONS = 60
+OVERPASS_REST_SECONDS = 600
 XOTELO_MAX_KM = 9
 XOTELO_CITY_KM = 40
 XOTELO_KEY = re.compile(r"\bg\d+-d\d+\b")
@@ -128,6 +134,42 @@ _static_files = {}
 _overpass_slots = threading.Semaphore(OVERPASS_SLOTS)
 TRUST_PROXY = False
 _xotelo_slots = threading.Semaphore(4)
+_rate_locks = [threading.Lock() for _ in range(64)]
+_background = threading.local()  # el recolector no debe llenar la memoria de precios de las personas
+_overpass_rest_until = 0.0
+
+
+class MinuteBudget:
+    """Cuántas consultas a un servicio externo quedan en este minuto."""
+
+    def __init__(self, per_minute):
+        self.per_minute, self.times, self.lock = per_minute, collections.deque(), threading.Lock()
+
+    def take(self):
+        now = time.time()
+        with self.lock:
+            while self.times and now - self.times[0] >= 60:
+                self.times.popleft()
+            if len(self.times) >= self.per_minute:
+                return False
+            self.times.append(now)
+            return True
+
+
+_xotelo_budget = MinuteBudget(XOTELO_PER_MINUTE)
+_travelpayouts_budget = MinuteBudget(TRAVELPAYOUTS_PER_MINUTE)
+
+
+def remember(key, value):
+    """Guarda en memoria sin vaciarla entera: al llenarse solo se olvida lo más antiguo."""
+    if getattr(_background, "on", False):
+        return
+    with _lock:
+        if len(_cache) >= CACHE_MAX and key not in _cache:
+            for old in list(_cache)[:CACHE_MAX // 10]:
+                del _cache[old]
+        _cache.pop(key, None)
+        _cache[key] = value
 try:
     XOTELO_CITIES = json.loads((ROOT / "xotelo_cities.json").read_text(encoding="utf-8"))
 except (OSError, ValueError):
@@ -203,6 +245,10 @@ def tp_request(path, query):
         if hit and hit[0] > now:
             return hit[1]
 
+    if not _travelpayouts_budget.take():
+        if hit:
+            return hit[1]  # mejor un precio de hace un rato que ninguno
+        raise Unavailable("busy")
     url = f"{API_BASE}{key}"
     try:
         payload = fetch_json(url, {"X-Access-Token": token})
@@ -214,10 +260,7 @@ def tp_request(path, query):
         raise Unavailable("upstream")
 
     rows = payload.get("data")
-    with _lock:
-        if len(_cache) >= CACHE_MAX:
-            _cache.clear()
-        _cache[key] = (now + CACHE_SECONDS, rows)
+    remember(key, (now + CACHE_SECONDS, rows))
     return rows
 
 
@@ -325,7 +368,7 @@ def airline_logo(code):
 def stay_price(data):
     """Precio más bajo por noche de un alojamiento guardado; None si no hay datos."""
     status, body = api_rates({"key": data["key"], "in": data["start"], "out": data["end"], "adults": str(data["pax"].get("adults", 1)), "rooms": str(data["pax"].get("rooms", 1))})
-    rates = [r["rate"] for r in body.get("rates", [])] if status == 200 else []
+    rates = [r["rate"] for r in body.get("rates") or []] if status == 200 else []
     return min(rates) if rates else None
 
 
@@ -358,6 +401,7 @@ def history_destinations(origin):
 
 
 def history_month_prices(origin, destination, month):
+    _background.on = True
     status, body = api_calendar({"origin": origin, "dest": destination, "month": month, "historial": True})
     if status != 200:
         raise ValueError("sin datos")
@@ -369,6 +413,7 @@ def history_hotel_keys():
 
 
 def history_stay_price(key, start, end):
+    _background.on = True
     return stay_price({"key": key, "start": start, "end": end, "pax": {"adults": 1, "rooms": 1}})
 
 
@@ -487,14 +532,18 @@ def geocode(place):
         return local
     if settings()["NOMINATIM"] == "off":
         raise Unavailable("upstream")
-    # Nominatim pide un máximo de una petición por segundo.
-    with _geo_lock:
+    # Nominatim pide un máximo de una petición por segundo: con cola, no se espera.
+    if not _geo_lock.acquire(timeout=3):
+        raise Unavailable("busy")
+    try:
         wait = 1.1 - (time.time() - _last_geocode)
         if wait > 0:
             time.sleep(wait)
         _last_geocode = time.time()
         query = urllib.parse.urlencode({"q": place, "format": "jsonv2", "limit": 1, "accept-language": "es"})
-        rows = fetch_json(f"https://nominatim.openstreetmap.org/search?{query}")
+        rows = fetch_json(f"https://nominatim.openstreetmap.org/search?{query}", timeout=8)
+    finally:
+        _geo_lock.release()
     return (float(rows[0]["lat"]), float(rows[0]["lon"])) if rows else None
 
 
@@ -503,6 +552,9 @@ def overpass(lat, lon):
         '[out:json][timeout:12];nwr["tourism"~"^(hotel|apartment|hostel|guest_house)$"]["name"]'
         f"(around:7000,{lat:.5f},{lon:.5f});out center tags 400;"
     )
+    global _overpass_rest_until
+    if time.time() < _overpass_rest_until:
+        raise Unavailable("upstream")
     body = urllib.parse.urlencode({"data": query}).encode("utf-8")
 
     def ask(url):
@@ -526,6 +578,7 @@ def overpass(lat, lon):
         last_error = error
     finally:
         pool.shutdown(wait=False, cancel_futures=True)
+    _overpass_rest_until = time.time() + OVERPASS_REST_SECONDS
     raise Unavailable("upstream") from last_error
 
 
@@ -910,7 +963,8 @@ def describe_activity(item):
     capacity = str(item.get("capacity", ""))
     website = str(item.get("website", ""))
     result = {
-        "name": item["name"], "kind": kind, "lat": item["lat"], "lon": item["lon"], "km": item.get("km"), "stop_m": item.get("stop_m"),
+        # Wikidata guarda muchos nombres en minúscula («basílica de…»).
+        "name": item["name"][:1].upper() + item["name"][1:], "kind": kind, "lat": item["lat"], "lon": item["lon"], "km": item.get("km"), "stop_m": item.get("stop_m"),
         "free": free, "budget": "bajo" if free else BUDGET_BY_KIND.get(kind, "medio"), "plans": PLANS_BY_KIND.get(kind, []),
         "known": known, "gem": kind in GEM_KINDS and not known, "capacity": int(capacity) if capacity.isdigit() else None,
     }
@@ -1001,6 +1055,8 @@ def overpass_slow(query):
 
 
 def build_transit(lat, lon, part=None):
+    if time.time() < _overpass_rest_until:
+        raise Unavailable("upstream")
     # El recorrido se recorta a la zona del mapa: si no, una ciudad pesa decenas de MB.
     margin_lat = (MAP_RADIUS_KM + 1) / 110.574
     margin_lon = (MAP_RADIUS_KM + 1) / (111.32 * math.cos(math.radians(lat)))
@@ -1087,9 +1143,24 @@ def api_rates(q):
         hit = _cache.get(cache_key)
     if hit and hit[0] > now:
         return 200, hit[1]
+    # Dos personas mirando el mismo hotel a la vez no deben generar dos consultas.
+    with _rate_locks[hash(cache_key) % len(_rate_locks)]:
+        with _lock:
+            hit = _cache.get(cache_key)
+        if hit and hit[0] > time.time():
+            return 200, hit[1]
+        if not _xotelo_budget.take():
+            return 200, hit[1] if hit else {"rates": None, "busy": True}
+        return rates_from_xotelo(key, start, end, adults, rooms, rooms == 1, cache_key, hit)
+
+
+def rates_from_xotelo(key, start, end, adults, rooms, note, cache_key, stale):
+    now = time.time()
     try:
         result = xotelo_get(XOTELO_BASE, "rates", {"hotel_key": key, "chk_in": start, "chk_out": end, "currency": "EUR", "adults": adults, "rooms": rooms})
     except (urllib.error.URLError, TimeoutError, ValueError, OSError) as error:
+        if stale:
+            return 200, stale[1]
         raise Unavailable("upstream") from error
     rates = sorted(
         (
@@ -1100,12 +1171,9 @@ def api_rates(q):
         key=lambda r: r["rate"],
     )
     data = {"rates": rates}
-    if rates and rooms == 1:
+    if rates and note:
         price_collector.note_hotel(key, start, rates[0]["rate"])
-    with _lock:
-        if len(_cache) >= CACHE_MAX:
-            _cache.clear()
-        _cache[cache_key] = (now + XOTELO_RATES_SECONDS, data)
+    remember(cache_key, (now + XOTELO_RATES_SECONDS, data))
     return 200, data
 
 
@@ -1314,7 +1382,7 @@ class Handler(BaseHTTPRequestHandler):
     # Reutiliza la conexión entre peticiones, que es bastante más rápido.
     protocol_version = "HTTP/1.1"
     disable_nagle_algorithm = True
-    timeout = 30
+    timeout = 15
 
     def accepts_gzip(self):
         return "gzip" in (self.headers.get("Accept-Encoding") or "")
@@ -1363,12 +1431,16 @@ class Handler(BaseHTTPRequestHandler):
 
     def send_static(self, path, content_type, cache=None):
         """Sirve un archivo comprimido y evita volver a enviarlo si el navegador ya lo tiene."""
-        stamp = path.stat().st_mtime_ns
+        info = path.stat()
+        stamp = info.st_mtime_ns
         entry = _static_files.get(path)
         if not entry or entry[0] != stamp:
-            raw = path.read_bytes()
-            packed = gzip.compress(raw, 9) if not content_type.startswith("image/") else None
-            entry = (stamp, raw, packed, f'"{hashlib.sha1(raw).hexdigest()[:16]}"')
+            if content_type.startswith("image/"):
+                # Las fotos no se quedan en memoria: hay más de las que caben en el servidor.
+                entry = (stamp, None, None, f'"{stamp:x}-{info.st_size:x}"')
+            else:
+                raw = path.read_bytes()
+                entry = (stamp, raw, gzip.compress(raw, 9), f'"{hashlib.sha1(raw).hexdigest()[:16]}"')
             _static_files[path] = entry
         _, raw, packed, etag = entry
         if self.headers.get("If-None-Match") == etag:
@@ -1381,6 +1453,8 @@ class Handler(BaseHTTPRequestHandler):
             except (ConnectionError, TimeoutError):
                 self.close_connection = True
             return
+        if raw is None:
+            raw = path.read_bytes()
         if packed and self.accepts_gzip():
             self.send_body(200, packed, content_type, cache, "gzip", etag)
         else:
@@ -1551,8 +1625,36 @@ def watch_restart_flag():
             os._exit(0)
 
 
+BUSY_PAGE = (
+    "HTTP/1.1 503 Service Unavailable\r\nContent-Type: text/plain; charset=utf-8\r\nRetry-After: 20\r\nConnection: close\r\n\r\n"
+    "Hay muchas visitas en este momento. Se puede volver a intentar en unos segundos."
+).encode("utf-8")
+
+
 class Server(ThreadingHTTPServer):
     daemon_threads = True
+    request_queue_size = 64
+
+    def __init__(self, *args, **kwargs):
+        self.free_slots = threading.BoundedSemaphore(MAX_ACTIVE_CONNECTIONS)
+        super().__init__(*args, **kwargs)
+
+    def process_request(self, request, client_address):
+        # Con demasiadas conexiones se responde al momento: mejor eso que quedarse sin memoria.
+        if not self.free_slots.acquire(blocking=False):
+            try:
+                request.sendall(BUSY_PAGE)
+            except OSError:
+                pass
+            self.shutdown_request(request)
+            return
+        super().process_request(request, client_address)
+
+    def process_request_thread(self, request, client_address):
+        try:
+            super().process_request_thread(request, client_address)
+        finally:
+            self.free_slots.release()
 
 
 class ServerV6(Server):

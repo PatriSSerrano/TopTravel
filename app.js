@@ -149,12 +149,21 @@ function searchPlaces(text) {
 }
 
 /* Los más buscados van escritos arriba; el resto de aeropuertos del mundo se carga aparte. */
-fetch('vendor/aeropuertos.json').then((r) => (r.ok ? r.json() : [])).then((rows) => {
-  const known = new Set(PLACES.map((p) => p.code));
-  rows.forEach(([code, city, country, airport]) => {
-    if (!known.has(code)) PLACES.push({ code, city, country, airport });
-  });
-}).catch(() => {});
+let airportsLoad = null;
+function loadAirports() {
+  airportsLoad = airportsLoad || fetch('vendor/aeropuertos.json').then((r) => (r.ok ? r.json() : [])).then((rows) => {
+    const known = new Set(PLACES.map((p) => p.code));
+    rows.forEach(([code, city, country, airport]) => {
+      if (!known.has(code)) PLACES.push({ code, city, country, airport });
+    });
+    // Si ya se estaba escribiendo, las sugerencias se actualizan.
+    const typing = document.activeElement;
+    if (typing && (typing.id === 'origin' || typing.id === 'dest' || /^stop\d+$/.test(typing.id)) && typing.value.trim()) {
+      typing.dispatchEvent(new Event('sugerir'));
+    }
+  }).catch(() => { airportsLoad = null; });
+  return airportsLoad;
+}
 
 const customCode = (text) => ({ code: text.trim().toUpperCase(), city: text.trim().toUpperCase(), country: '', airport: '' });
 const isCode = (text) => /^[a-z]{3}$/i.test(text.trim());
@@ -226,7 +235,8 @@ function setupCombo(key, input, list, seg) {
     }
   };
 
-  input.addEventListener('focus', () => { closePops(); open(); });
+  input.addEventListener('focus', () => { closePops(); open(); loadAirports(); });
+  input.addEventListener('sugerir', open);
   input.addEventListener('input', () => { state[key] = null; open(); });
   input.addEventListener('blur', close);
   input.addEventListener('keydown', (e) => {
@@ -908,7 +918,8 @@ function renderHotelResults(el, hotels, s, center) {
       : noMatchHtml;
     el.querySelector('.more').hidden = rows.length <= state.limit;
     drawHotelMap(el, rows, s, center, hotels);
-    loadVisibleRates(el, s, rows);
+    el.reloadRates = () => loadVisibleRates(el, s, rows);
+    el.reloadRates();
   };
 
   wireControls(el, state, draw);
@@ -975,6 +986,7 @@ async function removeSaved(id) {
   if (account.user) await api('/api/saved/delete', { id });
   account.saved = account.saved.filter((x) => x.id !== id);
   if (!account.user) setGuestItems(account.saved);
+  paintSavedCount();
 }
 
 /* Al entrar con una cuenta se ofrece mover lo guardado como invitado. */
@@ -1596,6 +1608,18 @@ let exploreLand = null;
 document.addEventListener('toptravel:tema', () => { if (exploreLand) exploreLand.setStyle(landStyle()); });
 const hasMaps = () => typeof L !== 'undefined';
 
+/* Ejecuta algo la primera vez que un elemento va a aparecer en pantalla. */
+function whenNear(el, run, margin = '400px') {
+  if (typeof IntersectionObserver === 'undefined') { run(); return; }
+  const watcher = new IntersectionObserver((entries) => {
+    if (entries.some((e) => e.isIntersecting)) {
+      watcher.disconnect();
+      run();
+    }
+  }, { rootMargin: margin });
+  watcher.observe(el);
+}
+
 function newMap(el, options = {}, tiles = true) {
   const map = L.map(el, { scrollWheelZoom: false, ...options });
   map.attributionControl.setPrefix(false);
@@ -1686,6 +1710,15 @@ function paintPriceMarker(key, rates) {
 function drawHotelMap(root, rows, s, center, hotels) {
   const el = root.querySelector('[data-map]');
   if (!hasMaps() || !el) return;
+  // El mapa pide sus imágenes a OpenStreetMap: se crea solo cuando se va a ver.
+  el.pendingDraw = () => drawHotelMap(root, rows, s, center, hotels);
+  if (!el.dataset.seen) {
+    if (!el.dataset.watching) {
+      el.dataset.watching = '1';
+      whenNear(el, () => { el.dataset.seen = '1'; el.pendingDraw(); });
+    }
+    return;
+  }
   if (cityMap.el !== el) {
     if (cityMap.map) cityMap.map.remove();
     Object.assign(cityMap, { map: newMap(el), el, center, s, mode: 'prices', monumentsData: null, transitData: null, framed: false, markers: new Map(), run: cityMap.run + 1 });
@@ -1705,7 +1738,7 @@ function drawHotelMap(root, rows, s, center, hotels) {
   cityMap.prices.clearLayers();
   cityMap.markers = new Map();
   // Cada precio es una consulta: el mapa enseña los mejor valorados, y el resto está en la lista.
-  const points = rows.filter((h) => h.key && typeof h.lat === 'number' && typeof h.lon === 'number').slice(0, MAX_RATE_REQUESTS);
+  const points = rows.filter((h) => h.key && typeof h.lat === 'number' && typeof h.lon === 'number').slice(0, MAP_PRICES);
   points.forEach((h) => {
     const marker = L.marker([h.lat, h.lon], { icon: priceIcon('…', h.km), title: h.name, alt: h.name }).bindPopup(hotelPopup(h, s), { maxWidth: 280 });
     cityMap.markers.set(h.key, { marker, hotel: h });
@@ -2117,13 +2150,26 @@ function ratesHtml(rates, s) {
 }
 
 const rateId = (key, s) => [key, s.start, s.end, s.pax.adults, s.pax.rooms].join('|');
-const MAX_RATE_REQUESTS = 40;
+const MAP_PRICES = 16;
+const PRICES_BEFORE_SCROLL = 4;
+const CHEAP_FIRST = { Albergue: 0, 'Casa de huéspedes': 1, Hostal: 1, Apartamento: 2 };
 
 async function loadVisibleRates(root, s, rows = []) {
   const run = ++ratesRun;
   const visible = [...root.querySelectorAll('[data-rates]')].map((el) => el.dataset.rates);
-  const onMap = rows.filter((h) => h.key && typeof h.lat === 'number').map((h) => h.key);
-  const pending = [...new Set([...visible, ...onMap])].slice(0, MAX_RATE_REQUESTS);
+  const onMap = rows.filter((h) => h.key && typeof h.lat === 'number').map((h) => h.key).slice(0, MAP_PRICES);
+  // Hasta llegar a los alojamientos solo se piden los justos para el total del viaje.
+  const pending = root.dataset.ratesSeen
+    ? [...new Set([...visible, ...onMap])]
+    : rows.filter((h) => h.key).sort((a, b) => (CHEAP_FIRST[a.kind] ?? 3) - (CHEAP_FIRST[b.kind] ?? 3) || (a.stars || 0) - (b.stars || 0) || (a.rating || 9) - (b.rating || 9))
+      .slice(0, PRICES_BEFORE_SCROLL).map((h) => h.key);
+  if (!root.dataset.ratesSeen && !root.dataset.ratesWatching) {
+    root.dataset.ratesWatching = '1';
+    whenNear(root, () => {
+      root.dataset.ratesSeen = '1';
+      root.reloadRates?.();
+    });
+  }
   const paint = (key, rates) => {
     root.querySelectorAll(`[data-rates="${key}"]`).forEach((el) => { el.innerHTML = ratesHtml(rates, s); });
     if (rates && rates.length) {
@@ -2147,7 +2193,7 @@ async function loadVisibleRates(root, s, rows = []) {
       }
     }
   };
-  await Promise.all([next(), next(), next(), next(), next()]);
+  await Promise.all([next(), next(), next()]);
 }
 
 /* La nota media de viajeros que da Xotelo. Al pulsarla se abren las opiniones en TripAdvisor. */
@@ -2206,7 +2252,7 @@ async function loadHotels(s) {
     paintPlanHotels();
     renderHotelResults(el, body.hotels, s, body.center);
   } catch {
-    if (run === hotelsRun) el.innerHTML = '<div class="empty"><b>No se han podido cargar los alojamientos</b>Se puede volver a intentar en un momento.</div>';
+    if (run === hotelsRun) el.innerHTML = '<div class="empty"><b>Todavía no hay alojamientos de esta ciudad</b>Se van añadiendo más ciudades poco a poco. También se puede probar con la ciudad grande más cercana.</div>';
   } finally {
     stop();
   }
@@ -2348,6 +2394,10 @@ function planHtml(a, city) {
 
 function renderPlans(el, items, city, center, s) {
   planMap.trip = s;
+  if (planMap.map) {
+    planMap.map.remove();
+    planMap.map = null;
+  }
   const count = (fn) => items.filter(fn).length;
   const groups = PLAN_GROUPS.filter((g) => items.some((a) => g.kinds.includes(a.kind)));
   const kinds = Object.keys(PLAN_KINDS).filter((k) => items.some((a) => a.kind === k));
@@ -2411,8 +2461,10 @@ function renderPlans(el, items, city, center, s) {
     el.querySelectorAll('[data-group]').forEach((box) => {
       box.checked = PLAN_GROUPS.find((g) => g.id === box.dataset.group).kinds.every((k) => !kinds.includes(k) || chosen.has(k));
     });
-    drawPlanMap(rows, city, !framed);
-    framed = true;
+    if (planMap.map) {
+      drawPlanMap(rows, city, !framed);
+      framed = true;
+    }
     el.querySelector('[data-count]').textContent = `${rows.length} de ${items.length} planes`;
     el.querySelector('[data-results]').innerHTML = rows.length
       ? rows.slice(0, view.limit).map((a) => planHtml(a, city)).join('')
@@ -2420,8 +2472,10 @@ function renderPlans(el, items, city, center, s) {
     el.querySelector('.more').hidden = rows.length <= view.limit;
   };
 
-  setupPlanMap(el, center);
   let framed = false;
+  const mapBox = el.querySelector('[data-plan-map]');
+  if (center && hasMaps()) whenNear(mapBox, () => { setupPlanMap(el, center); draw(); });
+  else el.querySelector('[data-plan-map-block]').hidden = true;
   wireControls(el, view, draw);
   el.addEventListener('click', (e) => {
     const save = e.target.closest('.list [data-save-plan]');
@@ -2438,6 +2492,7 @@ function renderPlans(el, items, city, center, s) {
       view.limit = view.step;
       draw();
     } else if (overlay === 'hotels') {
+      if (!planMap.map) return;
       if (e.target.checked) {
         planMap.hotelsLayer.addTo(planMap.map);
         el.querySelector('[data-plan-note]').textContent = planMap.hotels ? '' : 'Los alojamientos salen al buscar con fecha de vuelta.';

@@ -70,3 +70,8 @@ html, body.lp { background: var(--lp-bg); }
   .lp-js .sc-track { display: none; }
   .lp-js .sc-static { display: block; }
 }
+
+/* En móvil, los iconos de arriba deben poder pulsarse con el dedo */
+@media (max-width: 640px) {
+  .lp-tool { min-width: 40px; min-height: 40px; justify-content: center; }
+}

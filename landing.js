@@ -590,7 +590,7 @@
   document.addEventListener('toptravel:tema', readLook);
   ['roma', 'roma2', 'roma3'].forEach((name) => {
     photos[name] = new Image();
-    photos[name].src = `assets/${name}.jpg`;
+    photos[name].src = `assets/${name}${innerWidth < 900 ? '-m' : ''}.jpg`;
   });
   fetch('vendor/globo.json').then((r) => r.json()).then((data) => { globe = data; }).catch(() => {});
   fetch('vendor/roma.json').then((r) => r.json()).then((data) => { city = prepareCity(data); }).catch(() => {});

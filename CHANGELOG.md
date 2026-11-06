@@ -6,6 +6,12 @@ Cada versión tiene tres números, por ejemplo 1.2.3:
 - **El segundo** cambia al añadir algo nuevo, como más ciudades o una función.
 - **El tercero** cambia al corregir un error o hacer un retoque.
 
+## 1.9.1 · 7 de noviembre de 2026
+
+- La web aguanta mejor muchas visitas a la vez y gasta menos datos: los mapas y la mayoría de precios se cargan al llegar a ellos.
+- Los precios de hoteles se reutilizan durante 6 horas.
+- Correcciones: el contador de Guardados y los nombres de monumentos en minúscula.
+
 ## 1.9.0 · 7 de noviembre de 2026
 
 - Muchos más hoteles con precio y ubicación en el mapa: hasta unos 500 por ciudad.
