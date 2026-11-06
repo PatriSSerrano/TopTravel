@@ -37,7 +37,7 @@ def main():
     folder.mkdir(exist_ok=True)
     sources = {}
     for city, (_, source) in ciudades.CITIES.items():
-        if not has_plans(city):
+        if source and not has_plans(city):
             sources.setdefault(source, []).append(city)
     print(f"{len(sources)} extractos para {sum(map(len, sources.values()))} ciudades", flush=True)
     # Primero los pequeños: así la mayoría de ciudades queda lista antes.

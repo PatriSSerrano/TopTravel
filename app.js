@@ -148,6 +148,14 @@ function searchPlaces(text) {
     .map((x) => x.p);
 }
 
+/* Los más buscados van escritos arriba; el resto de aeropuertos del mundo se carga aparte. */
+fetch('vendor/aeropuertos.json').then((r) => (r.ok ? r.json() : [])).then((rows) => {
+  const known = new Set(PLACES.map((p) => p.code));
+  rows.forEach(([code, city, country, airport]) => {
+    if (!known.has(code)) PLACES.push({ code, city, country, airport });
+  });
+}).catch(() => {});
+
 const customCode = (text) => ({ code: text.trim().toUpperCase(), city: text.trim().toUpperCase(), country: '', airport: '' });
 const isCode = (text) => /^[a-z]{3}$/i.test(text.trim());
 
@@ -181,7 +189,7 @@ function setupCombo(key, input, list, seg) {
   const open = () => {
     const text = input.value;
     const typed = norm(text) !== '' && norm(text) !== norm(placeLabel(state[key]));
-    items = typed ? searchPlaces(text) : PLACES.slice(0, 6);
+    items = typed ? searchPlaces(text).slice(0, 30) : PLACES.slice(0, 6);
     if (typed && !items.length && state.mode === 'flights' && isCode(text)) items = [customCode(text)];
     active = -1;
 
@@ -848,6 +856,8 @@ function renderHotelResults(el, hotels, s, center) {
         fieldsetHtml('Tipo', kinds.map((k) => optHtml('checkbox', 'h_kind', k, k, count((h) => (h.kind || 'Alojamiento') === k), true)).join(''))
         + fieldsetHtml('Estrellas', optHtml('radio', 'h_stars', '0', 'Cualquiera', hotels.length, true)
           + [3, 4, 5].map((n) => optHtml('radio', 'h_stars', n, n === 5 ? '5 estrellas' : `${n} o más`, count((h) => h.stars >= n))).join(''))
+        + fieldsetHtml('Nota de viajeros', optHtml('radio', 'h_rate', '0', 'Cualquiera', hotels.length, true)
+          + [4, 4.5].map((n) => optHtml('radio', 'h_rate', n, `${String(n).replace('.', ',')} o más`, count((h) => h.rating >= n))).join(''))
         + fieldsetHtml('Precio', optHtml('checkbox', 'h_price', '1', 'Solo con precio', count((h) => h.key))),
       )}
       <div class="layout__main">
@@ -873,12 +883,14 @@ function renderHotelResults(el, hotels, s, center) {
         <p class="count">Precio orientativo por noche y por persona: el precio de la habitación según Xotelo, dividido entre los viajeros. Puede no incluir impuestos, por lo que el total se debe confirmar antes de reservar.</p>
         <div class="list" data-results></div>
         <button type="button" class="btn btn--out btn--block more">Ver más alojamientos</button>
-        <p class="legal">Datos de alojamientos: © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">colaboradores de OpenStreetMap</a>. Precios: <a href="https://xotelo.com" target="_blank" rel="noopener">Xotelo</a>.</p>
+        <p class="legal">Datos de alojamientos: © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">colaboradores de OpenStreetMap</a>. Precios y notas: <a href="https://xotelo.com" target="_blank" rel="noopener">Xotelo</a>, con datos de TripAdvisor.</p>
       </div>
     </div>`;
 
   const byName = (a, b) => a.name.localeCompare(b.name, 'es');
-  const order = (a, b) => Boolean(b.key) - Boolean(a.key) || b.stars - a.stars || byName(a, b);
+  // Pocas opiniones pesan menos: un 5 con 20 opiniones no debe ganar a un 4,8 con 5.000.
+  const trust = (h) => (h.rating ? (h.rating * (h.reviews || 0) + 3.8 * 100) / ((h.reviews || 0) + 100) : 0);
+  const order = (a, b) => Boolean(b.key) - Boolean(a.key) || trust(b) - trust(a) || b.stars - a.stars || byName(a, b);
   const state = { step: HOTELS_STEP, limit: HOTELS_STEP };
 
   const draw = () => {
@@ -886,8 +898,9 @@ function renderHotelResults(el, hotels, s, center) {
     const chosen = new Set([...form.querySelectorAll('[name=h_kind]:checked')].map((i) => i.value));
     const minStars = Number(form.elements.h_stars.value);
     const needsPrice = form.elements.h_price.checked;
+    const minRate = Number(form.elements.h_rate.value);
     const rows = hotels
-      .filter((h) => chosen.has(h.kind || 'Alojamiento') && h.stars >= minStars && (!needsPrice || h.key))
+      .filter((h) => chosen.has(h.kind || 'Alojamiento') && h.stars >= minStars && (!needsPrice || h.key) && (!minRate || h.rating >= minRate))
       .sort(order);
     el.querySelector('[data-count]').textContent = `${rows.length} de ${hotels.length} alojamientos`;
     el.querySelector('[data-results]').innerHTML = rows.length
@@ -1607,6 +1620,7 @@ function hotelPopup(h, s, rates) {
   const booking = linkBooking({ ...s, dest: { city: `${h.name}, ${s.dest.city}`, country: '' } });
   const stars = h.stars ? ' · ' + '★'.repeat(h.stars) : '';
   return `<b class="map__title">${esc(h.name)}</b><span class="map__sub">${esc(h.kind || 'Alojamiento')}${stars}</span>
+    ${hotelRating(h)}
     ${kmHtml(h)}
     ${rates && rates.length ? `<div class="rates">${ratesHtml(rates, s)}</div>` : ''}
     ${h.website ? `<a class="btn" href="${esc(h.website)}" target="_blank" rel="noopener nofollow">Web oficial</a>` : ''}
@@ -1690,7 +1704,8 @@ function drawHotelMap(root, rows, s, center, hotels) {
   cityMap.map.invalidateSize();
   cityMap.prices.clearLayers();
   cityMap.markers = new Map();
-  const points = rows.filter((h) => h.key && typeof h.lat === 'number' && typeof h.lon === 'number');
+  // Cada precio es una consulta: el mapa enseña los mejor valorados, y el resto está en la lista.
+  const points = rows.filter((h) => h.key && typeof h.lat === 'number' && typeof h.lon === 'number').slice(0, MAX_RATE_REQUESTS);
   points.forEach((h) => {
     const marker = L.marker([h.lat, h.lon], { icon: priceIcon('…', h.km), title: h.name, alt: h.name }).bindPopup(hotelPopup(h, s), { maxWidth: 280 });
     cityMap.markers.set(h.key, { marker, hotel: h });
@@ -1707,7 +1722,7 @@ function drawHotelMap(root, rows, s, center, hotels) {
   if (cityMap.mode === 'prices') {
     const missing = rows.filter((h) => h.key).length - points.length;
     mapNote(root, points.length
-      ? `${plural(points.length, 'alojamiento', 'alojamientos')} con precio en el mapa, por noche y por persona.${missing > 0 ? ` ${plural(missing, 'otro', 'otros')} con precio solo en la lista: falta su ubicación.` : ''}`
+      ? `${plural(points.length, 'alojamiento', 'alojamientos')} con precio en el mapa, por noche y por persona.${missing > 0 ? ` ${plural(missing, 'otro', 'otros')} en la lista.` : ''}`
       : 'Todavía no hay alojamientos con precio en el mapa de esta ciudad. Los mapas de monumentos y transporte sí están disponibles.');
   }
 }
@@ -2135,6 +2150,15 @@ async function loadVisibleRates(root, s, rows = []) {
   await Promise.all([next(), next(), next(), next(), next()]);
 }
 
+/* La nota media de viajeros que da Xotelo. Al pulsarla se abren las opiniones en TripAdvisor. */
+function hotelRating(h) {
+  if (!h.rating) return '';
+  const text = `<b>${esc(String(h.rating).replace('.', ','))}/5</b>${h.reviews ? `<small>${esc(plural(h.reviews, 'opinión', 'opiniones').replace(/^(\d+)/, (n) => Number(n).toLocaleString('es-ES')))}</small>` : ''}`;
+  return h.url
+    ? `<a class="note" href="${esc(h.url)}" target="_blank" rel="noopener nofollow">${text}<span class="sr"> Ver las opiniones en TripAdvisor, en una pestaña nueva</span></a>`
+    : `<span class="note">${text}</span>`;
+}
+
 function hotelHtml(h, s) {
   const stars = h.stars ? ' · ' + '★'.repeat(h.stars) : '';
   const booking = linkBooking({ ...s, dest: { city: `${h.name}, ${s.dest.city}`, country: '' } });
@@ -2143,6 +2167,7 @@ function hotelHtml(h, s) {
       <div class="hotel__body">
         <span class="stay__type">${esc(h.kind || 'Alojamiento')}${stars}</span>
         <h3 class="stay__name">${esc(h.name)}</h3>
+        ${hotelRating(h)}
         ${h.address ? `<span class="stay__loc"><span>${esc(h.address)}</span></span>` : ''}
         ${kmHtml(h)}
         ${h.key ? `<div class="rates" data-rates="${esc(h.key)}">Buscando precios…</div>` : '<div class="rates rates--none">Sin precio disponible para este alojamiento.</div>'}
@@ -2245,7 +2270,7 @@ function paintPlanHotels() {
   if (!hotelsLayer || !hotels) return;
   hotelsLayer.clearLayers();
   const from = planMap.center ? L.latLng(planMap.center.lat, planMap.center.lon) : null;
-  hotels.filter((h) => typeof h.lat === 'number' && typeof h.lon === 'number').forEach((h) => {
+  hotels.filter((h) => typeof h.lat === 'number' && typeof h.lon === 'number').slice(0, 300).forEach((h) => {
     if (from) h.km = from.distanceTo([h.lat, h.lon]) / 1000;
     const icon = L.divIcon({ className: 'pin-hotel', iconSize: [9, 9], iconAnchor: [4, 4] });
     L.marker([h.lat, h.lon], { icon, title: h.name, alt: h.name })
@@ -2877,7 +2902,7 @@ function toggleCompareStay(h, s, button, center) {
   const id = stayCompareId(h, s);
   const rates = h.key ? rateCache.get(rateId(h.key, s)) : null;
   toggleCompare('stays', {
-    id, name: h.name, kind: h.kind || 'Alojamiento', stars: h.stars || 0, key: h.key || '', lat: h.lat, lon: h.lon, km: h.km ?? null, website: h.website || '',
+    id, name: h.name, kind: h.kind || 'Alojamiento', stars: h.stars || 0, rating: h.rating || null, reviews: h.reviews || 0, url: h.url || '', key: h.key || '', lat: h.lat, lon: h.lon, km: h.km ?? null, website: h.website || '',
     city: s.dest.city, country: s.dest.country || '', center: center || null, start: s.start, end: s.end, pax: s.pax,
     night: rates && rates.length ? perPerson(rates[0].rate, s) : null,
   });
@@ -3087,6 +3112,7 @@ function compareStays(items) {
     { label: 'Distancia al centro', value: (x) => (typeof x.km === 'number' ? kmShort(x.km) : 'Sin dato'), number: (x) => x.km },
     { label: 'Metro o tranvía más cercano', value: (x) => (x.line === null ? 'Sin dato' : metres(x.line)), number: (x) => x.line },
     { label: 'Planes a menos de 1 km', value: (x) => (x.nearPlans === null ? 'Sin dato' : String(x.nearPlans)), number: (x) => x.nearPlans, high: true },
+    { label: 'Nota de viajeros', value: (x) => (x.rating ? `${String(x.rating).replace('.', ',')}/5 (${x.reviews.toLocaleString('es-ES')})` : 'Sin dato'), number: (x) => x.rating, high: true },
     { label: 'Categoría', value: (x) => (x.stars ? '★'.repeat(x.stars) : 'Sin dato'), number: (x) => x.stars || null, high: true },
   ];
   const points = [];
@@ -3096,32 +3122,34 @@ function compareStays(items) {
   const metro = bestOf(items, (x) => x.line);
   const plans = bestOf(items, (x) => x.nearPlans, true);
   const stars = bestOf(items, (x) => x.stars || null, true);
+  const rated = bestOf(items, (x) => x.rating, true);
   const far = worstOf(items, (x) => x.km);
   if (cheap) {
     points.push(`${nameOf(items, cheap)} es la opción más barata: ${money(cheap.night)} por noche y persona${typeof cheap.km === 'number' && far === cheap ? `, pero es la más lejana del centro (${kmShort(cheap.km)})` : ''}.`);
     summary.push(`Para gastar menos, ${LETTERS[items.indexOf(cheap)]}.`);
   }
-  if (near) {
+  if (near && far && far.km - near.km >= 0.5) {
     const extra = cheap && near !== cheap && typeof near.night === 'number' ? `, y cuesta ${money(near.night - cheap.night)} más por noche que la más barata` : '';
     points.push(`${nameOf(items, near)} es la más céntrica: a ${kmShort(near.km)} del centro${extra}. Se tarda menos en ver las cosas.`);
     if (near !== cheap) summary.push(`Para ir andando a casi todo, ${LETTERS[items.indexOf(near)]}.`);
   }
-  if (far && far !== near && typeof far.line === 'number') {
+  if (far && far !== near && typeof far.line === 'number' && far.km - near.km >= 1) {
     points.push(far.line <= 500
       ? `${nameOf(items, far)} es la más lejana (${kmShort(far.km)}), pero tiene metro o tranvía a ${metres(far.line)}: va bien con transporte público, aunque se tarda más en ver las cosas.`
       : `${nameOf(items, far)} es la más lejana (${kmShort(far.km)}) y el metro o tranvía más cercano está a ${metres(far.line)}: se depende más del autobús o del taxi.`);
   }
   if (metro && metro !== far) points.push(`${nameOf(items, metro)} es la mejor conectada: metro o tranvía a ${metres(metro.line)}.`);
   if (plans) points.push(`${nameOf(items, plans)} tiene más planes alrededor: ${plans.nearPlans} a menos de 1 km.`);
-  if (stars) {
-    points.push(`${nameOf(items, stars)} tiene la mejor categoría (${'★'.repeat(stars.stars)}): conviene si se va a pasar mucho tiempo en el alojamiento.`);
-    if (stars !== cheap && stars !== near) summary.push(`Para pasar más tiempo en el alojamiento, ${LETTERS[items.indexOf(stars)]}.`);
+  if (rated) {
+    points.push(`${nameOf(items, rated)} es la mejor valorada: ${String(rated.rating).replace('.', ',')}/5 con ${rated.reviews.toLocaleString('es-ES')} opiniones. Conviene si se va a pasar mucho tiempo en el alojamiento.`);
+    if (rated !== cheap && rated !== near) summary.push(`Para pasar más tiempo en el alojamiento, ${LETTERS[items.indexOf(rated)]}.`);
   }
+  if (stars) points.push(`${nameOf(items, stars)} tiene la mejor categoría (${'★'.repeat(stars.stars)}).`);
   const noPrice = items.filter((x) => x.night === null);
   if (noPrice.length) points.push(`De ${noPrice.map((x) => LETTERS[items.indexOf(x)]).join(' y ')} no hay precio para estas fechas, así que no entra en la comparación de precio.`);
   if (new Set(items.map((x) => x.city)).size > 1) points.push('Son ciudades distintas: para comparar también vuelos, moneda y horarios, está la pestaña «Viajes».');
   return compareTable(items, rows) + conclusionHtml(points, summary)
-    + '<p class="count">La categoría son las estrellas del alojamiento, no una nota de opiniones. La distancia al metro o tranvía se mide hasta la línea, en línea recta.</p>';
+    + '<p class="count">La nota es la media de opiniones de TripAdvisor, según Xotelo. La categoría son las estrellas del alojamiento. La distancia al metro o tranvía se mide hasta la línea, en línea recta.</p>';
 }
 
 /* --- Viajes --- */

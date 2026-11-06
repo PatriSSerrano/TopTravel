@@ -39,8 +39,25 @@ CITIES = {
 ALIASES = {
     "nueva york": "new york city", "washington d. c.": "washington", "montecarlo": "monte carlo", "skopie": "skopje",
     "san sebastian": "donostia", "chisinau": "chisinau", "kiev": "kyiv", "la valeta": "valletta", "reikiavik": "reykjavik",
+    "denpasar (bali)": "denpasar", "ciudad ho chi minh": "ho chi minh city", "nueva delhi": "delhi", "bombay": "mumbai", "busan": "busan", "cebu": "cebu city",
+    "shanghai": "shanghai", "pekin": "beijing", "hanoi": "hanoi", "seul": "seoul", "taipei": "taipei", "nom pen": "phnom penh", "kioto": "kyoto", "yakarta": "jakarta", "malaca": "malacca", "penang": "george town", "pattaya": "pattaya", "macao": "macau", "katmandu": "kathmandu",
     "liubliana": "ljubljana", "salonica": "thessaloniki", "lárnaca": "larnaca", "santorini": "fira", "andorra la vella": "andorra la vella",
 }
+
+# Ciudades de Asia con hoteles de la lista de Xotelo: su zona y su país. Todavía sin mapa propio.
+ASIA_ZONES = {
+    "Singapur": ("Singapur", "g294265"), "Kuala Lumpur": ("Malasia", "g298570"), "Penang": ("Malasia", "g298303"), "Malaca": ("Malasia", "g306997"),
+    "Langkawi": ("Malasia", "g298283"), "Phuket": ("Tailandia", "g293920"), "Chiang Mai": ("Tailandia", "g293917"), "Pattaya": ("Tailandia", "g293919"),
+    "Denpasar (Bali)": ("Indonesia", "g294226"), "Yakarta": ("Indonesia", "g294229"), "Yogyakarta": ("Indonesia", "g294230"),
+    "Ciudad Ho Chi Minh": ("Vietnam", "g293925"), "Hanói": ("Vietnam", "g293924"), "Da Nang": ("Vietnam", "g298085"),
+    "Manila": ("Filipinas", "g298573"), "Cebú": ("Filipinas", "g298460"), "Hong Kong": ("Hong Kong", "g294217"), "Macao": ("Macao", "g664891"),
+    "Taipéi": ("Taiwán", "g293913"), "Osaka": ("Japón", "g298566"), "Kioto": ("Japón", "g298564"), "Sapporo": ("Japón", "g298560"), "Fukuoka": ("Japón", "g298207"),
+    "Seúl": ("Corea del Sur", "g294197"), "Busán": ("Corea del Sur", "g297884"), "Shanghái": ("República Popular China", "g308272"), "Pekín": ("República Popular China", "g294212"),
+    "Nueva Delhi": ("India", "g304551"), "Bombay": ("India", "g304554"), "Colombo": ("Sri Lanka", "g293962"), "Katmandú": ("Nepal", "g293890"),
+    "Nom Pen": ("Camboya", "g293940"), "Siem Reap": ("Camboya", "g297390"),
+}
+for _city, (_country, _zone) in ASIA_ZONES.items():
+    CITIES[_city] = (_country, None)
 
 
 def place_of(city):

@@ -6,6 +6,14 @@ Cada versión tiene tres números, por ejemplo 1.2.3:
 - **El segundo** cambia al añadir algo nuevo, como más ciudades o una función.
 - **El tercero** cambia al corregir un error o hacer un retoque.
 
+## 1.9.0 · 7 de noviembre de 2026
+
+- Muchos más hoteles con precio y ubicación en el mapa: hasta unos 500 por ciudad.
+- Cada hotel muestra la nota media de los viajeros. Al pulsarla, se abren sus opiniones.
+- Filtro por nota, y el comparador indica cuál está mejor valorado.
+- El buscador conoce todos los aeropuertos con vuelos del mundo, también los de Asia.
+- Hoteles de grandes ciudades de Asia.
+
 ## 1.8.0 · 6 de noviembre de 2026
 
 - Nuevo apartado «Comparar»: vuelos, alojamientos o viajes juntos, con una conclusión final. Los viajes comparan precio, tipo de plan, moneda, hora y horas de luz.

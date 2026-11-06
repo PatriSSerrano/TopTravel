@@ -13,8 +13,8 @@
    {
     "name": "Dharma Boutique Hotel & Spa",
     "key": "g187791-d19907141",
-    "lat": null,
-    "lon": null
+    "lat": 41.895824,
+    "lon": 12.49349
    },
    {
     "name": "Piazza di Spagna 9",
@@ -31,8 +31,8 @@
    {
     "name": "The Fifteen Keys Hotel",
     "key": "g187791-d7619756",
-    "lat": null,
-    "lon": null
+    "lat": 41.89771,
+    "lon": 12.495477
    },
    {
     "name": "Hotel Hassler",
@@ -43,8 +43,8 @@
    {
     "name": "Rome Cavalieri, A Waldorf Astoria Hotel",
     "key": "g187791-d190138",
-    "lat": null,
-    "lon": null
+    "lat": 41.91883,
+    "lon": 12.446622
    },
    {
     "name": "Hotel Colosseum",
@@ -61,8 +61,8 @@
    {
     "name": "iQ Hotel Roma",
     "key": "g187791-d1729030",
-    "lat": null,
-    "lon": null
+    "lat": 41.90049,
+    "lon": 12.495253
    },
    {
     "name": "The Independent Hotel",
@@ -98,8 +98,8 @@
    {
     "name": "Hotel Astra Opera Astotel",
     "key": "g187147-d229968",
-    "lat": null,
-    "lon": null
+    "lat": 48.87178,
+    "lon": 2.328087
    },
    {
     "name": "Hotel Bradford Elysees Astotel",
@@ -122,8 +122,8 @@
    {
     "name": "Hotel Residence Henri IV",
     "key": "g187147-d230491",
-    "lat": null,
-    "lon": null
+    "lat": 48.848167,
+    "lon": 2.349061
    },
    {
     "name": "Hotel & Spa de Latour Maubourg",
@@ -158,8 +158,8 @@
    {
     "name": "Hotel Eiffel Seine",
     "key": "g187147-d572984",
-    "lat": null,
-    "lon": null
+    "lat": 48.85437,
+    "lon": 2.28929
    },
    {
     "name": "Hotel Astoria - Astotel",
@@ -195,8 +195,8 @@
    {
     "name": "Santiago de Alfama Boutique Hotel",
     "key": "g189158-d7376234",
-    "lat": null,
-    "lon": null
+    "lat": 38.711502,
+    "lon": -9.13125
    },
    {
     "name": "Casa do Barao",
@@ -249,8 +249,8 @@
    {
     "name": "Jupiter Lisboa Hotel - Rooftop & Spa",
     "key": "g189158-d7363512",
-    "lat": null,
-    "lon": null
+    "lat": 38.739616,
+    "lon": -9.145963
    },
    {
     "name": "LX Boutique Hotel",
@@ -261,8 +261,8 @@
    {
     "name": "Brown's Central Hotel",
     "key": "g189158-d7109188",
-    "lat": null,
-    "lon": null
+    "lat": 38.71154,
+    "lon": -9.138393
    }
   ]
  },
@@ -292,8 +292,8 @@
    {
     "name": "The Milestone Hotel and Residences",
     "key": "g186338-d193121",
-    "lat": null,
-    "lon": null
+    "lat": 51.502083,
+    "lon": -0.186593
    },
    {
     "name": "Staybridge Suites London Vauxhall",
@@ -759,8 +759,8 @@
    {
     "name": "CoolRooms Palacio de Atocha",
     "key": "g187514-d15011688",
-    "lat": null,
-    "lon": null
+    "lat": 40.413204,
+    "lon": -3.701099
    },
    {
     "name": "Barceló Imagine",
@@ -771,8 +771,8 @@
    {
     "name": "Relais & Chateaux Heritage Madrid Hotel",
     "key": "g187514-d12828930",
-    "lat": null,
-    "lon": null
+    "lat": 40.43489,
+    "lon": -3.678937
    },
    {
     "name": "Hotel Villa Real",
@@ -801,8 +801,8 @@
    {
     "name": "SLEEP'N Atocha",
     "key": "g187514-d1475454",
-    "lat": null,
-    "lon": null
+    "lat": 40.409077,
+    "lon": -3.693069
    },
    {
     "name": "Hotel101 - Madrid",
@@ -813,8 +813,8 @@
    {
     "name": "ApartoSuites Jardines de Sabatini",
     "key": "g187514-d1657593",
-    "lat": null,
-    "lon": null
+    "lat": 40.42097,
+    "lon": -3.714896
    },
    {
     "name": "Innside By Meliá Madrid Valdebebas",
@@ -874,8 +874,8 @@
    {
     "name": "Claris Hotel & Spa",
     "key": "g187497-d190615",
-    "lat": null,
-    "lon": null
+    "lat": 41.394367,
+    "lon": 2.165189
    },
    {
     "name": "Hotel Astoria",
@@ -886,8 +886,8 @@
    {
     "name": "Hotel Arc La Rambla",
     "key": "g187497-d232778",
-    "lat": null,
-    "lon": null
+    "lat": 41.378223,
+    "lon": 2.175595
    },
    {
     "name": "Hotel Acta Voraport",
@@ -929,14 +929,14 @@
    {
     "name": "Hotel Tayko Sevilla",
     "key": "g187443-d24912528",
-    "lat": null,
-    "lon": null
+    "lat": 37.382324,
+    "lon": -5.993939
    },
    {
     "name": "Mercer Plaza Sevilla",
     "key": "g187443-d25565289",
-    "lat": null,
-    "lon": null
+    "lat": 37.388344,
+    "lon": -5.993604
    },
    {
     "name": "Hotel Colón Gran Meliá",
@@ -953,8 +953,8 @@
    {
     "name": "NH Sevilla Plaza De Armas",
     "key": "g187443-d206961",
-    "lat": null,
-    "lon": null
+    "lat": 37.3924,
+    "lon": -6.002287
    },
    {
     "name": "Hotel Alfonso XIII, a Luxury Collection Hotel, Seville",
@@ -965,8 +965,8 @@
    {
     "name": "Las Casas de la Juderia",
     "key": "g187443-d191207",
-    "lat": null,
-    "lon": null
+    "lat": 37.386806,
+    "lon": -5.987239
    },
    {
     "name": "Hotel Fernando III",
@@ -1008,14 +1008,14 @@
    {
     "name": "Room Mate Oliveira",
     "key": "g187529-d5556355",
-    "lat": null,
-    "lon": null
+    "lat": 39.470417,
+    "lon": -0.374634
    },
    {
     "name": "Hotel Malcom And Barret",
     "key": "g187529-d206949",
-    "lat": null,
-    "lon": null
+    "lat": 39.45072,
+    "lon": -0.37094
    },
    {
     "name": "Petit Palace Plaza de la Reina",
@@ -1044,20 +1044,20 @@
    {
     "name": "Hotel Las Arenas Balneario Resort",
     "key": "g187529-d559406",
-    "lat": null,
-    "lon": null
+    "lat": 39.466328,
+    "lon": -0.324669
    },
    {
     "name": "Room Mate Cosmo",
     "key": "g187529-d17513946",
-    "lat": null,
-    "lon": null
+    "lat": 39.47274,
+    "lon": -0.377197
    },
    {
     "name": "One Shot Puerta Ruzafa",
     "key": "g187529-d33066197",
-    "lat": null,
-    "lon": null
+    "lat": 39.467056,
+    "lon": -0.374621
    },
    {
     "name": "Hotel Kramer",
@@ -1068,8 +1068,8 @@
    {
     "name": "Innside by Melia Valencia Oceanic",
     "key": "g187529-d281196",
-    "lat": null,
-    "lon": null
+    "lat": 39.458366,
+    "lon": -0.34789
    },
    {
     "name": "Only YOU Hotel Valencia",
@@ -1105,8 +1105,8 @@
    {
     "name": "Catalonia Molina Lario",
     "key": "g187438-d596603",
-    "lat": null,
-    "lon": null
+    "lat": 36.7191,
+    "lon": -4.4201
    },
    {
     "name": "Hotel Ilunion Málaga",
@@ -1117,8 +1117,8 @@
    {
     "name": "Hotel Málaga Alameda Centro Affiliated By Meliá",
     "key": "g187438-d228521",
-    "lat": null,
-    "lon": null
+    "lat": 36.71599,
+    "lon": -4.432874
    },
    {
     "name": "Sallés hotel Málaga Centro",
@@ -1135,8 +1135,8 @@
    {
     "name": "Gran Hotel Miramar GL",
     "key": "g187438-d10128553",
-    "lat": null,
-    "lon": null
+    "lat": 36.72011,
+    "lon": -4.407465
    },
    {
     "name": "Palacio Solecio",
@@ -1159,8 +1159,8 @@
    {
     "name": "Casual del Mar Málaga",
     "key": "g187438-d12449129",
-    "lat": null,
-    "lon": null
+    "lat": 36.715656,
+    "lon": -4.428451
    }
   ]
  },
@@ -1269,8 +1269,8 @@
    {
     "name": "Hotel Paris Prague",
     "key": "g274707-d275253",
-    "lat": null,
-    "lon": null
+    "lat": 50.08818,
+    "lon": 14.427306
    },
    {
     "name": "Hilton Prague Old Town",
@@ -1287,14 +1287,14 @@
    {
     "name": "Best Western City Hotel Moran",
     "key": "g274707-d275497",
-    "lat": null,
-    "lon": null
+    "lat": 50.0737,
+    "lon": 14.4174
    },
    {
     "name": "Jalta Boutique Hotel",
     "key": "g274707-d275250",
-    "lat": null,
-    "lon": null
+    "lat": 50.08127,
+    "lon": 14.428478
    },
    {
     "name": "Mosaic House Design Hotel",
@@ -1323,8 +1323,8 @@
    {
     "name": "Kings Court Prague Deluxe Hotel",
     "key": "g274707-d1485015",
-    "lat": null,
-    "lon": null
+    "lat": 50.08826,
+    "lon": 14.428207
    }
   ]
  },
@@ -1421,8 +1421,8 @@
    {
     "name": "Hotel Spadari al Duomo True Stay",
     "key": "g187849-d194976",
-    "lat": null,
-    "lon": null
+    "lat": 45.463596,
+    "lon": 9.186926
    },
    {
     "name": "Grand Hotel et de Milan",
@@ -1439,8 +1439,8 @@
    {
     "name": "c-Hotels Atlantic",
     "key": "g187849-d202569",
-    "lat": null,
-    "lon": null
+    "lat": 45.48316,
+    "lon": 9.203375
    },
    {
     "name": "Starhotels E.c.ho.",
@@ -1469,8 +1469,8 @@
    {
     "name": "INNSiDE by Meliá Milano Torre GalFa",
     "key": "g187849-d19239938",
-    "lat": null,
-    "lon": null
+    "lat": 45.485947,
+    "lon": 9.198858
    },
    {
     "name": "Hotel Bernina",
@@ -1487,8 +1487,8 @@
    {
     "name": "Ostello Bello Grande",
     "key": "g187849-d9701793",
-    "lat": null,
-    "lon": null
+    "lat": 45.484234,
+    "lon": 9.205503
    },
    {
     "name": "Hotel Milano Castello",
@@ -1512,8 +1512,8 @@
    {
     "name": "Santa Croce Boutique Hotel",
     "key": "g187870-d14117477",
-    "lat": null,
-    "lon": null
+    "lat": 45.440067,
+    "lon": 12.325092
    },
    {
     "name": "Ca' Di Dio - Vretreats",
@@ -1530,8 +1530,8 @@
    {
     "name": "Cà Bonfadini Historic Experience",
     "key": "g187870-d14011373",
-    "lat": null,
-    "lon": null
+    "lat": 45.444485,
+    "lon": 12.32353
    },
    {
     "name": "Rosa Salva Hotel",
@@ -1548,14 +1548,14 @@
    {
     "name": "B&b Hotel Venezia Laguna",
     "key": "g187870-d32759879",
-    "lat": null,
-    "lon": null
+    "lat": 45.440605,
+    "lon": 12.304016
    },
    {
     "name": "H10 Palazzo Canova",
     "key": "g187870-d15458491",
-    "lat": null,
-    "lon": null
+    "lat": 45.43733,
+    "lon": 12.334058
    },
    {
     "name": "Carnival Palace Hotel",
@@ -1585,8 +1585,8 @@
    {
     "name": "Golden Tower Hotel & Spa",
     "key": "g187895-d1461957",
-    "lat": null,
-    "lon": null
+    "lat": 43.770626,
+    "lon": 11.252038
    },
    {
     "name": "Hotel Lungarno",
@@ -1627,8 +1627,8 @@
    {
     "name": "Hotel Calimala Florence",
     "key": "g187895-d17703706",
-    "lat": null,
-    "lon": null
+    "lat": 43.770473,
+    "lon": 11.253995
    },
    {
     "name": "Hotel La Fortezza",
@@ -2156,20 +2156,20 @@
    {
     "name": "Torel Saboaria",
     "key": "g189180-d24853912",
-    "lat": null,
-    "lon": null
+    "lat": 41.151363,
+    "lon": -8.608361
    },
    {
     "name": "Torel Palace Porto",
     "key": "g189180-d17786186",
-    "lat": null,
-    "lon": null
+    "lat": 41.145206,
+    "lon": -8.605683
    },
    {
     "name": "Torel 1884 Suites & Apartments",
     "key": "g189180-d15619658",
-    "lat": null,
-    "lon": null
+    "lat": 41.14373,
+    "lon": -8.612664
    },
    {
     "name": "Canto de Luz",
@@ -2180,14 +2180,14 @@
    {
     "name": "Hotel Porto River Infante",
     "key": "g189180-d23875367",
-    "lat": null,
-    "lon": null
+    "lat": 41.141296,
+    "lon": -8.614198
    },
    {
     "name": "Cocorico - Hotel & Restaurant",
     "key": "g189180-d15132794",
-    "lat": null,
-    "lon": null
+    "lat": 41.14445,
+    "lon": -8.60487
    },
    {
     "name": "Porto River Aparthotel",
@@ -2210,8 +2210,8 @@
    {
     "name": "Artcore Hotel Porto",
     "key": "g189180-d33471488",
-    "lat": null,
-    "lon": null
+    "lat": 41.14753,
+    "lon": -8.59871
    },
    {
     "name": "Moov Hotel Porto Norte",
@@ -2222,8 +2222,8 @@
    {
     "name": "Porto Palácio Hotel by The Editory",
     "key": "g189180-d229305",
-    "lat": null,
-    "lon": null
+    "lat": 41.15919,
+    "lon": -8.638683
    },
    {
     "name": "PortoBay Flores",
@@ -4185,8 +4185,8 @@
    {
     "name": "The Artist Grand Hotel of Art",
     "key": "g187454-d266116",
-    "lat": null,
-    "lon": null
+    "lat": 43.26738,
+    "lon": -2.933909
    },
    {
     "name": "Hotel Artetxe",
@@ -4215,8 +4215,8 @@
    {
     "name": "Barcelo Bilbao Nervion",
     "key": "g187454-d228497",
-    "lat": null,
-    "lon": null
+    "lat": 43.2652,
+    "lon": -2.925099
    },
    {
     "name": "Hotel Carlton",
@@ -4227,8 +4227,8 @@
    {
     "name": "Spirit Hotel Gran Bilbao",
     "key": "g187454-d1526241",
-    "lat": null,
-    "lon": null
+    "lat": 43.249058,
+    "lon": -2.919337
    },
    {
     "name": "Hotel Tayko Bilbao",
@@ -4348,8 +4348,8 @@
    {
     "name": "Hospes Palacio De Los Patos",
     "key": "g187441-d550766",
-    "lat": null,
-    "lon": null
+    "lat": 37.172016,
+    "lon": -3.603162
    }
   ]
  },
@@ -4385,8 +4385,8 @@
    {
     "name": "Sant Jaume Design Hotel",
     "key": "g187463-d12146483",
-    "lat": null,
-    "lon": null
+    "lat": 39.57371,
+    "lon": 2.648127
    },
    {
     "name": "Hotel Basilica",
@@ -4397,14 +4397,14 @@
    {
     "name": "Can Alomar Urban Luxury Retreat",
     "key": "g187463-d6385615",
-    "lat": null,
-    "lon": null
+    "lat": 39.569912,
+    "lon": 2.64612
    },
    {
     "name": "Concepcio By Nobis",
     "key": "g187463-d23348433",
-    "lat": null,
-    "lon": null
+    "lat": 39.574528,
+    "lon": 2.645673
    },
    {
     "name": "Meliá Palma Marina",
@@ -4421,8 +4421,8 @@
    {
     "name": "Protur Naisa Palma Hotel",
     "key": "g187463-d14931104",
-    "lat": null,
-    "lon": null
+    "lat": 39.57445,
+    "lon": 2.642253
    },
    {
     "name": "Nakar Hotel",
@@ -4433,8 +4433,8 @@
    {
     "name": "INNSiDE By Meliá Palma Center",
     "key": "g187463-d248987",
-    "lat": null,
-    "lon": null
+    "lat": 39.57736,
+    "lon": 2.650129
    },
    {
     "name": "Hotel Costa Azul",
@@ -4494,14 +4494,14 @@
    {
     "name": "Hotel Lyon Metropole",
     "key": "g187265-d232351",
-    "lat": null,
-    "lon": null
+    "lat": 45.78871,
+    "lon": 4.819914
    },
    {
     "name": "MEININGER Hotel Lyon Centre Berthelot",
     "key": "g187265-d19102216",
-    "lat": null,
-    "lon": null
+    "lat": 45.74603,
+    "lon": 4.837
    },
    {
     "name": "Fourviere Hotel",
@@ -4543,8 +4543,8 @@
    {
     "name": "Grand Hôtel Beauvau Marseille Vieux-Port - MGallery",
     "key": "g187253-d195831",
-    "lat": null,
-    "lon": null
+    "lat": 43.295074,
+    "lon": 5.374741
    },
    {
     "name": "nhow Marseille",
@@ -4555,8 +4555,8 @@
    {
     "name": "Le Ryad Boutique Hôtel",
     "key": "g187253-d1025492",
-    "lat": null,
-    "lon": null
+    "lat": 43.297665,
+    "lon": 5.383536
    },
    {
     "name": "Hôtel Marsiho by HappyCulture",
@@ -4585,8 +4585,8 @@
    {
     "name": "Maisons Du Monde Hotel & Suites Marseille",
     "key": "g187253-d232409",
-    "lat": null,
-    "lon": null
+    "lat": 43.29411,
+    "lon": 5.374676
    },
    {
     "name": "InterContinental Marseille - Hotel Dieu by IHG",
@@ -4609,20 +4609,20 @@
    {
     "name": "Meininger Hotel Marseille Centre La Joliette",
     "key": "g187253-d23839722",
-    "lat": null,
-    "lon": null
+    "lat": 43.305744,
+    "lon": 5.371088
    },
    {
     "name": "Alex Hotel & Spa",
     "key": "g187253-d5790602",
-    "lat": null,
-    "lon": null
+    "lat": 43.3016,
+    "lon": 5.379619
    },
    {
     "name": "Sofitel Marsella Viejo Puerto",
     "key": "g187253-d207554",
-    "lat": null,
-    "lon": null
+    "lat": 43.29295,
+    "lon": 5.360556
    }
   ]
  },
@@ -4640,8 +4640,8 @@
    {
     "name": "Hotel Burdigala By Inwood Hotels",
     "key": "g187079-d240243",
-    "lat": null,
-    "lon": null
+    "lat": 44.8399,
+    "lon": -0.5868
    },
    {
     "name": "Hotel Life Bordeaux Gare - BG",
@@ -4706,8 +4706,8 @@
    {
     "name": "Villas Foch",
     "key": "g187079-d21292609",
-    "lat": null,
-    "lon": null
+    "lat": 44.847324,
+    "lon": -0.575417
    }
   ]
  },
@@ -4719,20 +4719,20 @@
    {
     "name": "Turin Palace Hotel True Stay",
     "key": "g187855-d8333271",
-    "lat": null,
-    "lon": null
+    "lat": 45.062145,
+    "lon": 7.676818
    },
    {
     "name": "Principi di Piemonte | UNA Esperienze",
     "key": "g187855-d228940",
-    "lat": null,
-    "lon": null
+    "lat": 45.065033,
+    "lon": 7.681587
    },
    {
     "name": "NH Torino Lingotto Congress",
     "key": "g187855-d229030",
-    "lat": null,
-    "lon": null
+    "lat": 45.032375,
+    "lon": 7.666154
    },
    {
     "name": "Grand Hotel Sitea",
@@ -4743,8 +4743,8 @@
    {
     "name": "Best Western Plus Executive Hotel And Suites",
     "key": "g187855-d237342",
-    "lat": null,
-    "lon": null
+    "lat": 45.055374,
+    "lon": 7.675869
    },
    {
     "name": "Concord Hotel",
@@ -4761,20 +4761,20 @@
    {
     "name": "Starhotels Majestic",
     "key": "g187855-d229100",
-    "lat": null,
-    "lon": null
+    "lat": 45.062515,
+    "lon": 7.680636
    },
    {
     "name": "Hotel Roma e Rocca Cavour",
     "key": "g187855-d237348",
-    "lat": null,
-    "lon": null
+    "lat": 45.063572,
+    "lon": 7.678881
    },
    {
     "name": "Duparc Contemporary Suites",
     "key": "g187855-d1593169",
-    "lat": null,
-    "lon": null
+    "lat": 45.04773,
+    "lon": 7.67968
    },
    {
     "name": "Star Residence",
@@ -4785,20 +4785,20 @@
    {
     "name": "Tomato Urban Retreat",
     "key": "g187855-d2521028",
-    "lat": null,
-    "lon": null
+    "lat": 45.057976,
+    "lon": 7.682426
    },
    {
     "name": "Hotel Cascina Fossata & Residence",
     "key": "g187855-d19337435",
-    "lat": null,
-    "lon": null
+    "lat": 45.10145,
+    "lon": 7.684697
    },
    {
     "name": "Best Western Hotel Genio",
     "key": "g187855-d203043",
-    "lat": null,
-    "lon": null
+    "lat": 45.06198,
+    "lon": 7.680322
    }
   ]
  },
@@ -4810,8 +4810,8 @@
    {
     "name": "Art Hotel Orologio",
     "key": "g187801-d203489",
-    "lat": null,
-    "lon": null
+    "lat": 44.49355,
+    "lon": 11.341833
    },
    {
     "name": "Grand Hotel Majestic Gia Baglioni",
@@ -4858,8 +4858,8 @@
    {
     "name": "Savhotel Fiera Bologna",
     "key": "g187801-d601493",
-    "lat": null,
-    "lon": null
+    "lat": 44.512646,
+    "lon": 11.354105
    },
    {
     "name": "NH Bologna De La Gare",
@@ -4888,8 +4888,8 @@
    {
     "name": "Savhotel Aemilia Bologna",
     "key": "g187801-d286576",
-    "lat": null,
-    "lon": null
+    "lat": 44.494946,
+    "lon": 11.359945
    }
   ]
  },
@@ -5059,8 +5059,8 @@
    {
     "name": "Doubletree By Hilton Glasgow Central",
     "key": "g186534-d188992",
-    "lat": null,
-    "lon": null
+    "lat": 55.866093,
+    "lon": -4.259351
    },
    {
     "name": "Hotel Du Vin Glasgow, at One Devonshire Gardens",
@@ -5095,8 +5095,8 @@
    {
     "name": "voco Grand Central Glasgow by IHG",
     "key": "g186534-d1874829",
-    "lat": null,
-    "lon": null
+    "lat": 55.859856,
+    "lon": -4.258717
    },
    {
     "name": "The Social Hub Glasgow",
@@ -5107,14 +5107,14 @@
    {
     "name": "Crowne Plaza Glasgow By IHG",
     "key": "g186534-d192415",
-    "lat": null,
-    "lon": null
+    "lat": 55.859806,
+    "lon": -4.289606
    },
    {
     "name": "Holiday Inn Express Glasgow City Theatreland by IHG",
     "key": "g186534-d265538",
-    "lat": null,
-    "lon": null
+    "lat": 55.86605,
+    "lon": -4.254068
    },
    {
     "name": "Motel One Glasgow",
@@ -5125,8 +5125,8 @@
    {
     "name": "The Z Hotel Glasgow",
     "key": "g186534-d6820788",
-    "lat": null,
-    "lon": null
+    "lat": 55.861782,
+    "lon": -4.24857
    }
   ]
  },
@@ -5181,8 +5181,8 @@
    {
     "name": "Gizis Cliffside Suites",
     "key": "g189433-d34201026",
-    "lat": null,
-    "lon": null
+    "lat": 36.442398,
+    "lon": 25.42562
    },
    {
     "name": "Altera Pars Suites",
@@ -5206,8 +5206,8 @@
    {
     "name": "Hotel Zinema7",
     "key": "g187457-d1439666",
-    "lat": null,
-    "lon": null
+    "lat": 43.30833,
+    "lon": -1.97996
    },
    {
     "name": "Hotel Avenida",
@@ -5218,8 +5218,8 @@
    {
     "name": "NH Collection San Sebastián Aránzazu",
     "key": "g187457-d234408",
-    "lat": null,
-    "lon": null
+    "lat": 43.312847,
+    "lon": -2.006987
    },
    {
     "name": "Hotel de Londres y de Inglaterra",
@@ -5236,8 +5236,8 @@
    {
     "name": "Sercotel  Codina",
     "key": "g187457-d237018",
-    "lat": null,
-    "lon": null
+    "lat": 43.313396,
+    "lon": -2.00417
    },
    {
     "name": "Sercotel Europa San Sebastián",
@@ -5795,8 +5795,8 @@
    {
     "name": "Dormire A Napoli Suite Spa",
     "key": "g187785-d23298912",
-    "lat": null,
-    "lon": null
+    "lat": 40.830616,
+    "lon": 14.22111
    },
    {
     "name": "La Gatta Cenerentola Rooms",
@@ -5825,14 +5825,14 @@
    {
     "name": "Eurostars Hotel Excelsior",
     "key": "g187785-d195492",
-    "lat": null,
-    "lon": null
+    "lat": 40.830086,
+    "lon": 14.24962
    },
    {
     "name": "Renaissance Naples Hotel Mediterraneo",
     "key": "g187785-d202910",
-    "lat": null,
-    "lon": null
+    "lat": 40.841045,
+    "lon": 14.250317
    },
    {
     "name": "Decumani Hotel de Charme",
@@ -5855,8 +5855,8 @@
    {
     "name": "Hotel Piazza Bellini & Apartments",
     "key": "g187785-d646334",
-    "lat": null,
-    "lon": null
+    "lat": 40.85052,
+    "lon": 14.251721
    },
    {
     "name": "Hotel Cristina",
@@ -5892,8 +5892,8 @@
    {
     "name": "The Deck Hotel by HappyCulture",
     "key": "g187234-d197196",
-    "lat": null,
-    "lon": null
+    "lat": 43.69723,
+    "lon": 7.265033
    },
    {
     "name": "NH Nice",
@@ -5904,8 +5904,8 @@
    {
     "name": "Hotel Le Grimaldi by HappyCulture",
     "key": "g187234-d197193",
-    "lat": null,
-    "lon": null
+    "lat": 43.699184,
+    "lon": 7.264797
    },
    {
     "name": "Le Méridien Nice",
@@ -5928,8 +5928,8 @@
    {
     "name": "Hôtel Le Royal Vacances Bleues",
     "key": "g187234-d609466",
-    "lat": null,
-    "lon": null
+    "lat": 43.69508,
+    "lon": 7.262041
    },
    {
     "name": "Hotel Locarno Nice",
@@ -5940,14 +5940,14 @@
    {
     "name": "Hôtel Du Centre Un Hôtel Ammi",
     "key": "g187234-d222935",
-    "lat": null,
-    "lon": null
+    "lat": 43.703545,
+    "lon": 7.265771
    },
    {
     "name": "Aparthotel AMMI Nice Lafayette",
     "key": "g187234-d197214",
-    "lat": null,
-    "lon": null
+    "lat": 43.6992,
+    "lon": 7.270221
    },
    {
     "name": "Hôtel Khla Nice",
@@ -5995,8 +5995,8 @@
    {
     "name": "Sheraton Grand Hotel & Spa, Edinburgh",
     "key": "g186525-d188790",
-    "lat": null,
-    "lon": null
+    "lat": 55.947014,
+    "lon": -3.207713
    },
    {
     "name": "Travelodge Edinburgh Central",
@@ -6019,14 +6019,14 @@
    {
     "name": "Travelodge Edinburgh Cameron Toll",
     "key": "g186525-d1763923",
-    "lat": null,
-    "lon": null
+    "lat": 55.92687,
+    "lon": -3.166777
    },
    {
     "name": "Heeton Concept Aparthotel - Queen Street - Edinburgh",
     "key": "g186525-d14776170",
-    "lat": null,
-    "lon": null
+    "lat": 55.95347,
+    "lon": -3.206577
    },
    {
     "name": "Travelodge Edinburgh Central Waterloo Place",
@@ -6056,8 +6056,8 @@
    {
     "name": "Kimpton Clocktower Hotel by IHG",
     "key": "g187069-d193189",
-    "lat": null,
-    "lon": null
+    "lat": 53.47432,
+    "lon": -2.240368
    },
    {
     "name": "Leonardo Hotel Manchester Central",
@@ -6086,8 +6086,8 @@
    {
     "name": "Travelodge Manchester Central Arena",
     "key": "g187069-d2367411",
-    "lat": null,
-    "lon": null
+    "lat": 53.49004,
+    "lon": -2.24674
    },
    {
     "name": "Travelodge Manchester Central",
@@ -6098,26 +6098,26 @@
    {
     "name": "Crowne Plaza Manchester City Centre by IHG",
     "key": "g187069-d1145928",
-    "lat": null,
-    "lon": null
+    "lat": 53.485573,
+    "lon": -2.236357
    },
    {
     "name": "Travelodge Manchester Piccadilly",
     "key": "g187069-d5415098",
-    "lat": null,
-    "lon": null
+    "lat": 53.48157,
+    "lon": -2.236639
    },
    {
     "name": "Travelodge Manchester Upper Brook Street",
     "key": "g187069-d2310965",
-    "lat": null,
-    "lon": null
+    "lat": 53.462746,
+    "lon": -2.22371
    },
    {
     "name": "Innside By Meliá Manchester",
     "key": "g187069-d7905598",
-    "lat": null,
-    "lon": null
+    "lat": 53.473675,
+    "lon": -2.247572
    }
   ]
  },
@@ -8243,8 +8243,8 @@
    {
     "name": "Titano Suites",
     "key": "g187809-d7331559",
-    "lat": null,
-    "lon": null
+    "lat": 43.93611,
+    "lon": 12.44713
    },
    {
     "name": "Hotel Rosa",
@@ -8261,8 +8261,8 @@
    {
     "name": "Hotel La Rocca",
     "key": "g187809-d2019489",
-    "lat": null,
-    "lon": null
+    "lat": 43.935837,
+    "lon": 12.448123
    }
   ]
  }

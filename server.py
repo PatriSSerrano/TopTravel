@@ -69,6 +69,7 @@ STATIC = {
     "/vendor/labels.json": ("vendor/labels.json", "application/json; charset=utf-8"),
     "/vendor/globo.json": ("vendor/globo.json", "application/json; charset=utf-8"),
     "/vendor/roma.json": ("vendor/roma.json", "application/json; charset=utf-8"),
+    "/vendor/aeropuertos.json": ("vendor/aeropuertos.json", "application/json; charset=utf-8"),
 }
 
 IATA = re.compile(r"^[A-Z]{3}$")
@@ -93,6 +94,13 @@ AIRLINE_SITES = {
     "DL": "delta.com", "UA": "united.com", "AA": "aa.com", "B6": "jetblue.com", "AC": "aircanada.com",
     "AM": "aeromexico.com", "Y4": "volaris.com", "AV": "avianca.com", "LA": "latamairlines.com", "AR": "aerolineas.com.ar",
     "CM": "copaair.com", "JL": "jal.com", "NH": "ana.co.jp", "TG": "thaiairways.com", "SQ": "singaporeair.com",
+    "CX": "cathaypacific.com", "KE": "koreanair.com", "OZ": "flyasiana.com", "MH": "malaysiaairlines.com", "BR": "evaair.com",
+    "CI": "china-airlines.com", "CA": "airchina.com", "MU": "ceair.com", "CZ": "csair.com", "HU": "hainanairlines.com",
+    "AI": "airindia.com", "6E": "goindigo.in", "GA": "garuda-indonesia.com", "VN": "vietnamairlines.com", "PR": "philippineairlines.com",
+    "SV": "saudia.com", "WY": "omanair.com", "GF": "gulfair.com", "KU": "kuwaitairways.com", "RJ": "rj.com", "UL": "srilankan.com",
+    "PG": "bangkokair.com", "AK": "airasia.com", "D7": "airasia.com", "FD": "airasia.com", "TR": "flyscoot.com", "5J": "cebupacificair.com",
+    "VJ": "vietjetair.com", "MM": "flypeach.com", "FZ": "flydubai.com", "G9": "airarabia.com", "J9": "jazeeraairways.com", "KC": "airastana.com",
+    "HY": "uzairways.com", "LY": "elal.com",
 }
 OVERPASS_URLS = (
     "https://overpass-api.de/api/interpreter",
@@ -215,6 +223,7 @@ def tp_request(path, query):
 
 # La fuente deja algunos nombres sin traducir o mal puestos ("Buda" por Budapest).
 CITY_NAMES = {
+    "DAD": "Da Nang", "CEB": "Cebú", "REP": "Siem Reap",
     "ACE": "Lanzarote", "AER": "Sochi", "ALA": "Almaty", "BDS": "Brindisi", "BIO": "Bilbao", "BUD": "Budapest",
     "COR": "Córdoba (Argentina)", "EAS": "San Sebastián", "FLW": "Isla de Flores", "GZP": "Gazipaşa",
     "IGU": "Foz de Iguazú", "JTR": "Santorini", "LCG": "La Coruña", "LIR": "Liberia (Costa Rica)",
@@ -583,7 +592,8 @@ def load_hotels():
 def save_hotels():
     HOTELS_FILE.parent.mkdir(exist_ok=True)
     temp = HOTELS_FILE.with_suffix(".tmp")
-    temp.write_text(json.dumps(_hotels, ensure_ascii=False), encoding="utf-8")
+    # Se mezcla con lo que ya hay en el disco: un proceso que no lo haya cargado no debe borrarlo.
+    temp.write_text(json.dumps({**load_hotels(), **_hotels}, ensure_ascii=False), encoding="utf-8")
     temp.replace(HOTELS_FILE)
 
 
@@ -654,6 +664,23 @@ def same_curated_hotel(hotel, item):
     return len(a) / max(len(b), 1) >= 0.6
 
 
+def merge_saved_list(hotels, items):
+    """Añade a los alojamientos la lista guardada con tools/hacer_xotelo.py: código, ubicación y nota."""
+    by_key = {h["key"]: h for h in hotels if h.get("key")}
+    for item in items:
+        match = by_key.get(item["key"]) or next((h for h in hotels if not h.get("key") and h.get("lat") is not None
+                                                 and distance_km(h["lat"], h["lon"], item["lat"], item["lon"]) <= 0.25 and same_name(h["name"], item["name"])), None)
+        if not match:
+            match = {"name": item["name"], "kind": item["kind"], "stars": 0, "address": "", "website": ""}
+            hotels.append(match)
+        match["key"] = item["key"]
+        if match.get("lat") is None:
+            match["lat"], match["lon"] = item["lat"], item["lon"]
+        for field in ("rating", "reviews", "url"):
+            if item.get(field):
+                match[field] = item[field]
+
+
 def add_price_keys(data):
     """Une nuestros alojamientos con su código de precios, sin tocar lo guardado."""
     if settings()["HOTEL_PRICES"] == "off":
@@ -670,7 +697,11 @@ def add_price_keys(data):
                 if match:
                     match["key"] = item["key"]
                 else:
-                    hotels.append({"key": item["key"], "name": item["name"], "kind": "Hotel", "stars": 0, "address": "", "website": "", "lat": item.get("lat"), "lon": item.get("lon")})
+                    hotels.append({"key": item["key"], "name": item["name"], "kind": item.get("lodging") or "Hotel", "stars": item.get("stars") or 0, "address": item.get("address") or "", "website": item.get("website") or "", "lat": item.get("lat"), "lon": item.get("lon")})
+        saved = read_map(f"x|{round(center['lat'], 2)}|{round(center['lon'], 2)}")
+        if saved:
+            merge_saved_list(hotels, saved["hotels"])
+            return {**data, "hotels": hotels}
         for item in xotelo_list(center):
             geo = item.get("geo") or {}
             lat, lon, key, name = geo.get("latitude"), geo.get("longitude"), item.get("key") or "", item.get("name") or ""
@@ -1126,6 +1157,10 @@ def lodging_list(q, force=False):
     own = own_city_data(place)
     if own:
         return 200, own
+    # Ciudades con lista de hoteles guardada pero sin mapa propio: no hace falta pedir nada fuera.
+    point = geocode_local(place)
+    if point and read_map(f"x|{round(point[0], 2)}|{round(point[1], 2)}"):
+        return 200, {"hotels": [], "center": {"lat": point[0], "lon": point[1]}}
     key = place.casefold()
     now = time.time()
     with _lock:

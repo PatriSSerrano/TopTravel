@@ -38,6 +38,8 @@ WORLD_HUBS = (
     "JFK", "EWR", "LAX", "SFO", "ORD", "MIA", "ATL", "DFW", "BOS", "SEA", "LAS", "YYZ", "YVR", "YUL", "MEX", "CUN",
     "GRU", "EZE", "BOG", "SCL", "LIM", "DXB", "DOH", "TLV", "CAI", "JNB", "CMN", "DEL", "BOM", "BKK", "SIN", "KUL",
     "HKG", "ICN", "NRT", "HND", "PEK", "PVG", "SYD", "MEL", "AKL",
+    "CGK", "DPS", "MNL", "SGN", "HAN", "TPE", "CAN", "SZX", "CTU", "KIX", "FUK", "CTS", "BLR", "MAA", "CCU", "CMB", "KTM", "DAC",
+    "ALA", "TAS", "KWI", "RUH", "JED", "AUH", "MCT", "BAH", "AMM",
 )
 WORLD_REQUESTS_PER_DAY = 12000
 WORLD_PAUSE = 2.5
@@ -218,9 +220,9 @@ def has_room():
         return True
 
 
-def discover_world_routes(db, destinations_of):
+def discover_world_routes(db, destinations_of, hubs=None):
     """Apunta las rutas nuevas de cada aeropuerto. Las ya conocidas no se tocan: la rotación sigue su orden."""
-    for hub in WORLD_HUBS:
+    for hub in WORLD_HUBS if hubs is None else hubs:
         try:
             db.executemany("INSERT OR IGNORE INTO world_routes (origin, destination) VALUES (?, ?)", [(hub, code) for code in destinations_of(hub)])
             db.commit()
@@ -238,8 +240,9 @@ def collect_world(destinations_of, month_prices, today=None, sleep=time.sleep, b
         db.execute("INSERT OR IGNORE INTO world_state (id, position, laps) VALUES (1, 0, 0)")
         db.execute("INSERT OR IGNORE INTO runs (job, day) VALUES ('mundo', ?)", (day,))
         db.commit()
-        if not db.execute("SELECT 1 FROM world_routes LIMIT 1").fetchone():
-            discover_world_routes(db, destinations_of)
+        known = {row["origin"] for row in db.execute("SELECT DISTINCT origin FROM world_routes")}
+        if any(hub not in known for hub in WORLD_HUBS):
+            discover_world_routes(db, destinations_of, [hub for hub in WORLD_HUBS if hub not in known])
         routes = db.execute("SELECT origin, destination FROM world_routes ORDER BY id").fetchall()
         total = len(routes) * len(months)
         if not total:
