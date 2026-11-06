@@ -324,24 +324,30 @@ def write_noted():
 
 
 def start(destinations_of, month_prices, hotel_keys, stay_price):
-    """Hilo aparte: si la web se reinicia, sigue por donde iba."""
+    """Hilos aparte: si la web se reinicia, siguen por donde iban.
+
+    Vuelos y hoteles van a la vez porque usan servicios distintos. La rotación del mundo
+    comparte servicio con los vuelos, así que va detrás de ellos para no sumar peticiones.
+    """
     global _listening
 
-    def loop():
+    def loop(*jobs):
         time.sleep(START_DELAY)
         while True:
-            for job, args in (
-                (collect_flights, (destinations_of, month_prices)),
-                (collect_hotels, (hotel_keys(), stay_price)),
-                (collect_world, (destinations_of, month_prices)),
-            ):
+            for job, args_of in jobs:
                 try:
-                    job(*args)
+                    job(*args_of())
                 except Exception as error:  # el historial nunca debe tirar la web
                     print(f"Historial: {job.__name__} ha fallado: {type(error).__name__}", flush=True)
             time.sleep(CHECK_EVERY)
 
+    flights = (
+        (collect_flights, lambda: (destinations_of, month_prices)),
+        (collect_world, lambda: (destinations_of, month_prices)),
+    )
+    hotels = ((collect_hotels, lambda: (hotel_keys(), stay_price)),)
     init_db()
     _listening = True
     threading.Thread(target=write_noted, daemon=True).start()
-    threading.Thread(target=loop, daemon=True).start()
+    threading.Thread(target=loop, args=flights, daemon=True).start()
+    threading.Thread(target=loop, args=hotels, daemon=True).start()
