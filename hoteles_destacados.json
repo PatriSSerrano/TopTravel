@@ -5132,44 +5132,44 @@
  },
  {
   "city": "Montecarlo",
-  "lat": 21.363,
-  "lon": -77.8911,
+  "lat": 43.7396,
+  "lon": 7.4276,
   "hotels": [
    {
     "name": "Hôtel Hermitage Monte-Carlo",
     "key": "g190409-d196745",
-    "lat": null,
-    "lon": null
+    "lat": 43.7384603,
+    "lon": 7.4259576
    },
    {
     "name": "Hotel de Paris Monte-Carlo",
     "key": "g190409-d196746",
-    "lat": null,
-    "lon": null
+    "lat": 43.7390094,
+    "lon": 7.4274682
    },
    {
     "name": "Fairmont Monte-Carlo",
     "key": "g190409-d230423",
-    "lat": null,
-    "lon": null
+    "lat": 43.7399902,
+    "lon": 7.4299421
    },
    {
     "name": "Le Méridien Beach Plaza",
     "key": "g190409-d229111",
-    "lat": null,
-    "lon": null
+    "lat": 43.748144582857144,
+    "lon": 7.435983511428572
    },
    {
     "name": "Novotel Monte Carlo",
     "key": "g190409-d638971",
-    "lat": null,
-    "lon": null
+    "lat": 43.73900042857143,
+    "lon": 7.4218214428571425
    },
    {
     "name": "Hotel Metropole, Monte Carlo",
     "key": "g190409-d196744",
-    "lat": null,
-    "lon": null
+    "lat": 43.7409352,
+    "lon": 7.4279184
    }
   ]
  },
@@ -7891,8 +7891,8 @@
  },
  {
   "city": "Ciudad de México",
-  "lat": 19.3208,
-  "lon": -99.1515,
+  "lat": 19.4326,
+  "lon": -99.1332,
   "hotels": [
    {
     "name": "Sofitel Mexico City Reforma",
