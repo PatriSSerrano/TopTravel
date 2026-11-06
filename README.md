@@ -4,7 +4,7 @@ Web gratuita para comparar vuelos y alojamientos. Reúne en un solo sitio lo que
 
 Nadie gana dinero con esta web: no tiene publicidad, comisiones ni enlaces de afiliado.
 
-**Web: <https://toptravel.alwaysdata.net>** (versión beta)
+**Web: <https://toptravel.alwaysdata.net>**
 
 ## Qué ofrece
 

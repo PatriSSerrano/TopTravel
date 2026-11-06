@@ -2232,5 +2232,4015 @@
     "lon": -8.614629
    }
   ]
+ },
+ {
+  "city": "Oslo",
+  "lat": 59.9133,
+  "lon": 10.739,
+  "hotels": [
+   {
+    "name": "Thon Hotel Cecil",
+    "key": "g190479-d229254",
+    "lat": 59.912837,
+    "lon": 10.737375
+   },
+   {
+    "name": "Thon Hotel Opera",
+    "key": "g190479-d229253",
+    "lat": 59.909586,
+    "lon": 10.753362
+   },
+   {
+    "name": "Thon Hotel Slottsparken",
+    "key": "g190479-d229269",
+    "lat": 59.918536,
+    "lon": 10.732128
+   },
+   {
+    "name": "Thon Hotel Spectrum",
+    "key": "g190479-d229248",
+    "lat": 59.914017,
+    "lon": 10.755758
+   },
+   {
+    "name": "Thon Hotel Terminus",
+    "key": "g190479-d229249",
+    "lat": 59.913363,
+    "lon": 10.752801
+   },
+   {
+    "name": "Scandic Sjølyst",
+    "key": "g190479-d229288",
+    "lat": 59.920194,
+    "lon": 10.682835
+   },
+   {
+    "name": "Scandic Helsfyr",
+    "key": "g190479-d206854",
+    "lat": 59.915606,
+    "lon": 10.804986
+   },
+   {
+    "name": "Grand Hotel Oslo by Scandic",
+    "key": "g190479-d206849",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Comfort Hotel Xpress Central Station",
+    "key": "g190479-d7178463",
+    "lat": 59.910686,
+    "lon": 10.748769
+   },
+   {
+    "name": "Clarion Hotel Oslo",
+    "key": "g190479-d15517091",
+    "lat": 59.907733,
+    "lon": 10.757176
+   },
+   {
+    "name": "Comfort Hotel Grand Central",
+    "key": "g190479-d2634195",
+    "lat": 59.910641,
+    "lon": 10.7507
+   },
+   {
+    "name": "Citybox Oslo",
+    "key": "g190479-d4297956",
+    "lat": 59.910347,
+    "lon": 10.747243
+   },
+   {
+    "name": "Hotel Christiania Teater",
+    "key": "g190479-d1758032",
+    "lat": 59.913542,
+    "lon": 10.735917
+   },
+   {
+    "name": "Amerikalinjen",
+    "key": "g190479-d15619140",
+    "lat": 59.910733,
+    "lon": 10.749602
+   }
+  ]
+ },
+ {
+  "city": "Copenhague",
+  "lat": 55.6867,
+  "lon": 12.5701,
+  "hotels": [
+   {
+    "name": "71 Nyhavn Hotel",
+    "key": "g189541-d207305",
+    "lat": 55.679436,
+    "lon": 12.593682
+   },
+   {
+    "name": "Andersen Hotel",
+    "key": "g189541-d228436",
+    "lat": 55.671877,
+    "lon": 12.561113
+   },
+   {
+    "name": "Ibsens Hotel",
+    "key": "g189541-d207269",
+    "lat": 55.684652,
+    "lon": 12.566266
+   },
+   {
+    "name": "Copenhagen Strand",
+    "key": "g189541-d232085",
+    "lat": 55.67723,
+    "lon": 12.590152
+   },
+   {
+    "name": "The Huxley Copenhagen",
+    "key": "g189541-d227260",
+    "lat": 55.677353,
+    "lon": 12.588981
+   },
+   {
+    "name": "Radisson Collection Royal Hotel, Copenhagen",
+    "key": "g189541-d206741",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Phoenix Copenhagen",
+    "key": "g189541-d206743",
+    "lat": 55.68294,
+    "lon": 12.58893
+   },
+   {
+    "name": "Admiral Hotel Copenhagen",
+    "key": "g189541-d229647",
+    "lat": 55.681902,
+    "lon": 12.593805
+   },
+   {
+    "name": "Axel Guldsmeden Hotels",
+    "key": "g189541-d232096",
+    "lat": 55.672087,
+    "lon": 12.562026
+   },
+   {
+    "name": "Next House Copenhagen",
+    "key": "g189541-d23984102",
+    "lat": 55.669631,
+    "lon": 12.570909
+   },
+   {
+    "name": "Bryggen Guldsmeden Hotel",
+    "key": "g189541-d17463079",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Kong Arthur",
+    "key": "g189541-d232098",
+    "lat": 55.68476,
+    "lon": 12.564994
+   },
+   {
+    "name": "AC Hotel Bella Sky Copenhagen",
+    "key": "g189541-d1986559",
+    "lat": 55.639533,
+    "lon": 12.578217
+   },
+   {
+    "name": "NH Collection Copenhagen",
+    "key": "g189541-d23438123",
+    "lat": 55.673777,
+    "lon": 12.588
+   }
+  ]
+ },
+ {
+  "city": "Estocolmo",
+  "lat": 59.3251,
+  "lon": 18.0711,
+  "hotels": [
+   {
+    "name": "Grand Hôtel Stockholm",
+    "key": "g189852-d207781",
+    "lat": 59.329611,
+    "lon": 18.07549
+   },
+   {
+    "name": "Victory Hotel",
+    "key": "g189852-d207024",
+    "lat": 59.32436,
+    "lon": 18.067936
+   },
+   {
+    "name": "Hotel Diplomat",
+    "key": "g189852-d207025",
+    "lat": 59.331965,
+    "lon": 18.08053
+   },
+   {
+    "name": "Scandic Gamla Stan",
+    "key": "g189852-d207027",
+    "lat": 59.323065,
+    "lon": 18.070006
+   },
+   {
+    "name": "Scandic Park",
+    "key": "g189852-d229347",
+    "lat": 59.340951,
+    "lon": 18.075507
+   },
+   {
+    "name": "Home Hotel Tapto",
+    "key": "g189852-d206394",
+    "lat": 59.343601,
+    "lon": 18.086439
+   },
+   {
+    "name": "Mornington Hotel Stockholm City",
+    "key": "g189852-d227485",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Radisson Collection Strand Hotel, Stockholm",
+    "key": "g189852-d207021",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel C Stockholm",
+    "key": "g189852-d233088",
+    "lat": 59.332132,
+    "lon": 18.056839
+   },
+   {
+    "name": "Hotel Kungsträdgården - The King's Garden",
+    "key": "g189852-d5279741",
+    "lat": 59.331216,
+    "lon": 18.069788
+   },
+   {
+    "name": "Freys Hotel",
+    "key": "g189852-d233095",
+    "lat": 59.332827,
+    "lon": 18.058412
+   },
+   {
+    "name": "Motel L Hammarby Sjöstad",
+    "key": "g189852-d6411737",
+    "lat": 59.302815,
+    "lon": 18.087702
+   },
+   {
+    "name": "Downtown Camper By Scandic",
+    "key": "g189852-d12441627",
+    "lat": 59.331258,
+    "lon": 18.06556
+   },
+   {
+    "name": "Scandic Continental",
+    "key": "g189852-d229383",
+    "lat": 59.331025,
+    "lon": 18.059417
+   }
+  ]
+ },
+ {
+  "city": "Helsinki",
+  "lat": 60.1666,
+  "lon": 24.9435,
+  "hotels": [
+   {
+    "name": "Hobo Helsinki",
+    "key": "g189934-d625374",
+    "lat": 60.168588,
+    "lon": 24.947283
+   },
+   {
+    "name": "Hotel Haaga Central Park",
+    "key": "g189934-d227279",
+    "lat": 60.218376,
+    "lon": 24.907
+   },
+   {
+    "name": "Hilton Helsinki Strand",
+    "key": "g189934-d232307",
+    "lat": 60.177157,
+    "lon": 24.951581
+   },
+   {
+    "name": "Radisson Blu Seaside Hotel, Helsinki",
+    "key": "g189934-d561487",
+    "lat": 60.161978,
+    "lon": 24.924484
+   },
+   {
+    "name": "Klaus K Hotel",
+    "key": "g189934-d579503",
+    "lat": 60.166126,
+    "lon": 24.942586
+   },
+   {
+    "name": "Home Hotel Katajanokka",
+    "key": "g189934-d652575",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Original Sokos Hotel Vaakuna",
+    "key": "g189934-d232149",
+    "lat": 60.170595,
+    "lon": 24.939017
+   },
+   {
+    "name": "Solo Sokos Hotel Helsinki",
+    "key": "g189934-d232145",
+    "lat": 60.169618,
+    "lon": 24.947203
+   },
+   {
+    "name": "Scandic Grand Central Helsinki",
+    "key": "g189934-d23264377",
+    "lat": 60.172376,
+    "lon": 24.942623
+   },
+   {
+    "name": "Scandic Helsinki Hub",
+    "key": "g189934-d24941108",
+    "lat": 60.165856,
+    "lon": 24.937996
+   },
+   {
+    "name": "Lapland Hotels Bulevardi",
+    "key": "g189934-d15676940",
+    "lat": 60.163699,
+    "lon": 24.935607
+   },
+   {
+    "name": "NH Collection Helsinki Grand Hansa",
+    "key": "g189934-d26827535",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Haven",
+    "key": "g189934-d1158907",
+    "lat": 60.166502,
+    "lon": 24.951472
+   },
+   {
+    "name": "Hotel Indigo Helsinki - Boulevard By IHG",
+    "key": "g189934-d7288414",
+    "lat": 60.163942,
+    "lon": 24.936331
+   }
+  ]
+ },
+ {
+  "city": "Reikiavik",
+  "lat": 64.146,
+  "lon": -21.9422,
+  "hotels": [
+   {
+    "name": "Hotel Holt - The Art Hotel",
+    "key": "g189970-d207776",
+    "lat": 64.14278,
+    "lon": -21.935045
+   },
+   {
+    "name": "Hotel Borg by Keahotels",
+    "key": "g189970-d207775",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Odinsve",
+    "key": "g189970-d235795",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Fosshotel Lind",
+    "key": "g189970-d231238",
+    "lat": 64.141857,
+    "lon": -21.914922
+   },
+   {
+    "name": "Hotel Leifur Eiriksson",
+    "key": "g189970-d235793",
+    "lat": 64.142768,
+    "lon": -21.927639
+   },
+   {
+    "name": "Hotel Reykjavik Grand",
+    "key": "g189970-d228920",
+    "lat": 64.142317,
+    "lon": -21.891254
+   },
+   {
+    "name": "Sand Hotel by Keahotels",
+    "key": "g189970-d12131464",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Exeter Hotel",
+    "key": "g189970-d13428067",
+    "lat": 64.15012,
+    "lon": -21.943499
+   },
+   {
+    "name": "Hotel Reykjavik Saga",
+    "key": "g189970-d23866375",
+    "lat": 64.145923,
+    "lon": -21.938896
+   },
+   {
+    "name": "Reykjavik Residence Apartment Hotel",
+    "key": "g189970-d1966925",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Eyja",
+    "key": "g189970-d10046045",
+    "lat": 64.141851,
+    "lon": -21.907496
+   },
+   {
+    "name": "Reykjavik Lights By Keahotels",
+    "key": "g189970-d4262903",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Varsovia",
+  "lat": 52.232,
+  "lon": 21.0067,
+  "hotels": [
+   {
+    "name": "Raffles Europejski Warsaw",
+    "key": "g274856-d276990",
+    "lat": 52.241927,
+    "lon": 21.015059
+   },
+   {
+    "name": "Sheraton Grand Warsaw",
+    "key": "g274856-d275057",
+    "lat": 52.228077,
+    "lon": 21.02489
+   },
+   {
+    "name": "Novotel Warszawa Centrum",
+    "key": "g274856-d275049",
+    "lat": 52.22936,
+    "lon": 21.013044
+   },
+   {
+    "name": "Polonia Palace Hotel",
+    "key": "g274856-d276699",
+    "lat": 52.229098,
+    "lon": 21.010359
+   },
+   {
+    "name": "Sofitel Warsaw Victoria",
+    "key": "g274856-d275059",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Radisson Blu Sobieski Hotel, Warsaw",
+    "key": "g274856-d275046",
+    "lat": 52.223744,
+    "lon": 20.988752
+   },
+   {
+    "name": "Hotel Bristol, a Luxury Collection Hotel, Warsaw",
+    "key": "g274856-d275056",
+    "lat": 52.242404,
+    "lon": 21.015724
+   },
+   {
+    "name": "Mercure Warsaw Grand",
+    "key": "g274856-d275053",
+    "lat": 52.227727,
+    "lon": 21.018738
+   },
+   {
+    "name": "Intercontinental Warsaw By IHG",
+    "key": "g274856-d284134",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Royal Tulip Warsaw Centre",
+    "key": "g274856-d24133436",
+    "lat": 52.233835,
+    "lon": 20.989702
+   },
+   {
+    "name": "PURO Warszawa Stare Miasto",
+    "key": "g274856-d32975225",
+    "lat": 52.243198,
+    "lon": 21.007861
+   },
+   {
+    "name": "Mamaison Hotel Le Regina Warsaw",
+    "key": "g274856-d312546",
+    "lat": 52.253778,
+    "lon": 21.007528
+   },
+   {
+    "name": "Safestay Warsaw Old Town",
+    "key": "g274856-d10070113",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Cracovia",
+  "lat": 50.0469,
+  "lon": 19.9972,
+  "hotels": [
+   {
+    "name": "Holiday Inn Krakow City Centre By IHG",
+    "key": "g274772-d277356",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Saski Krakow, Curio Collection by Hilton",
+    "key": "g274772-d276772",
+    "lat": 50.063338,
+    "lon": 19.937451
+   },
+   {
+    "name": "H15 Hotel Francuski",
+    "key": "g274772-d275830",
+    "lat": 50.064858,
+    "lon": 19.93933
+   },
+   {
+    "name": "Novotel Krakow Centrum",
+    "key": "g274772-d277358",
+    "lat": 50.054886,
+    "lon": 19.92597
+   },
+   {
+    "name": "Grand Hotel",
+    "key": "g274772-d276782",
+    "lat": 50.063609,
+    "lon": 19.937773
+   },
+   {
+    "name": "Amber Design Residence",
+    "key": "g274772-d15239444",
+    "lat": 50.062596,
+    "lon": 19.943323
+   },
+   {
+    "name": "PURO Kraków Stare Miasto",
+    "key": "g274772-d4176964",
+    "lat": 50.068816,
+    "lon": 19.944889
+   },
+   {
+    "name": "Wyndham Grand Krakow Old Town",
+    "key": "g274772-d12393367",
+    "lat": 50.063799,
+    "lon": 19.94042
+   }
+  ]
+ },
+ {
+  "city": "Bucarest",
+  "lat": 44.4361,
+  "lon": 26.1027,
+  "hotels": [
+   {
+    "name": "InterContinental Athénée Palace Bucharest by IHG",
+    "key": "g294458-d300679",
+    "lat": 44.441428,
+    "lon": 26.095757
+   },
+   {
+    "name": "JW Marriott Bucharest Grand Hotel",
+    "key": "g294458-d299811",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Grand Hotel Bucharest",
+    "key": "g294458-d304878",
+    "lat": 44.43729,
+    "lon": 26.102268
+   },
+   {
+    "name": "Pullman Bucharest World Trade Center",
+    "key": "g294458-d300789",
+    "lat": 44.475885,
+    "lon": 26.070274
+   },
+   {
+    "name": "Caro Hotel",
+    "key": "g294458-d324571",
+    "lat": 44.475002,
+    "lon": 26.109491
+   },
+   {
+    "name": "HOTEL MOXA Bucharest",
+    "key": "g294458-d621040",
+    "lat": 44.446811,
+    "lon": 26.089975
+   },
+   {
+    "name": "Peakture Hotel",
+    "key": "g294458-d586717",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Capitol Hotel",
+    "key": "g294458-d304772",
+    "lat": 44.435482,
+    "lon": 26.097734
+   },
+   {
+    "name": "Hilton Garden Inn Bucharest Old Town",
+    "key": "g294458-d12786273",
+    "lat": 44.432951,
+    "lon": 26.100809
+   },
+   {
+    "name": "The Marmorosch Bucharest, Autograph Collection",
+    "key": "g294458-d23521327",
+    "lat": 44.433745,
+    "lon": 26.099095
+   },
+   {
+    "name": "Radisson Blu Hotel, Bucharest",
+    "key": "g294458-d1027852",
+    "lat": 44.441355,
+    "lon": 26.094531
+   },
+   {
+    "name": "Mercure Bucharest City Center",
+    "key": "g294458-d7156058",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Park Inn by Radisson Bucharest Hotel & Residence",
+    "key": "g294458-d8602170",
+    "lat": 44.441085,
+    "lon": 26.092861
+   }
+  ]
+ },
+ {
+  "city": "Sofía",
+  "lat": 42.6977,
+  "lon": 23.3217,
+  "hotels": [
+   {
+    "name": "Hyatt Regency Sofia",
+    "key": "g294452-d20373886",
+    "lat": 42.696219,
+    "lon": 23.336215
+   },
+   {
+    "name": "Novotel Sofia",
+    "key": "g294452-d3533454",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "InterContinental Sofia by IHG",
+    "key": "g294452-d305129",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Grand Sofia Hotel",
+    "key": "g294452-d530275",
+    "lat": 42.682386,
+    "lon": 23.314572
+   },
+   {
+    "name": "Rosslyn Thracia Hotel Sofia",
+    "key": "g294452-d1840671",
+    "lat": 42.69307,
+    "lon": 23.318617
+   },
+   {
+    "name": "Central Hotel Sofia",
+    "key": "g294452-d312412",
+    "lat": 42.698068,
+    "lon": 23.315652
+   },
+   {
+    "name": "Maison Sofia - MGallery Collection",
+    "key": "g294452-d574424",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Favorit",
+    "key": "g294452-d2485685",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Crowne Plaza Sofia By IHG",
+    "key": "g294452-d596104",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Art Hotel 158",
+    "key": "g294452-d26366458",
+    "lat": 42.70098,
+    "lon": 23.320281
+   },
+   {
+    "name": "Grand Hotel Millennium Sofia",
+    "key": "g294452-d19338354",
+    "lat": 42.682386,
+    "lon": 23.314572
+   },
+   {
+    "name": "Adella Boutique Hotel",
+    "key": "g294452-d15185935",
+    "lat": 42.666859,
+    "lon": 23.350317
+   },
+   {
+    "name": "Metropolitan Hotel Sofia, a member of Radisson Individuals",
+    "key": "g294452-d846709",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Zagreb",
+  "lat": 45.8131,
+  "lon": 15.9773,
+  "hotels": [
+   {
+    "name": "Sheraton Zagreb Hotel",
+    "key": "g294454-d301822",
+    "lat": 45.807234,
+    "lon": 15.984561
+   },
+   {
+    "name": "Hotel Jägerhorn",
+    "key": "g294454-d601839",
+    "lat": 45.813684,
+    "lon": 15.973846
+   },
+   {
+    "name": "Esplanade Zagreb Hotel",
+    "key": "g294454-d301428",
+    "lat": 45.805241,
+    "lon": 15.975888
+   },
+   {
+    "name": "Amadria Park Hotel Capital",
+    "key": "g294454-d15757943",
+    "lat": 45.812119,
+    "lon": 15.982081
+   },
+   {
+    "name": "art'otel Zagreb",
+    "key": "g294454-d26517477",
+    "lat": 45.81147,
+    "lon": 15.979826
+   },
+   {
+    "name": "Hotel Dubrovnik",
+    "key": "g294454-d302946",
+    "lat": 45.81242,
+    "lon": 15.976651
+   },
+   {
+    "name": "Best Western Premier Hotel Astoria",
+    "key": "g294454-d551017",
+    "lat": 45.807126,
+    "lon": 15.980611
+   },
+   {
+    "name": "DoubleTree by Hilton Zagreb",
+    "key": "g294454-d3372267",
+    "lat": 45.801864,
+    "lon": 16.001521
+   },
+   {
+    "name": "Livris Hotel",
+    "key": "g294454-d11927509",
+    "lat": 45.799155,
+    "lon": 15.999047
+   },
+   {
+    "name": "Best Western Airport Hotel Stella",
+    "key": "g294454-d1018452",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Fala",
+    "key": "g294454-d304254",
+    "lat": 45.793706,
+    "lon": 15.97869
+   },
+   {
+    "name": "Hotel Calypso",
+    "key": "g294454-d3573223",
+    "lat": 45.754281,
+    "lon": 15.885251
+   },
+   {
+    "name": "Hotel Delminivm",
+    "key": "g294454-d2099415",
+    "lat": 45.809143,
+    "lon": 15.900414
+   }
+  ]
+ },
+ {
+  "city": "Belgrado",
+  "lat": 44.8153,
+  "lon": 20.4457,
+  "hotels": [
+   {
+    "name": "Villa 1927",
+    "key": "g294472-d26433119",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hilton Belgrade",
+    "key": "g294472-d13494348",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Square Nine Hotel Belgrade",
+    "key": "g294472-d2062799",
+    "lat": 44.819368,
+    "lon": 20.456205
+   },
+   {
+    "name": "Radisson Collection Hotel, Old Mill Belgrade",
+    "key": "g294472-d6707465",
+    "lat": 44.797257,
+    "lon": 20.447425
+   },
+   {
+    "name": "Hyatt Regency Belgrade",
+    "key": "g294472-d305204",
+    "lat": 44.813116,
+    "lon": 20.434334
+   },
+   {
+    "name": "Hotel Moskva",
+    "key": "g294472-d317311",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Privilege Suites by Central Park",
+    "key": "g294472-d11687766",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Bohemian",
+    "key": "g294472-d11695996",
+    "lat": 44.818323,
+    "lon": 20.465378
+   },
+   {
+    "name": "The Bristol Belgrade",
+    "key": "g294472-d31694745",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Belgrade Waterfront Residences",
+    "key": "g294472-d27697645",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Mama Shelter Belgrade",
+    "key": "g294472-d13422969",
+    "lat": 44.820083,
+    "lon": 20.453953
+   },
+   {
+    "name": "Metropol Palace Belgrade",
+    "key": "g294472-d496836",
+    "lat": 44.806788,
+    "lon": 20.473775
+   },
+   {
+    "name": "Kopernikus Hotel Prag",
+    "key": "g294472-d506702",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "The St. Regis Belgrade",
+    "key": "g294472-d27996070",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Liubliana",
+  "lat": 46.05,
+  "lon": 14.5069,
+  "hotels": [
+   {
+    "name": "Hotel Cubo",
+    "key": "g274873-d2235422",
+    "lat": 46.049224,
+    "lon": 14.501869
+   },
+   {
+    "name": "Urban Boutique Hotel",
+    "key": "g274873-d12182125",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Intercontinental Ljubljana By IHG",
+    "key": "g274873-d12394722",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "City hotel",
+    "key": "g274873-d290747",
+    "lat": 46.053817,
+    "lon": 14.50794
+   },
+   {
+    "name": "Grand Hotel Union Eurostars",
+    "key": "g274873-d456147",
+    "lat": 46.052715,
+    "lon": 14.506376
+   },
+   {
+    "name": "Four Points by Sheraton Ljubljana Mons",
+    "key": "g274873-d530649",
+    "lat": 46.052047,
+    "lon": 14.452661
+   },
+   {
+    "name": "Occidental Ljubljana",
+    "key": "g274873-d26340492",
+    "lat": 46.049435,
+    "lon": 14.502618
+   },
+   {
+    "name": "AS Boutique hotel",
+    "key": "g274873-d26721107",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Ahotel Hotel Ljubljana",
+    "key": "g274873-d1018114",
+    "lat": 46.030296,
+    "lon": 14.491779
+   },
+   {
+    "name": "B&B Hotel Ljubljana Park",
+    "key": "g274873-d290446",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Best Western Premier Hotel Slon",
+    "key": "g274873-d276338",
+    "lat": 46.052564,
+    "lon": 14.503834
+   }
+  ]
+ },
+ {
+  "city": "Bratislava",
+  "lat": 48.1435,
+  "lon": 17.1083,
+  "hotels": [
+   {
+    "name": "Loft Hotel & Wilson Palace",
+    "key": "g274924-d2333104",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Clarion Congress Hotel Bratislava",
+    "key": "g274924-d1784546",
+    "lat": 48.156338,
+    "lon": 17.108316
+   },
+   {
+    "name": "Radisson Blu Carlton Hotel, Bratislava",
+    "key": "g274924-d276309",
+    "lat": 48.141212,
+    "lon": 17.108581
+   },
+   {
+    "name": "Lindner Hotel Bratislava, Part Of Jdv By Hyatt",
+    "key": "g274924-d4173013",
+    "lat": 48.157244,
+    "lon": 17.129127
+   },
+   {
+    "name": "Crowne Plaza Bratislava by IHG",
+    "key": "g274924-d281813",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "APLEND CITY Hotel Perugia",
+    "key": "g274924-d276307",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "AC Hotel Bratislava Old Town",
+    "key": "g274924-d22980246",
+    "lat": 48.148136,
+    "lon": 17.10908
+   },
+   {
+    "name": "Hotel Antares",
+    "key": "g274924-d567655",
+    "lat": 48.150096,
+    "lon": 17.096231
+   },
+   {
+    "name": "Sheraton Bratislava Hotel",
+    "key": "g274924-d1592032",
+    "lat": 48.140537,
+    "lon": 17.122527
+   },
+   {
+    "name": "Grand Hotel River Park, a Luxury Collection Hotel, Bratislava",
+    "key": "g274924-d1142517",
+    "lat": 48.141409,
+    "lon": 17.090236
+   }
+  ]
+ },
+ {
+  "city": "Sarajevo",
+  "lat": 43.8571,
+  "lon": 18.4126,
+  "hotels": [
+   {
+    "name": "Hotel President Sarajevo",
+    "key": "g294450-d8352788",
+    "lat": 43.858221,
+    "lon": 18.43005
+   },
+   {
+    "name": "Hotel Central",
+    "key": "g294450-d1372995",
+    "lat": 43.857925,
+    "lon": 18.426029
+   },
+   {
+    "name": "Hotel Sana",
+    "key": "g294450-d12172153",
+    "lat": 43.860332,
+    "lon": 18.429504
+   },
+   {
+    "name": "Courtyard by Marriott Sarajevo",
+    "key": "g294450-d7911102",
+    "lat": 43.855528,
+    "lon": 18.415503
+   },
+   {
+    "name": "Movenpick hotel Sarajevo",
+    "key": "g294450-d2061154",
+    "lat": 43.852855,
+    "lon": 18.390017
+   },
+   {
+    "name": "Isa Begov Hamam Hotel",
+    "key": "g294450-d8417501",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Residence Inn by Marriott Sarajevo",
+    "key": "g294450-d7182538",
+    "lat": 43.855896,
+    "lon": 18.421549
+   },
+   {
+    "name": "Pansion River",
+    "key": "g294450-d7622097",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Colors Inn",
+    "key": "g294450-d6363092",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Old Town",
+    "key": "g294450-d1439263",
+    "lat": 43.858486,
+    "lon": 18.428922
+   },
+   {
+    "name": "Garni Hotel Konak",
+    "key": "g294450-d1203986",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Boutique 36",
+    "key": "g294450-d617003",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Tirana",
+  "lat": 41.3284,
+  "lon": 19.818,
+  "hotels": [
+   {
+    "name": "Hilton Garden Inn Tirana",
+    "key": "g294446-d13602916",
+    "lat": 41.321216,
+    "lon": 19.795152
+   },
+   {
+    "name": "Rogner Hotel Tirana",
+    "key": "g294446-d304895",
+    "lat": 41.320757,
+    "lon": 19.821646
+   },
+   {
+    "name": "Maritim Hotel Plaza Tirana",
+    "key": "g294446-d10384289",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Mondial",
+    "key": "g294446-d318565",
+    "lat": 41.326712,
+    "lon": 19.80266
+   },
+   {
+    "name": "Tirana Marriott",
+    "key": "g294446-d25044386",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Xheko Imperial Luxury Hotel & SPA",
+    "key": "g294446-d318545",
+    "lat": 41.318073,
+    "lon": 19.818634
+   },
+   {
+    "name": "Lot Boutique Hotel by Hotels and Preference",
+    "key": "g294446-d9771172",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Radisson Collection Morina Hotel Tirana",
+    "key": "g294446-d23797741",
+    "lat": 41.30381,
+    "lon": 19.817193
+   },
+   {
+    "name": "Tirana International Hotel & Conference Centre",
+    "key": "g294446-d317815",
+    "lat": 41.329817,
+    "lon": 19.818694
+   },
+   {
+    "name": "Holiday Hotel",
+    "key": "g294446-d28107836",
+    "lat": 41.238526,
+    "lon": 19.516748
+   },
+   {
+    "name": "Destiny Hotel & Spa",
+    "key": "g294446-d27174382",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Central Inn Hotel",
+    "key": "g294446-d27428374",
+    "lat": 41.331195,
+    "lon": 19.82031
+   },
+   {
+    "name": "Metro Hotel Tirana",
+    "key": "g294446-d15635913",
+    "lat": 41.319675,
+    "lon": 19.817505
+   },
+   {
+    "name": "Hotel Boutique Gloria",
+    "key": "g294446-d10234084",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Skopie",
+  "lat": 41.9962,
+  "lon": 21.4319,
+  "hotels": [
+   {
+    "name": "Alexandar Square Boutique Hotel",
+    "key": "g295110-d10319560",
+    "lat": 41.995103,
+    "lon": 21.429709
+   },
+   {
+    "name": "Hotel Senigallia",
+    "key": "g295110-d9587641",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Macedonia Square",
+    "key": "g295110-d26367949",
+    "lat": 41.995322,
+    "lon": 21.432854
+   },
+   {
+    "name": "Park Hotel & Spa",
+    "key": "g295110-d10233930",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "City5 Rooms & Suites By LSA",
+    "key": "g295110-d3563985",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Skopje Marriott Hotel",
+    "key": "g295110-d10118054",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Doubletree by Hilton Skopje",
+    "key": "g295110-d14199204",
+    "lat": 41.99039,
+    "lon": 21.473022
+   },
+   {
+    "name": "Hotel City Park",
+    "key": "g295110-d2062277",
+    "lat": 42.002393,
+    "lon": 21.422164
+   },
+   {
+    "name": "ibis Skopje City Center",
+    "key": "g295110-d7747160",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Villa Vodno",
+    "key": "g295110-d602948",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel De KOKA",
+    "key": "g295110-d6681754",
+    "lat": 41.999663,
+    "lon": 21.437591
+   },
+   {
+    "name": "Solun Hotel & SPA",
+    "key": "g295110-d4569481",
+    "lat": 41.995461,
+    "lon": 21.42938
+   },
+   {
+    "name": "Premium Boutique Hotel",
+    "key": "g295110-d17767012",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Tallin",
+  "lat": 59.4372,
+  "lon": 24.7573,
+  "hotels": [
+   {
+    "name": "Palace Hotel Tallinn, a member of Radisson Individuals",
+    "key": "g274958-d277103",
+    "lat": 59.432511,
+    "lon": 24.745322
+   },
+   {
+    "name": "My City Hotel",
+    "key": "g274958-d277093",
+    "lat": 59.435271,
+    "lon": 24.745953
+   },
+   {
+    "name": "Radisson Collection Hotel, Tallinn",
+    "key": "g274958-d276623",
+    "lat": 59.433457,
+    "lon": 24.758105
+   },
+   {
+    "name": "Hilton Tallinn Park",
+    "key": "g274958-d290521",
+    "lat": 59.433736,
+    "lon": 24.768934
+   },
+   {
+    "name": "Kalev Spa Hotel & Water Park",
+    "key": "g274958-d596447",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Rixwell Collection Savoy Boutique Hotel",
+    "key": "g274958-d589470",
+    "lat": 59.435094,
+    "lon": 24.746891
+   },
+   {
+    "name": "Hotel CRU",
+    "key": "g274958-d612248",
+    "lat": 59.436754,
+    "lon": 24.747636
+   },
+   {
+    "name": "Nunne Boutique Hotel 4 Superior",
+    "key": "g274958-d26447539",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Nordic Hotel Forum",
+    "key": "g274958-d817717",
+    "lat": 59.437657,
+    "lon": 24.755403
+   },
+   {
+    "name": "Hotel Bern",
+    "key": "g274958-d654670",
+    "lat": 59.43835,
+    "lon": 24.75218
+   },
+   {
+    "name": "Citybox Tallinn",
+    "key": "g274958-d20345015",
+    "lat": 59.441117,
+    "lon": 24.756812
+   },
+   {
+    "name": "Mövenpick Hotel Tallinn",
+    "key": "g274958-d21093774",
+    "lat": 59.430476,
+    "lon": 24.754879
+   },
+   {
+    "name": "Radisson Blu Olumpia Hotel, Tallinn",
+    "key": "g274958-d277100",
+    "lat": 59.430272,
+    "lon": 24.757581
+   }
+  ]
+ },
+ {
+  "city": "Riga",
+  "lat": 56.9494,
+  "lon": 24.1052,
+  "hotels": [
+   {
+    "name": "Konventa Sēta Hotel",
+    "key": "g274967-d277634",
+    "lat": 56.948322,
+    "lon": 24.110256
+   },
+   {
+    "name": "Riga Islande Hotel",
+    "key": "g274967-d608019",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Grand Hotel Kempinski Riga",
+    "key": "g274967-d277639",
+    "lat": 56.949063,
+    "lon": 24.113072
+   },
+   {
+    "name": "Grand Palace Hotel",
+    "key": "g274967-d277641",
+    "lat": 56.950211,
+    "lon": 24.10296
+   },
+   {
+    "name": "Monika Centrum Hotel",
+    "key": "g274967-d587611",
+    "lat": 56.958826,
+    "lon": 24.104983
+   },
+   {
+    "name": "Radisson Blu Latvija Conference & Spa Hotel, Riga",
+    "key": "g274967-d277638",
+    "lat": 56.955018,
+    "lon": 24.117752
+   },
+   {
+    "name": "Eurostars Metropole",
+    "key": "g274967-d277643",
+    "lat": 56.946936,
+    "lon": 24.114663
+   },
+   {
+    "name": "TRIBE Riga City Centre Hotel",
+    "key": "g274967-d290827",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Grand Poet Hotel by Semarah",
+    "key": "g274967-d13286067",
+    "lat": 56.953567,
+    "lon": 24.110713
+   },
+   {
+    "name": "Neiburgs Hotel",
+    "key": "g274967-d1737599",
+    "lat": 56.948393,
+    "lon": 24.105522
+   },
+   {
+    "name": "Wellton Riverside Spa Hotel",
+    "key": "g274967-d15300952",
+    "lat": 56.945127,
+    "lon": 24.108059
+   },
+   {
+    "name": "Four Points Flex by Sheraton Riga Old Town",
+    "key": "g274967-d8147305",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Aparthotel Amella",
+    "key": "g274967-d24186311",
+    "lat": 56.943152,
+    "lon": 24.123767
+   },
+   {
+    "name": "Radisson Blu Elizabete Hotel, Riga",
+    "key": "g274967-d1006415",
+    "lat": 56.952267,
+    "lon": 24.120542
+   }
+  ]
+ },
+ {
+  "city": "Vilna",
+  "lat": 54.687,
+  "lon": 25.2829,
+  "hotels": [
+   {
+    "name": "Ratonda Centrum Hotels",
+    "key": "g274951-d284919",
+    "lat": 54.689153,
+    "lon": 25.265441
+   },
+   {
+    "name": "Artis Centrum Hotels",
+    "key": "g274951-d290833",
+    "lat": 54.683342,
+    "lon": 25.282294
+   },
+   {
+    "name": "Radisson Blu Hotel Lietuva, Vilnius",
+    "key": "g274951-d284931",
+    "lat": 54.695085,
+    "lon": 25.274759
+   },
+   {
+    "name": "NARUTIS hotel",
+    "key": "g274951-d284928",
+    "lat": 54.682463,
+    "lon": 25.289433
+   },
+   {
+    "name": "Comfort Hotel LT - Rock 'n' Roll Vilnius",
+    "key": "g274951-d2647491",
+    "lat": 54.672353,
+    "lon": 25.275403
+   },
+   {
+    "name": "Novotel Vilnius Centre",
+    "key": "g274951-d284920",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Courtyard by Marriott Vilnius City Center",
+    "key": "g274951-d13884672",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "St. Palace Hotel",
+    "key": "g274951-d24072628",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Best Eastern City Gate",
+    "key": "g274951-d284907",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Artagonist Art Hotel",
+    "key": "g274951-d10793019",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Cathedral Apart-Hotel",
+    "key": "g274951-d26787193",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hilton Garden Inn Vilnius City Centre",
+    "key": "g274951-d16715121",
+    "lat": 54.688609,
+    "lon": 25.267056
+   },
+   {
+    "name": "Downtown Forest Hostel & Camping",
+    "key": "g274951-d299026",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Kiev",
+  "lat": 50.45,
+  "lon": 30.5241,
+  "hotels": []
+ },
+ {
+  "city": "Bruselas",
+  "lat": 50.8467,
+  "lon": 4.3525,
+  "hotels": [
+   {
+    "name": "Hotel Amigo",
+    "key": "g188644-d196130",
+    "lat": 50.846177,
+    "lon": 4.351368
+   },
+   {
+    "name": "Stanhope Hotel Brussels by Thon Hotels",
+    "key": "g188644-d232025",
+    "lat": 50.83974,
+    "lon": 4.367541
+   },
+   {
+    "name": "NH Collection Brussels Grand Sablon",
+    "key": "g188644-d229564",
+    "lat": 50.840958,
+    "lon": 4.35583
+   },
+   {
+    "name": "Le Plaza Brussels",
+    "key": "g188644-d206692",
+    "lat": 50.854478,
+    "lon": 4.356129
+   },
+   {
+    "name": "Zoom Hotel",
+    "key": "g188644-d232015",
+    "lat": 50.832454,
+    "lon": 4.359738
+   },
+   {
+    "name": "Hotel a la Grande Cloche",
+    "key": "g188644-d235825",
+    "lat": 50.842997,
+    "lon": 4.346311
+   },
+   {
+    "name": "Steigenberger Icon Wiltcher's",
+    "key": "g188644-d228089",
+    "lat": 50.832239,
+    "lon": 4.357555
+   },
+   {
+    "name": "Novotel Brussels City Centre",
+    "key": "g188644-d232022",
+    "lat": 50.850635,
+    "lon": 4.349758
+   },
+   {
+    "name": "Hotel Motel One Brüssel",
+    "key": "g188644-d6401593",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Warwick Brussels",
+    "key": "g188644-d228078",
+    "lat": 50.84522,
+    "lon": 4.354321
+   },
+   {
+    "name": "NH Collection Brussels Centre",
+    "key": "g188644-d292822",
+    "lat": 50.852171,
+    "lon": 4.354228
+   },
+   {
+    "name": "MEININGER Hotel Bruxelles Gare Du Midi",
+    "key": "g188644-d17756341",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Thon Hotel Bristol Stephanie",
+    "key": "g188644-d1833664",
+    "lat": 50.831244,
+    "lon": 4.358622
+   },
+   {
+    "name": "The Dominican, Brussels",
+    "key": "g188644-d677329",
+    "lat": 50.849244,
+    "lon": 4.354717
+   }
+  ]
+ },
+ {
+  "city": "Zúrich",
+  "lat": 47.3744,
+  "lon": 8.541,
+  "hotels": [
+   {
+    "name": "Widder Hotel",
+    "key": "g188113-d196045",
+    "lat": 47.37244,
+    "lon": 8.539856
+   },
+   {
+    "name": "EMA House Hotel Suites",
+    "key": "g188113-d305635",
+    "lat": 47.383635,
+    "lon": 8.540301
+   },
+   {
+    "name": "Baur Au Lac",
+    "key": "g188113-d196060",
+    "lat": 47.367112,
+    "lon": 8.539343
+   }
+  ]
+ },
+ {
+  "city": "Split",
+  "lat": 43.5116,
+  "lon": 16.44,
+  "hotels": [
+   {
+    "name": "Cornaro Hotel",
+    "key": "g295370-d6871450",
+    "lat": 43.510319,
+    "lon": 16.439375
+   },
+   {
+    "name": "Hotel Park",
+    "key": "g295370-d313963",
+    "lat": 43.503139,
+    "lon": 16.448256
+   },
+   {
+    "name": "Dioklecijan Hotel & Residence",
+    "key": "g295370-d7100138",
+    "lat": 43.508835,
+    "lon": 16.457499
+   },
+   {
+    "name": "Radisson Blu Resort & Spa, Split",
+    "key": "g295370-d304333",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Ambasador Split",
+    "key": "g295370-d25175717",
+    "lat": 43.506871,
+    "lon": 16.432893
+   },
+   {
+    "name": "Marvie Hotel & Health",
+    "key": "g295370-d12338365",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Luxe",
+    "key": "g295370-d1836247",
+    "lat": 43.506492,
+    "lon": 16.44369
+   },
+   {
+    "name": "AC Hotel Split",
+    "key": "g295370-d23996937",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Gdansk",
+  "lat": 54.3483,
+  "lon": 18.654,
+  "hotels": [
+   {
+    "name": "PURO Gdansk Stare Miasto",
+    "key": "g274725-d7394519",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Craft Beer Central Hotel",
+    "key": "g274725-d12413755",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Sadova",
+    "key": "g274725-d10155092",
+    "lat": 54.345914,
+    "lon": 18.664251
+   },
+   {
+    "name": "Qubus Hotel Gdansk",
+    "key": "g274725-d1478312",
+    "lat": 54.345143,
+    "lon": 18.655174
+   },
+   {
+    "name": "Hilton Gdansk",
+    "key": "g274725-d1754683",
+    "lat": 54.35371,
+    "lon": 18.65834
+   },
+   {
+    "name": "Radisson Blu Hotel, Gdansk",
+    "key": "g274725-d779781",
+    "lat": 54.34789,
+    "lon": 18.654695
+   },
+   {
+    "name": "Grano Life Gdańsk",
+    "key": "g274725-d12218178",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "B&B HOTEL Gdańsk Old Town",
+    "key": "g274725-d14055281",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Fama Residence Old Town Gdańsk",
+    "key": "g274725-d17142803",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hampton by Hilton Gdansk Old Town",
+    "key": "g274725-d14167696",
+    "lat": 54.34945,
+    "lon": 18.651493
+   },
+   {
+    "name": "Hotel Gdańsk Boutique",
+    "key": "g274725-d1109745",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Holiday Inn Gdansk - City Centre By IHG",
+    "key": "g274725-d16830226",
+    "lat": 54.349328,
+    "lon": 18.658691
+   },
+   {
+    "name": "Celestin Residence",
+    "key": "g274725-d7309092",
+    "lat": 54.352242,
+    "lon": 18.656111
+   }
+  ]
+ },
+ {
+  "city": "Salónica",
+  "lat": 40.6403,
+  "lon": 22.9353,
+  "hotels": [
+   {
+    "name": "The Modernist Thessaloniki",
+    "key": "g189473-d14159992",
+    "lat": 40.634412,
+    "lon": 22.943356
+   },
+   {
+    "name": "Daios Luxury Living",
+    "key": "g189473-d634323",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "ONOMA Hotel",
+    "key": "g189473-d23121957",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Electra Palace Thessaloniki",
+    "key": "g189473-d228914",
+    "lat": 40.633174,
+    "lon": 22.941245
+   },
+   {
+    "name": "Makedonia Palace",
+    "key": "g189473-d253419",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Mediterranean Palace Hotel",
+    "key": "g189473-d228898",
+    "lat": 40.636015,
+    "lon": 22.935641
+   },
+   {
+    "name": "Imperial Plus Urban Smart Hotel Thessaloniki",
+    "key": "g189473-d19484799",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "City Hotel Thessaloniki",
+    "key": "g189473-d228894",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Noa Hotel",
+    "key": "g189473-d23198531",
+    "lat": 40.635042,
+    "lon": 22.935745
+   },
+   {
+    "name": "COLORS Urban Hotel",
+    "key": "g189473-d11774162",
+    "lat": 40.635112,
+    "lon": 22.93909
+   },
+   {
+    "name": "Urban Donkey",
+    "key": "g189473-d14465614",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "City Plaza",
+    "key": "g189473-d17762265",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Stay Hybrid Hostel",
+    "key": "g189473-d12793732",
+    "lat": 40.639191,
+    "lon": 22.942247
+   },
+   {
+    "name": "Pillow Urban Stay",
+    "key": "g189473-d20992734",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Bilbao",
+  "lat": 43.263,
+  "lon": -2.935,
+  "hotels": [
+   {
+    "name": "Hotel Miró",
+    "key": "g187454-d266115",
+    "lat": 43.266884,
+    "lon": -2.936455
+   },
+   {
+    "name": "The Artist Grand Hotel of Art",
+    "key": "g187454-d266116",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Artetxe",
+    "key": "g187454-d236170",
+    "lat": 43.278737,
+    "lon": -2.946232
+   },
+   {
+    "name": "Petit Palace Arana",
+    "key": "g187454-d237006",
+    "lat": 43.259064,
+    "lon": -2.92472
+   },
+   {
+    "name": "NH Collection Villa de Bilbao",
+    "key": "g187454-d232760",
+    "lat": 43.264856,
+    "lon": -2.944238
+   },
+   {
+    "name": "Occidental Bilbao",
+    "key": "g187454-d195186",
+    "lat": 43.257599,
+    "lon": -2.913256
+   },
+   {
+    "name": "Barcelo Bilbao Nervion",
+    "key": "g187454-d228497",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Carlton",
+    "key": "g187454-d190280",
+    "lat": 43.262408,
+    "lon": -2.934932
+   },
+   {
+    "name": "Spirit Hotel Gran Bilbao",
+    "key": "g187454-d1526241",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Tayko Bilbao",
+    "key": "g187454-d15555488",
+    "lat": 43.258016,
+    "lon": -2.926276
+   },
+   {
+    "name": "Hesperia Bilbao",
+    "key": "g187454-d578359",
+    "lat": 43.26783,
+    "lon": -2.928258
+   },
+   {
+    "name": "Melia Bilbao",
+    "key": "g187454-d289681",
+    "lat": 43.267421,
+    "lon": -2.941861
+   },
+   {
+    "name": "Latroupe La Granja",
+    "key": "g187454-d23572407",
+    "lat": 43.261631,
+    "lon": -2.927132
+   },
+   {
+    "name": "ibis Bilbao Centro",
+    "key": "g187454-d1063207",
+    "lat": 43.257784,
+    "lon": -2.935703
+   }
+  ]
+ },
+ {
+  "city": "Granada",
+  "lat": 37.1735,
+  "lon": -3.5995,
+  "hotels": [
+   {
+    "name": "Palacio Gran Via, a Royal Hideaway Hotel",
+    "key": "g187441-d25412343",
+    "lat": 37.177236,
+    "lon": -3.598145
+   },
+   {
+    "name": "Hotel Granada Center",
+    "key": "g187441-d206959",
+    "lat": 37.179162,
+    "lon": -3.607876
+   },
+   {
+    "name": "Melia Granada",
+    "key": "g187441-d228584",
+    "lat": 37.173229,
+    "lon": -3.598275
+   },
+   {
+    "name": "Barceló Carmen Granada",
+    "key": "g187441-d228637",
+    "lat": 37.17052,
+    "lon": -3.598312
+   },
+   {
+    "name": "Áurea Washington Irving",
+    "key": "g187441-d231592",
+    "lat": 37.174198,
+    "lon": -3.586574
+   },
+   {
+    "name": "Vincci Albayzin",
+    "key": "g187441-d229665",
+    "lat": 37.169711,
+    "lon": -3.596555
+   },
+   {
+    "name": "Eurostars Puerta Real",
+    "key": "g187441-d234533",
+    "lat": 37.172227,
+    "lon": -3.599478
+   },
+   {
+    "name": "Gran Hotel Luna de Granada",
+    "key": "g187441-d230833",
+    "lat": 37.17658,
+    "lon": -3.612239
+   },
+   {
+    "name": "Palacio de Santa Ines",
+    "key": "g187441-d274303",
+    "lat": 37.178276,
+    "lon": -3.593905
+   },
+   {
+    "name": "Parador de Granada",
+    "key": "g187441-d276463",
+    "lat": 37.175847,
+    "lon": -3.58728
+   },
+   {
+    "name": "Áurea Catedral",
+    "key": "g187441-d14862504",
+    "lat": 37.176944,
+    "lon": -3.59936
+   },
+   {
+    "name": "Alhambra Palace Hotel",
+    "key": "g187441-d191079",
+    "lat": 37.173961,
+    "lon": -3.590138
+   },
+   {
+    "name": "Seda Club Hotel",
+    "key": "g187441-d24944264",
+    "lat": 37.17577,
+    "lon": -3.602063
+   },
+   {
+    "name": "Hospes Palacio De Los Patos",
+    "key": "g187441-d550766",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Palma de Mallorca",
+  "lat": 39.5696,
+  "lon": 2.6501,
+  "hotels": [
+   {
+    "name": "Palma Riad",
+    "key": "g187463-d23674311",
+    "lat": 39.572071,
+    "lon": 2.647297
+   },
+   {
+    "name": "Es Príncep",
+    "key": "g187463-d12618449",
+    "lat": 39.565674,
+    "lon": 2.655274
+   },
+   {
+    "name": "Posada Terra Santa",
+    "key": "g187463-d6479649",
+    "lat": 39.570007,
+    "lon": 2.653422
+   },
+   {
+    "name": "Can Cera Hotel",
+    "key": "g187463-d2091212",
+    "lat": 39.568626,
+    "lon": 2.651531
+   },
+   {
+    "name": "Sant Jaume Design Hotel",
+    "key": "g187463-d12146483",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Basilica",
+    "key": "g187463-d17654472",
+    "lat": 39.569197,
+    "lon": 2.652952
+   },
+   {
+    "name": "Can Alomar Urban Luxury Retreat",
+    "key": "g187463-d6385615",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Concepcio By Nobis",
+    "key": "g187463-d23348433",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Meliá Palma Marina",
+    "key": "g187463-d228520",
+    "lat": 39.564557,
+    "lon": 2.627278
+   },
+   {
+    "name": "Melia Palma Bay",
+    "key": "g187463-d12218723",
+    "lat": 39.563192,
+    "lon": 2.665633
+   },
+   {
+    "name": "Protur Naisa Palma Hotel",
+    "key": "g187463-d14931104",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Nakar Hotel",
+    "key": "g187463-d10059938",
+    "lat": 39.572232,
+    "lon": 2.643358
+   },
+   {
+    "name": "INNSiDE By Meliá Palma Center",
+    "key": "g187463-d248987",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Costa Azul",
+    "key": "g187463-d238670",
+    "lat": 39.568652,
+    "lon": 2.632115
+   }
+  ]
+ },
+ {
+  "city": "Lyon",
+  "lat": 45.7578,
+  "lon": 4.832,
+  "hotels": [
+   {
+    "name": "Hôtel Bayard Bellecour",
+    "key": "g187265-d219781",
+    "lat": 45.756251,
+    "lon": 4.832447
+   },
+   {
+    "name": "Hôtel Maison Lacassagne",
+    "key": "g187265-d231035",
+    "lat": 45.744443,
+    "lon": 4.892545
+   },
+   {
+    "name": "Villa Florentine Lyon",
+    "key": "g187265-d551461",
+    "lat": 45.762961,
+    "lon": 4.825821
+   },
+   {
+    "name": "Republik Hotel",
+    "key": "g187265-d219780",
+    "lat": 45.758409,
+    "lon": 4.835641
+   },
+   {
+    "name": "Cour des Loges Lyon, A Radisson Collection Hotel",
+    "key": "g187265-d195623",
+    "lat": 45.763281,
+    "lon": 4.827399
+   },
+   {
+    "name": "Mercure Lyon Centre Beaux Arts Hotel",
+    "key": "g187265-d219782",
+    "lat": 45.760928,
+    "lon": 4.8342
+   },
+   {
+    "name": "Warwick Reine Astrid - Lyon",
+    "key": "g187265-d228802",
+    "lat": 45.774958,
+    "lon": 4.847435
+   },
+   {
+    "name": "Hotel Lyon Metropole",
+    "key": "g187265-d232351",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "MEININGER Hotel Lyon Centre Berthelot",
+    "key": "g187265-d19102216",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Fourviere Hotel",
+    "key": "g187265-d8820474",
+    "lat": 45.758662,
+    "lon": 4.816346
+   },
+   {
+    "name": "Grand Hotel des Terreaux",
+    "key": "g187265-d265523",
+    "lat": 45.766302,
+    "lon": 4.831742
+   },
+   {
+    "name": "Hotel Victoria",
+    "key": "g187265-d293648",
+    "lat": 45.748166,
+    "lon": 4.828577
+   },
+   {
+    "name": "Intercontinental Lyon - Hotel Dieu By IHG",
+    "key": "g187265-d15216091",
+    "lat": 45.758858,
+    "lon": 4.836903
+   },
+   {
+    "name": "Hotel des Celestins",
+    "key": "g187265-d801677",
+    "lat": 45.75952,
+    "lon": 4.832441
+   }
+  ]
+ },
+ {
+  "city": "Marsella",
+  "lat": 43.2964,
+  "lon": 5.3778,
+  "hotels": [
+   {
+    "name": "Grand Hôtel Beauvau Marseille Vieux-Port - MGallery",
+    "key": "g187253-d195831",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "nhow Marseille",
+    "key": "g187253-d198260",
+    "lat": 43.268564,
+    "lon": 5.369647
+   },
+   {
+    "name": "Le Ryad Boutique Hôtel",
+    "key": "g187253-d1025492",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hôtel Marsiho by HappyCulture",
+    "key": "g187253-d3224799",
+    "lat": 43.297349,
+    "lon": 5.377592
+   },
+   {
+    "name": "Hotel Bellevue",
+    "key": "g187253-d1018718",
+    "lat": 43.296495,
+    "lon": 5.372078
+   },
+   {
+    "name": "Escale Oceania Marseille Vieux Port",
+    "key": "g187253-d219969",
+    "lat": 43.295543,
+    "lon": 5.374723
+   },
+   {
+    "name": "Hotel Azur",
+    "key": "g187253-d238753",
+    "lat": 43.29888,
+    "lon": 5.387089
+   },
+   {
+    "name": "Maisons Du Monde Hotel & Suites Marseille",
+    "key": "g187253-d232409",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "InterContinental Marseille - Hotel Dieu by IHG",
+    "key": "g187253-d3226264",
+    "lat": 43.298586,
+    "lon": 5.369815
+   },
+   {
+    "name": "Hôtel La Residence du Vieux Port",
+    "key": "g187253-d195832",
+    "lat": 43.29656,
+    "lon": 5.372746
+   },
+   {
+    "name": "NH Collection Marseille",
+    "key": "g187253-d12957244",
+    "lat": 43.302452,
+    "lon": 5.368841
+   },
+   {
+    "name": "Meininger Hotel Marseille Centre La Joliette",
+    "key": "g187253-d23839722",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Alex Hotel & Spa",
+    "key": "g187253-d5790602",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Sofitel Marsella Viejo Puerto",
+    "key": "g187253-d207554",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Burdeos",
+  "lat": 44.8412,
+  "lon": -0.58,
+  "hotels": [
+   {
+    "name": "Hotel Majestic",
+    "key": "g187079-d219754",
+    "lat": 44.843376,
+    "lon": -0.573099
+   },
+   {
+    "name": "Hotel Burdigala By Inwood Hotels",
+    "key": "g187079-d240243",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Life Bordeaux Gare - BG",
+    "key": "g187079-d232374",
+    "lat": 44.82939,
+    "lon": -0.558828
+   },
+   {
+    "name": "Grand Hotel Français Bordeaux",
+    "key": "g187079-d198312",
+    "lat": 44.841281,
+    "lon": -0.577809
+   },
+   {
+    "name": "Hotel De Seze",
+    "key": "g187079-d219753",
+    "lat": 44.844671,
+    "lon": -0.576296
+   },
+   {
+    "name": "Hôtel Konti By Happyculture",
+    "key": "g187079-d220403",
+    "lat": 44.842326,
+    "lon": -0.578605
+   },
+   {
+    "name": "Quality Hotel Bordeaux Centre",
+    "key": "g187079-d196932",
+    "lat": 44.840573,
+    "lon": -0.574036
+   },
+   {
+    "name": "La Maison Bord'eaux",
+    "key": "g187079-d488197",
+    "lat": 44.847639,
+    "lon": -0.583845
+   },
+   {
+    "name": "Staycity Aparthotels, Bordeaux, City Centre",
+    "key": "g187079-d23355721",
+    "lat": 44.833692,
+    "lon": -0.569688
+   },
+   {
+    "name": "Jost Hotel Bordeaux",
+    "key": "g187079-d25297142",
+    "lat": 44.821334,
+    "lon": -0.558692
+   },
+   {
+    "name": "MEININGER Hotel Bordeaux Gare Saint-Jean",
+    "key": "g187079-d23283846",
+    "lat": 44.826989,
+    "lon": -0.552039
+   },
+   {
+    "name": "Hilton Garden Inn Bordeaux Centre",
+    "key": "g187079-d14504725",
+    "lat": 44.826749,
+    "lon": -0.548975
+   },
+   {
+    "name": "Villas Foch",
+    "key": "g187079-d21292609",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Turín",
+  "lat": 45.0678,
+  "lon": 7.6825,
+  "hotels": [
+   {
+    "name": "Turin Palace Hotel True Stay",
+    "key": "g187855-d8333271",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Principi di Piemonte | UNA Esperienze",
+    "key": "g187855-d228940",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "NH Torino Lingotto Congress",
+    "key": "g187855-d229030",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Grand Hotel Sitea",
+    "key": "g187855-d205797",
+    "lat": 45.065166,
+    "lon": 7.684002
+   },
+   {
+    "name": "Best Western Plus Executive Hotel And Suites",
+    "key": "g187855-d237342",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Concord Hotel",
+    "key": "g187855-d229079",
+    "lat": 45.062807,
+    "lon": 7.680674
+   },
+   {
+    "name": "Hotel Miramonti",
+    "key": "g187855-d237337",
+    "lat": 45.101741,
+    "lon": 7.700658
+   },
+   {
+    "name": "Starhotels Majestic",
+    "key": "g187855-d229100",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Roma e Rocca Cavour",
+    "key": "g187855-d237348",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Duparc Contemporary Suites",
+    "key": "g187855-d1593169",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Star Residence",
+    "key": "g187855-d1469073",
+    "lat": 45.072295,
+    "lon": 7.663676
+   },
+   {
+    "name": "Tomato Urban Retreat",
+    "key": "g187855-d2521028",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Cascina Fossata & Residence",
+    "key": "g187855-d19337435",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Best Western Hotel Genio",
+    "key": "g187855-d203043",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Bolonia",
+  "lat": 44.4938,
+  "lon": 11.3426,
+  "hotels": [
+   {
+    "name": "Art Hotel Orologio",
+    "key": "g187801-d203489",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Grand Hotel Majestic Gia Baglioni",
+    "key": "g187801-d202776",
+    "lat": 44.49603,
+    "lon": 11.342716
+   },
+   {
+    "name": "Hotel Corona d'Oro 1890",
+    "key": "g187801-d230509",
+    "lat": 44.49547,
+    "lon": 11.345591
+   },
+   {
+    "name": "Art Hotel Commercianti",
+    "key": "g187801-d230507",
+    "lat": 44.492546,
+    "lon": 11.342446
+   },
+   {
+    "name": "Hotel Il Guercino",
+    "key": "g187801-d205780",
+    "lat": 44.509594,
+    "lon": 11.345573
+   },
+   {
+    "name": "Starhotels Excelsior",
+    "key": "g187801-d202784",
+    "lat": 44.505082,
+    "lon": 11.342561
+   },
+   {
+    "name": "Royal Hotel Carlton",
+    "key": "g187801-d229084",
+    "lat": 44.502467,
+    "lon": 11.342314
+   },
+   {
+    "name": "Hotel Internazionale",
+    "key": "g187801-d228976",
+    "lat": 44.501026,
+    "lon": 11.344144
+   },
+   {
+    "name": "Savhotel Fiera Bologna",
+    "key": "g187801-d601493",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "NH Bologna De La Gare",
+    "key": "g187801-d1213874",
+    "lat": 44.503824,
+    "lon": 11.344039
+   },
+   {
+    "name": "Suite Hotel Elite",
+    "key": "g187801-d1605643",
+    "lat": 44.5017,
+    "lon": 11.31986
+   },
+   {
+    "name": "Hotel Maggiore",
+    "key": "g187801-d202781",
+    "lat": 44.505205,
+    "lon": 11.308456
+   },
+   {
+    "name": "Panorama Hotel",
+    "key": "g187801-d236522",
+    "lat": 44.495132,
+    "lon": 11.339546
+   },
+   {
+    "name": "Savhotel Aemilia Bologna",
+    "key": "g187801-d286576",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Colonia",
+  "lat": 50.9384,
+  "lon": 6.96,
+  "hotels": [
+   {
+    "name": "Excelsior Hotel Ernst",
+    "key": "g187371-d201491",
+    "lat": 50.942171,
+    "lon": 6.956348
+   },
+   {
+    "name": "Hotel Esplanade In Köln",
+    "key": "g187371-d234018",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Lindner Hotel Cologne City Plaza, part of JdV by Hyatt",
+    "key": "g187371-d199496",
+    "lat": 50.940341,
+    "lon": 6.941925
+   },
+   {
+    "name": "AMERON Koeln Hotel Regent",
+    "key": "g187371-d201481",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Philero Hotel Köln",
+    "key": "g187371-d228284",
+    "lat": 50.939487,
+    "lon": 7.017077
+   },
+   {
+    "name": "Hotel Mondial Am Dom Cologne - Mgallery",
+    "key": "g187371-d230380",
+    "lat": 50.940071,
+    "lon": 6.960381
+   },
+   {
+    "name": "Wasserturm Hotel Cologne",
+    "key": "g187371-d232667",
+    "lat": 50.931609,
+    "lon": 6.951625
+   },
+   {
+    "name": "CityClass Hotel Am Dom",
+    "key": "g187371-d234470",
+    "lat": 50.939723,
+    "lon": 6.958832
+   },
+   {
+    "name": "URBAN LOFT Cologne",
+    "key": "g187371-d21174849",
+    "lat": 50.946503,
+    "lon": 6.955982
+   },
+   {
+    "name": "Hyatt Regency Cologne",
+    "key": "g187371-d234019",
+    "lat": 50.940381,
+    "lon": 6.969487
+   },
+   {
+    "name": "Meininger Hotel Köln West",
+    "key": "g187371-d26431091",
+    "lat": 50.94216,
+    "lon": 6.888584
+   }
+  ]
+ },
+ {
+  "city": "Brujas",
+  "lat": 51.2086,
+  "lon": 3.2268,
+  "hotels": [
+   {
+    "name": "The Pand - Charming Boutique Hotel",
+    "key": "g188671-d206721",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel De Orangerie",
+    "key": "g188671-d232033",
+    "lat": 51.207034,
+    "lon": 3.226319
+   },
+   {
+    "name": "Hotel Navarra Brugge",
+    "key": "g188671-d227230",
+    "lat": 51.210098,
+    "lon": 3.220819
+   },
+   {
+    "name": "Hotel Acacia",
+    "key": "g188671-d227231",
+    "lat": 51.207989,
+    "lon": 3.22219
+   },
+   {
+    "name": "Martin's Brugge",
+    "key": "g188671-d228108",
+    "lat": 51.207451,
+    "lon": 3.225473
+   },
+   {
+    "name": "Grand Hotel Casselbergh Bruges",
+    "key": "g188671-d1595922",
+    "lat": 51.209131,
+    "lon": 3.228341
+   },
+   {
+    "name": "Hotel Aragon",
+    "key": "g188671-d265125",
+    "lat": 51.210724,
+    "lon": 3.22225
+   },
+   {
+    "name": "Hotel Dukes' Palace",
+    "key": "g188671-d815288",
+    "lat": 51.208491,
+    "lon": 3.219956
+   },
+   {
+    "name": "Hotel Velotel Brugge",
+    "key": "g188671-d4894842",
+    "lat": 51.226337,
+    "lon": 3.21281
+   },
+   {
+    "name": "Boutique Hotel Sablon",
+    "key": "g188671-d265142",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Ter Brughe",
+    "key": "g188671-d260788",
+    "lat": 51.213383,
+    "lon": 3.225612
+   }
+  ]
+ },
+ {
+  "city": "Glasgow",
+  "lat": 55.8612,
+  "lon": -4.2502,
+  "hotels": [
+   {
+    "name": "Kelvingrove Hotel",
+    "key": "g186534-d209058",
+    "lat": 55.866088,
+    "lon": -4.285769
+   },
+   {
+    "name": "Albion Hotel",
+    "key": "g186534-d194018",
+    "lat": 55.875017,
+    "lon": -4.277418
+   },
+   {
+    "name": "Doubletree By Hilton Glasgow Central",
+    "key": "g186534-d188992",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Du Vin Glasgow, at One Devonshire Gardens",
+    "key": "g186534-d187751",
+    "lat": 55.882274,
+    "lon": -4.303968
+   },
+   {
+    "name": "Sherbrooke Castle Hotel",
+    "key": "g186534-d210875",
+    "lat": 55.843156,
+    "lon": -4.297054
+   },
+   {
+    "name": "Carlton George Hotel",
+    "key": "g186534-d192419",
+    "lat": 55.86207,
+    "lon": -4.25295
+   },
+   {
+    "name": "Number 10 Hotel",
+    "key": "g186534-d210890",
+    "lat": 55.830813,
+    "lon": -4.258122
+   },
+   {
+    "name": "Glasgow Marriott Hotel",
+    "key": "g186534-d192422",
+    "lat": 55.860083,
+    "lon": -4.268719
+   },
+   {
+    "name": "voco Grand Central Glasgow by IHG",
+    "key": "g186534-d1874829",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "The Social Hub Glasgow",
+    "key": "g186534-d26862317",
+    "lat": 55.857838,
+    "lon": -4.247778
+   },
+   {
+    "name": "Crowne Plaza Glasgow By IHG",
+    "key": "g186534-d192415",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Holiday Inn Express Glasgow City Theatreland by IHG",
+    "key": "g186534-d265538",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Motel One Glasgow",
+    "key": "g186534-d13968040",
+    "lat": 55.858151,
+    "lon": -4.259411
+   },
+   {
+    "name": "The Z Hotel Glasgow",
+    "key": "g186534-d6820788",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Montecarlo",
+  "lat": 21.363,
+  "lon": -77.8911,
+  "hotels": [
+   {
+    "name": "Hôtel Hermitage Monte-Carlo",
+    "key": "g190409-d196745",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel de Paris Monte-Carlo",
+    "key": "g190409-d196746",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Fairmont Monte-Carlo",
+    "key": "g190409-d230423",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Le Méridien Beach Plaza",
+    "key": "g190409-d229111",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Novotel Monte Carlo",
+    "key": "g190409-d638971",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Metropole, Monte Carlo",
+    "key": "g190409-d196744",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Santorini",
+  "lat": 36.4071,
+  "lon": 25.4567,
+  "hotels": [
+   {
+    "name": "Gizis Cliffside Suites",
+    "key": "g189433-d34201026",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Altera Pars Suites",
+    "key": "g189433-d13568379",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "San Sebastián",
+  "lat": 43.3224,
+  "lon": -1.9839,
+  "hotels": [
+   {
+    "name": "Hotel Maria Cristina, a Luxury Collection Hotel, San Sebastian",
+    "key": "g187457-d228552",
+    "lat": 43.321773,
+    "lon": -1.98015
+   },
+   {
+    "name": "Hotel Zinema7",
+    "key": "g187457-d1439666",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Avenida",
+    "key": "g187457-d238957",
+    "lat": 43.312852,
+    "lon": -2.01092
+   },
+   {
+    "name": "NH Collection San Sebastián Aránzazu",
+    "key": "g187457-d234408",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel de Londres y de Inglaterra",
+    "key": "g187457-d236174",
+    "lat": 43.317938,
+    "lon": -1.985202
+   },
+   {
+    "name": "Barceló Costa Vasca",
+    "key": "g187457-d238669",
+    "lat": 43.311737,
+    "lon": -1.995126
+   },
+   {
+    "name": "Sercotel  Codina",
+    "key": "g187457-d237018",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Sercotel Europa San Sebastián",
+    "key": "g187457-d237016",
+    "lat": 43.316397,
+    "lon": -1.985114
+   },
+   {
+    "name": "Abba San Sebastián Hotel",
+    "key": "g187457-d21044506",
+    "lat": 43.320225,
+    "lon": -1.976913
+   },
+   {
+    "name": "Hotel One Shot Tabakalera House",
+    "key": "g187457-d12637969",
+    "lat": 43.316177,
+    "lon": -1.975595
+   },
+   {
+    "name": "Zenit Convento San Martin",
+    "key": "g187457-d21073041",
+    "lat": 43.315939,
+    "lon": -1.985586
+   },
+   {
+    "name": "Hotel Zenit San Sebastián",
+    "key": "g187457-d7166170",
+    "lat": 43.307466,
+    "lon": -1.983322
+   },
+   {
+    "name": "Casual de las Olas San Sebastián",
+    "key": "g187457-d15558824",
+    "lat": 43.307776,
+    "lon": -1.980165
+   },
+   {
+    "name": "Agroturismo Maddiola",
+    "key": "g187457-d610174",
+    "lat": 43.298845,
+    "lon": -2.069372
+   }
+  ]
+ },
+ {
+  "city": "Múnich",
+  "lat": 48.1371,
+  "lon": 11.5754,
+  "hotels": [
+   {
+    "name": "Koenigshof, a Luxury Collection Hotel, Munich",
+    "key": "g187309-d27426776",
+    "lat": 48.139649,
+    "lon": 11.564537
+   },
+   {
+    "name": "Unsold's Factory Hotel",
+    "key": "g187309-d21507365",
+    "lat": 48.14197,
+    "lon": 11.586577
+   },
+   {
+    "name": "BEYOND by Geisel",
+    "key": "g187309-d12821584",
+    "lat": 48.136848,
+    "lon": 11.575378
+   },
+   {
+    "name": "Hotel im Hof",
+    "key": "g187309-d10164462",
+    "lat": 48.153563,
+    "lon": 11.563002
+   },
+   {
+    "name": "Mandarin Oriental, Munich",
+    "key": "g187309-d233835",
+    "lat": 48.137299,
+    "lon": 11.580733
+   },
+   {
+    "name": "Scandic München Macherei",
+    "key": "g187309-d23605634",
+    "lat": 48.12988,
+    "lon": 11.62452
+   },
+   {
+    "name": "Bayerischer Hof Hotel",
+    "key": "g187309-d190303",
+    "lat": 48.140474,
+    "lon": 11.572928
+   },
+   {
+    "name": "Platzl Hotel",
+    "key": "g187309-d228386",
+    "lat": 48.137988,
+    "lon": 11.578962
+   },
+   {
+    "name": "LOUIS Hotel",
+    "key": "g187309-d1544237",
+    "lat": 48.135967,
+    "lon": 11.575797
+   },
+   {
+    "name": "Hotel Torbräu",
+    "key": "g187309-d201931",
+    "lat": 48.135501,
+    "lon": 11.58159
+   },
+   {
+    "name": "Rosewood Munich",
+    "key": "g187309-d26355406",
+    "lat": 48.141115,
+    "lon": 11.574422
+   }
+  ]
+ },
+ {
+  "city": "Ginebra",
+  "lat": 46.2018,
+  "lon": 6.1466,
+  "hotels": [
+   {
+    "name": "Swiss Luxury Apartments",
+    "key": "g188057-d3469792",
+    "lat": 46.209488,
+    "lon": 6.148905
+   },
+   {
+    "name": "Hôtel Beau-Rivage Genève",
+    "key": "g188057-d234808",
+    "lat": 46.209223,
+    "lon": 6.14982
+   },
+   {
+    "name": "Hotel D'angleterre",
+    "key": "g188057-d195979",
+    "lat": 46.209642,
+    "lon": 6.15031
+   },
+   {
+    "name": "Hôtel Les Armures",
+    "key": "g188057-d195980",
+    "lat": 46.201305,
+    "lon": 6.147276
+   },
+   {
+    "name": "Mandarin Oriental, Geneva",
+    "key": "g188057-d196004",
+    "lat": 46.205815,
+    "lon": 6.140977
+   },
+   {
+    "name": "Hôtel Mon-Repos",
+    "key": "g188057-d228139",
+    "lat": 46.221553,
+    "lon": 6.149213
+   },
+   {
+    "name": "Rotary Hotel Geneva - MGallery Collection",
+    "key": "g188057-d205919",
+    "lat": 46.207238,
+    "lon": 6.145177
+   },
+   {
+    "name": "Hôtel de la Cigogne",
+    "key": "g188057-d195984",
+    "lat": 46.202803,
+    "lon": 6.15023
+   },
+   {
+    "name": "Hotel Bernina Geneva",
+    "key": "g188057-d234229",
+    "lat": 46.210253,
+    "lon": 6.144268
+   },
+   {
+    "name": "Hôtel Bristol Genève",
+    "key": "g188057-d237556",
+    "lat": 46.207565,
+    "lon": 6.147019
+   },
+   {
+    "name": "Hotel D Geneva",
+    "key": "g188057-d15654431",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Ruby Claire Hotel Geneva by IHG",
+    "key": "g188057-d23834443",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Eastwest Hotel By Malone",
+    "key": "g188057-d817240",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "MEININGER Hotel Genève Centre Charmilles",
+    "key": "g188057-d23300912",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Luxemburgo",
+  "lat": 49.6113,
+  "lon": 6.1298,
+  "hotels": [
+   {
+    "name": "Hotel Le Place d'Armes",
+    "key": "g190356-d1935916",
+    "lat": 49.611695,
+    "lon": 6.1288
+   },
+   {
+    "name": "Le Royal Hotels & Resorts - Luxembourg",
+    "key": "g190356-d229110",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Meliá Luxembourg",
+    "key": "g190356-d1382442",
+    "lat": 49.617353,
+    "lon": 6.141832
+   },
+   {
+    "name": "Sofitel Luxembourg Le Grand Ducal",
+    "key": "g190356-d637669",
+    "lat": 49.605744,
+    "lon": 6.137723
+   },
+   {
+    "name": "Park Inn by Radisson Luxembourg City",
+    "key": "g190356-d2048902",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Grand Hotel Cravat",
+    "key": "g190356-d206548",
+    "lat": 49.60978,
+    "lon": 6.129733
+   },
+   {
+    "name": "Novotel Luxembourg Centre",
+    "key": "g190356-d648347",
+    "lat": 49.605311,
+    "lon": 6.137545
+   },
+   {
+    "name": "Hôtel Perrin",
+    "key": "g190356-d235975",
+    "lat": 49.601277,
+    "lon": 6.131916
+   },
+   {
+    "name": "Mercure Luxembourg Off kirchberg",
+    "key": "g190356-d19717712",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Luxembourg Marriott Hotel Alfa",
+    "key": "g190356-d32986370",
+    "lat": 49.600712,
+    "lon": 6.132873
+   },
+   {
+    "name": "La Pipistrelle Hotel",
+    "key": "g190356-d7899741",
+    "lat": 49.608356,
+    "lon": 6.134813
+   },
+   {
+    "name": "Hotel Simoncini",
+    "key": "g190356-d249261",
+    "lat": 49.610116,
+    "lon": 6.129805
+   },
+   {
+    "name": "The Central City - Luxury ApartHotel",
+    "key": "g190356-d19750227",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "La Valeta",
+  "lat": 35.899,
+  "lon": 14.5137,
+  "hotels": [
+   {
+    "name": "Domus Zamittello",
+    "key": "g190328-d13457441",
+    "lat": 35.896826,
+    "lon": 14.510463
+   },
+   {
+    "name": "Palazzo Consiglia",
+    "key": "g190328-d8812919",
+    "lat": 35.897942,
+    "lon": 14.515969
+   },
+   {
+    "name": "Palais Le Brun",
+    "key": "g190328-d14068988",
+    "lat": 35.900614,
+    "lon": 14.514217
+   },
+   {
+    "name": "La Falconeria",
+    "key": "g190328-d11876435",
+    "lat": 35.89824,
+    "lon": 14.509959
+   },
+   {
+    "name": "Rosselli - AX Privilege",
+    "key": "g190328-d17519905",
+    "lat": 35.898935,
+    "lon": 14.515365
+   },
+   {
+    "name": "The Vincent Boutique Hotel, BW Premier Collection by Best Western",
+    "key": "g190328-d12515140",
+    "lat": 35.900272,
+    "lon": 14.516784
+   },
+   {
+    "name": "AX The Saint John",
+    "key": "g190328-d12428155",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "The Cumberland By Neu Collective",
+    "key": "g190328-d1628241",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "The Gomerino Hotel",
+    "key": "g190328-d23481121",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "The Embassy Valletta Hotel",
+    "key": "g190328-d20170571",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Palazzo Rosaria Boutique Hotel",
+    "key": "g190328-d18178530",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "The Capital Boutique Valletta",
+    "key": "g190328-d26344833",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Luciano Al Porto Boutique",
+    "key": "g190328-d4242477",
+    "lat": 35.896443,
+    "lon": 14.513591
+   },
+   {
+    "name": "Casa Ellul",
+    "key": "g190328-d6892974",
+    "lat": 35.899989,
+    "lon": 14.511959
+   }
+  ]
+ },
+ {
+  "city": "Hamburgo",
+  "lat": 53.5502,
+  "lon": 10.0013,
+  "hotels": [
+   {
+    "name": "THE MADISON Hotel Hamburg",
+    "key": "g187331-d201214",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "NH Collection Hamburg City",
+    "key": "g187331-d199581",
+    "lat": 53.556931,
+    "lon": 9.974059
+   },
+   {
+    "name": "Fairmont Hotel Vier Jahreszeiten",
+    "key": "g187331-d194643",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Grand Elysee Hotel",
+    "key": "g187331-d201189",
+    "lat": 53.563389,
+    "lon": 9.990421
+   },
+   {
+    "name": "Hotel Atlantic Hamburg, Autograph Collection",
+    "key": "g187331-d199575",
+    "lat": 53.557078,
+    "lon": 10.00456
+   },
+   {
+    "name": "H4 Hotel Hamburg Bergedorf",
+    "key": "g187331-d199566",
+    "lat": 53.486448,
+    "lon": 10.209585
+   },
+   {
+    "name": "Hotel Motel One Hamburg-Fleetinsel",
+    "key": "g187331-d23342006",
+    "lat": 53.546779,
+    "lon": 9.982953
+   },
+   {
+    "name": "Pierdrei Hotel Hafencity Hamburg",
+    "key": "g187331-d14199097",
+    "lat": 53.543416,
+    "lon": 9.996012
+   },
+   {
+    "name": "Scandic Hamburg Emporio",
+    "key": "g187331-d2192546",
+    "lat": 53.556124,
+    "lon": 9.982287
+   },
+   {
+    "name": "Hotel Motel One Hamburg Am Michel",
+    "key": "g187331-d1802247",
+    "lat": 53.549753,
+    "lon": 9.974955
+   },
+   {
+    "name": "Ameron Hamburg Hotel Speicherstadt",
+    "key": "g187331-d5274407",
+    "lat": 53.543741,
+    "lon": 9.995354
+   },
+   {
+    "name": "CAB20",
+    "key": "g187331-d23151332",
+    "lat": 53.555293,
+    "lon": 10.014879
+   }
+  ]
+ },
+ {
+  "city": "Fráncfort",
+  "lat": 50.1106,
+  "lon": 8.6821,
+  "hotels": [
+   {
+    "name": "Avani Frankfurt City Hotel",
+    "key": "g187337-d280630",
+    "lat": 50.117177,
+    "lon": 8.687014
+   },
+   {
+    "name": "Adina Frankfurt Neue Oper",
+    "key": "g187337-d1450527",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Lindner Hotel Frankfurt Sportpark",
+    "key": "g187337-d1960488",
+    "lat": 50.067678,
+    "lon": 8.642626
+   },
+   {
+    "name": "Hilton Frankfurt Airport",
+    "key": "g187337-d2085472",
+    "lat": 50.053333,
+    "lon": 8.572442
+   },
+   {
+    "name": "Hilton Garden Inn Frankfurt Airport",
+    "key": "g187337-d1596081",
+    "lat": 50.053424,
+    "lon": 8.571517
+   },
+   {
+    "name": "The Westin Grand Frankfurt",
+    "key": "g187337-d202272",
+    "lat": 50.115805,
+    "lon": 8.6873
+   },
+   {
+    "name": "Le Méridien Frankfurt",
+    "key": "g187337-d199313",
+    "lat": 50.105818,
+    "lon": 8.666292
+   },
+   {
+    "name": "Steigenberger Icon Frankfurter Hof",
+    "key": "g187337-d202275",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "IntercityHotel Frankfurt Hauptbahnhof Süd",
+    "key": "g187337-d15216370",
+    "lat": 50.104935,
+    "lon": 8.662873
+   },
+   {
+    "name": "THE FLAG West M.",
+    "key": "g187337-d19873288",
+    "lat": 50.117589,
+    "lon": 8.665413
+   },
+   {
+    "name": "Mercure Hotel Kaiserhof Frankfurt City Center",
+    "key": "g187337-d230346",
+    "lat": 50.108231,
+    "lon": 8.667076
+   },
+   {
+    "name": "Hotel Motel One Frankfurt-Römer",
+    "key": "g187337-d14922897",
+    "lat": 50.110304,
+    "lon": 8.677909
+   },
+   {
+    "name": "Hyatt Place Frankfurt Airport",
+    "key": "g187337-d12924999",
+    "lat": 50.056184,
+    "lon": 8.59575
+   }
+  ]
+ },
+ {
+  "city": "Nápoles",
+  "lat": 40.8359,
+  "lon": 14.2488,
+  "hotels": [
+   {
+    "name": "Dormire A Napoli Suite Spa",
+    "key": "g187785-d23298912",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "La Gatta Cenerentola Rooms",
+    "key": "g187785-d17577445",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "La Gemma B&B",
+    "key": "g187785-d10127783",
+    "lat": 40.849626,
+    "lon": 14.250417
+   },
+   {
+    "name": "Grand Hotel Parker's",
+    "key": "g187785-d195633",
+    "lat": 40.837218,
+    "lon": 14.230014
+   },
+   {
+    "name": "Grand Hotel Vesuvio",
+    "key": "g187785-d195429",
+    "lat": 40.830101,
+    "lon": 14.248203
+   },
+   {
+    "name": "Eurostars Hotel Excelsior",
+    "key": "g187785-d195492",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Renaissance Naples Hotel Mediterraneo",
+    "key": "g187785-d202910",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Decumani Hotel de Charme",
+    "key": "g187785-d1068538",
+    "lat": 40.846656,
+    "lon": 14.255245
+   },
+   {
+    "name": "Grand Hotel Europa",
+    "key": "g187785-d236442",
+    "lat": 40.854555,
+    "lon": 14.27275
+   },
+   {
+    "name": "Grand Hotel Santa Lucia",
+    "key": "g187785-d228972",
+    "lat": 40.830016,
+    "lon": 14.249114
+   },
+   {
+    "name": "Hotel Piazza Bellini & Apartments",
+    "key": "g187785-d646334",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Cristina",
+    "key": "g187785-d4064499",
+    "lat": 40.819691,
+    "lon": 14.184547
+   },
+   {
+    "name": "B&B Hotel Napoli",
+    "key": "g187785-d204621",
+    "lat": 40.853081,
+    "lon": 14.268442
+   }
+  ]
+ },
+ {
+  "city": "Niza",
+  "lat": 43.7009,
+  "lon": 7.2684,
+  "hotels": [
+   {
+    "name": "Hotel Negresco",
+    "key": "g187234-d195659",
+    "lat": 43.69471,
+    "lon": 7.257752
+   },
+   {
+    "name": "Hôtel Apollinaire Nice",
+    "key": "g187234-d197182",
+    "lat": 43.7014,
+    "lon": 7.271135
+   },
+   {
+    "name": "The Deck Hotel by HappyCulture",
+    "key": "g187234-d197196",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "NH Nice",
+    "key": "g187234-d197189",
+    "lat": 43.707749,
+    "lon": 7.282836
+   },
+   {
+    "name": "Hotel Le Grimaldi by HappyCulture",
+    "key": "g187234-d197193",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Le Méridien Nice",
+    "key": "g187234-d197179",
+    "lat": 43.69528,
+    "lon": 7.265958
+   },
+   {
+    "name": "Best Western Plus Hotel Massena Nice",
+    "key": "g187234-d197187",
+    "lat": 43.698646,
+    "lon": 7.271033
+   },
+   {
+    "name": "Hotel West End",
+    "key": "g187234-d197184",
+    "lat": 43.694796,
+    "lon": 7.259591
+   },
+   {
+    "name": "Hôtel Le Royal Vacances Bleues",
+    "key": "g187234-d609466",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Locarno Nice",
+    "key": "g187234-d283724",
+    "lat": 43.694723,
+    "lon": 7.251776
+   },
+   {
+    "name": "Hôtel Du Centre Un Hôtel Ammi",
+    "key": "g187234-d222935",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Aparthotel AMMI Nice Lafayette",
+    "key": "g187234-d197214",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hôtel Khla Nice",
+    "key": "g187234-d25252263",
+    "lat": 43.704347,
+    "lon": 7.263694
+   },
+   {
+    "name": "Hôtel Nice Côte d'Azur",
+    "key": "g187234-d8118910",
+    "lat": 43.703421,
+    "lon": 7.263163
+   }
+  ]
+ },
+ {
+  "city": "Edimburgo",
+  "lat": 55.9533,
+  "lon": -3.1884,
+  "hotels": [
+   {
+    "name": "Ocean Mist Leith",
+    "key": "g186525-d24022285",
+    "lat": 55.976726,
+    "lon": -3.169727
+   },
+   {
+    "name": "100 Princes Street Edinburgh",
+    "key": "g186525-d23418900",
+    "lat": 55.951594,
+    "lon": -3.200138
+   },
+   {
+    "name": "The Bonham Hotel",
+    "key": "g186525-d188998",
+    "lat": 55.951426,
+    "lon": -3.215803
+   },
+   {
+    "name": "The Caledonian Edinburgh, Curio Collection by Hilton",
+    "key": "g186525-d188782",
+    "lat": 55.949553,
+    "lon": -3.207639
+   },
+   {
+    "name": "Sheraton Grand Hotel & Spa, Edinburgh",
+    "key": "g186525-d188790",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Travelodge Edinburgh Central",
+    "key": "g186525-d189268",
+    "lat": 55.949695,
+    "lon": -3.18385
+   },
+   {
+    "name": "The Resident Edinburgh",
+    "key": "g186525-d27501273",
+    "lat": 55.95126,
+    "lon": -3.212745
+   },
+   {
+    "name": "ibis Styles Edinburgh St Andrew Square",
+    "key": "g186525-d6227015",
+    "lat": 55.954571,
+    "lon": -3.194775
+   },
+   {
+    "name": "Travelodge Edinburgh Cameron Toll",
+    "key": "g186525-d1763923",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Heeton Concept Aparthotel - Queen Street - Edinburgh",
+    "key": "g186525-d14776170",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Travelodge Edinburgh Central Waterloo Place",
+    "key": "g186525-d1872491",
+    "lat": 55.953729,
+    "lon": -3.187632
+   }
+  ]
+ },
+ {
+  "city": "Mánchester",
+  "lat": 53.4795,
+  "lon": -2.2451,
+  "hotels": [
+   {
+    "name": "Clayton Hotel Manchester Airport",
+    "key": "g187069-d189331",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Townhouse Hotel Manchester",
+    "key": "g187069-d191543",
+    "lat": 53.477463,
+    "lon": -2.239711
+   },
+   {
+    "name": "Kimpton Clocktower Hotel by IHG",
+    "key": "g187069-d193189",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Leonardo Hotel Manchester Central",
+    "key": "g187069-d209369",
+    "lat": 53.474749,
+    "lon": -2.246691
+   },
+   {
+    "name": "Radisson Blu Hotel, Manchester Airport",
+    "key": "g187069-d210728",
+    "lat": 53.365172,
+    "lon": -2.27573
+   },
+   {
+    "name": "Malmaison Manchester",
+    "key": "g187069-d195668",
+    "lat": 53.479178,
+    "lon": -2.233235
+   },
+   {
+    "name": "The Midland",
+    "key": "g187069-d189332",
+    "lat": 53.401452,
+    "lon": -2.054256
+   },
+   {
+    "name": "Travelodge Manchester Central Arena",
+    "key": "g187069-d2367411",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Travelodge Manchester Central",
+    "key": "g187069-d225327",
+    "lat": 53.490155,
+    "lon": -2.246707
+   },
+   {
+    "name": "Crowne Plaza Manchester City Centre by IHG",
+    "key": "g187069-d1145928",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Travelodge Manchester Piccadilly",
+    "key": "g187069-d5415098",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Travelodge Manchester Upper Brook Street",
+    "key": "g187069-d2310965",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Innside By Meliá Manchester",
+    "key": "g187069-d7905598",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Salzburgo",
+  "lat": 47.7981,
+  "lon": 13.0465,
+  "hotels": [
+   {
+    "name": "Hotel & Villa Auersperg",
+    "key": "g190441-d228067",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Villa Carlton",
+    "key": "g190441-d231988",
+    "lat": 47.807546,
+    "lon": 13.038879
+   },
+   {
+    "name": "IMLAUER Palais Mirabell",
+    "key": "g190441-d195089",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Sheraton Grand Salzburg",
+    "key": "g190441-d195088",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "IMLAUER Hotel Pitter Salzburg",
+    "key": "g190441-d195615",
+    "lat": 47.807872,
+    "lon": 13.041787
+   },
+   {
+    "name": "NH Collection Salzburg City",
+    "key": "g190441-d228044",
+    "lat": 47.805374,
+    "lon": 13.048538
+   },
+   {
+    "name": "Hotel Goldener Hirsch, a Luxury Collection Hotel, Salzburg",
+    "key": "g190441-d195103",
+    "lat": 47.799887,
+    "lon": 13.040952
+   },
+   {
+    "name": "HOTEL andrä",
+    "key": "g190441-d33116551",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Leonardo Hotel Salzburg City Center",
+    "key": "g190441-d646522",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Imlauer & Bräu Salzburg",
+    "key": "g190441-d227186",
+    "lat": 47.808715,
+    "lon": 13.041618
+   },
+   {
+    "name": "Hotel Salzburg-Hauptbahnhof",
+    "key": "g190441-d1057242",
+    "lat": 47.811844,
+    "lon": 13.043574
+   },
+   {
+    "name": "Hotel Elefant Family Business",
+    "key": "g190441-d19789307",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Dubrovnik",
+  "lat": 42.6491,
+  "lon": 18.094,
+  "hotels": [
+   {
+    "name": "Hotel Royal Neptun",
+    "key": "g295371-d313158",
+    "lat": 42.659802,
+    "lon": 18.057986
+   },
+   {
+    "name": "Hotel Lero",
+    "key": "g295371-d313157",
+    "lat": 42.648321,
+    "lon": 18.088562
+   },
+   {
+    "name": "Hilton Imperial Dubrovnik",
+    "key": "g295371-d559522",
+    "lat": 42.642743,
+    "lon": 18.104924
+   },
+   {
+    "name": "Rixos Premium Dubrovnik",
+    "key": "g295371-d651125",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Palmotta Palace",
+    "key": "g295371-d2099112",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "B&B Andio",
+    "key": "g295371-d6416996",
+    "lat": null,
+    "lon": null
+   }
+  ]
  }
 ]

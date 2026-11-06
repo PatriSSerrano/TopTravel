@@ -1,5 +1,7 @@
 /* Modo claro u oscuro. Se carga antes que la página para que no parpadee al abrirla. */
 (() => {
+  // Número de versión de la web: se cambia aquí y en CHANGELOG.md al publicar.
+  const VERSION = '1.0.0';
   const KEY = 'toptravel-tema';
   const root = document.documentElement;
   const read = () => {
@@ -25,6 +27,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     paintMeta();
     paintButtons();
+    document.querySelectorAll('[data-version]').forEach((el) => { el.textContent = `Versión ${VERSION}`; });
     document.addEventListener('click', (event) => {
       if (!event.target.closest('[data-theme-toggle]')) return;
       root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
