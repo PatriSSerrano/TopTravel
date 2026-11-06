@@ -46,6 +46,8 @@ const PLACES = [
 ].map(([code, city, country, airport]) => ({ code, city, country, airport }));
 
 const IDEAS = ['CDG', 'FCO', 'LIS', 'LHR', 'JFK', 'NRT', 'CUN', 'AMS'];
+// Subirlo al cambiar las fotos: así el navegador no enseña las antiguas.
+const PHOTOS_VERSION = 2;
 const PHOTOS = {
   CDG: 'paris',
   FCO: 'roma',
@@ -2015,8 +2017,8 @@ function renderIdeas() {
         ${heartHtml(code, p.city)}
         <button type="button" class="dest" data-code="${code}">
           <span class="dest__img" style="display:block">
-            <img class="is-on" src="assets/${PHOTOS[code]}.jpg" alt="" width="640" height="640" loading="lazy" decoding="async">
-            ${[2, 3, 4].map((n) => `<img data-src="assets/${PHOTOS[code]}${n}.jpg" alt="" width="640" height="640" decoding="async">`).join('')}
+            <img class="is-on" src="assets/${PHOTOS[code]}.jpg?v=${PHOTOS_VERSION}" alt="" width="640" height="640" loading="lazy" decoding="async">
+            ${[2, 3, 4].map((n) => `<img data-src="assets/${PHOTOS[code]}${n}.jpg?v=${PHOTOS_VERSION}" alt="" width="640" height="640" decoding="async">`).join('')}
             <span class="dest__dots" aria-hidden="true"><i class="is-on"></i><i></i><i></i><i></i></span>
           </span>
           <span class="dest__t">${esc(p.city)}</span>
