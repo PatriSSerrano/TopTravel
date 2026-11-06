@@ -952,6 +952,8 @@ SECURITY_HEADERS = {
     "X-Content-Type-Options": "nosniff",
     "X-Frame-Options": "DENY",
     "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=()",
+    "Cross-Origin-Opener-Policy": "same-origin",
     "Content-Security-Policy": (
         "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; "
         "img-src 'self' data: https://tile.openstreetmap.org https://*.wikimedia.org; connect-src 'self'; "
@@ -999,13 +1001,17 @@ class Handler(BaseHTTPRequestHandler):
             self.send_header("ETag", etag)
         for name, value in SECURITY_HEADERS.items():
             self.send_header(name, value)
+        if TRUST_PROXY:
+            # Publicada, el navegador solo debe entrar por HTTPS, incluso si alguien intenta desviarlo.
+            self.send_header("Strict-Transport-Security", "max-age=31536000")
         cookie = getattr(self, "_set_cookie", None)
         if cookie:
             self.send_header("Set-Cookie", cookie)
             self._set_cookie = None
         try:
             self.end_headers()
-            self.wfile.write(body)
+            if not getattr(self, "_head_only", False):
+                self.wfile.write(body)
         except (ConnectionError, TimeoutError):
             self.close_connection = True  # el navegador cerró la conexión
 
@@ -1060,11 +1066,9 @@ class Handler(BaseHTTPRequestHandler):
         self.send_body(200, page.replace("{{CONTACTO}}", contact).encode("utf-8"), "text/html; charset=utf-8")
 
     def client_ip(self):
-        # Tras un proxy, la última dirección es la que él ha visto: las anteriores se pueden falsificar.
-        forwarded = self.headers.get("X-Forwarded-For")
-        if TRUST_PROXY and forwarded:
-            return forwarded.split(",")[-1].strip()
-        return self.client_address[0]
+        # El proxy de alwaysdata escribe X-Real-IP; X-Forwarded-For lo deja pasar y se puede falsificar.
+        real = self.headers.get("X-Real-IP")
+        return real.strip() if TRUST_PROXY and real else self.client_address[0]
 
     def context(self):
         raw = self.headers.get("Cookie") or ""
@@ -1128,6 +1132,13 @@ class Handler(BaseHTTPRequestHandler):
             return
         self._set_cookie = ctx.set_cookie
         self.send_json(status, data)
+
+    def do_HEAD(self):
+        self._head_only = True
+        try:
+            self.do_GET()
+        finally:
+            self._head_only = False
 
     def do_GET(self):
         parsed = urllib.parse.urlsplit(self.path)

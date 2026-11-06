@@ -15,6 +15,8 @@ from email.message import EmailMessage
 from pathlib import Path
 from urllib.parse import urlsplit
 
+from cryptography.fernet import Fernet
+
 ROOT = Path(__file__).resolve().parent
 DB_PATH = Path(os.environ.get("TOPTRAVEL_DB", ROOT / "data" / "toptravel.db"))
 
@@ -37,6 +39,7 @@ SCHEMA = """
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY,
   email TEXT NOT NULL UNIQUE,
+  email_sealed TEXT,
   salt BLOB NOT NULL,
   password BLOB NOT NULL,
   recovery_hash TEXT,
@@ -92,6 +95,47 @@ class Context:
         self.secure = False
 
 
+# ---------- Cifrado de datos personales ----------
+# Correos, viajes guardados y avisos se guardan cifrados. Para buscar un correo sin
+# descifrarlo, la columna "email" guarda solo una huella que no se puede revertir.
+_cipher = None
+_index_key = b""
+
+
+def load_keys():
+    global _cipher, _index_key
+    path = DB_PATH.parent / "clave-datos.key"
+    if not path.exists():
+        descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        with os.fdopen(descriptor, "wb") as file:
+            file.write(Fernet.generate_key())
+    key = path.read_bytes().strip()
+    _cipher = Fernet(key)
+    _index_key = hashlib.sha256(b"toptravel-huellas" + key).digest()
+
+
+def seal(text):
+    return _cipher.encrypt(text.encode("utf-8")).decode("ascii")
+
+
+def unseal(token):
+    return _cipher.decrypt(token.encode("ascii")).decode("utf-8")
+
+
+def fingerprint(text):
+    return hmac.new(_index_key, text.encode("utf-8"), hashlib.sha256).hexdigest()
+
+
+def seal_old_rows(db):
+    """Cifra lo que se guardó antes de que existiera el cifrado."""
+    for row in db.execute("SELECT id, email FROM users WHERE email_sealed IS NULL").fetchall():
+        db.execute("UPDATE users SET email = ?, email_sealed = ? WHERE id = ?", (fingerprint(row["email"]), seal(row["email"]), row["id"]))
+    for row in db.execute("SELECT id, item_key, data FROM saved WHERE data LIKE '{%'").fetchall():
+        db.execute("UPDATE saved SET item_key = ?, data = ? WHERE id = ?", (fingerprint(row["item_key"]), seal(row["data"]), row["id"]))
+    for row in db.execute("SELECT id, title FROM alerts WHERE title NOT LIKE 'gAAAA%'").fetchall():
+        db.execute("UPDATE alerts SET title = ? WHERE id = ?", (seal(row["title"]), row["id"]))
+
+
 def connect():
     db = sqlite3.connect(DB_PATH, timeout=10)
     db.row_factory = sqlite3.Row
@@ -100,7 +144,11 @@ def connect():
 
 
 def init_db():
+    # Nada de lo que cree este programa debe poder leerlo otro usuario del sistema.
+    os.umask(0o077)
     DB_PATH.parent.mkdir(exist_ok=True)
+    DB_PATH.parent.chmod(0o700)
+    load_keys()
     db = connect()
     try:
         db.execute("PRAGMA journal_mode = WAL")
@@ -110,9 +158,15 @@ def init_db():
             db.execute("ALTER TABLE users ADD COLUMN recovery_hash TEXT")
         if "email_alerts" not in columns:
             db.execute("ALTER TABLE users ADD COLUMN email_alerts INTEGER NOT NULL DEFAULT 1")
+        if "email_sealed" not in columns:
+            db.execute("ALTER TABLE users ADD COLUMN email_sealed TEXT")
+        seal_old_rows(db)
         db.commit()
     finally:
         db.close()
+    for path in (DB_PATH, DB_PATH.with_name(DB_PATH.name + "-wal"), DB_PATH.with_name(DB_PATH.name + "-shm")):
+        if path.exists():
+            path.chmod(0o600)
 
 
 def hash_password(password, salt):
@@ -198,8 +252,8 @@ def api_register(body, ctx):
     try:
         try:
             cursor = db.execute(
-                "INSERT INTO users (email, salt, password, recovery_hash, created_at) VALUES (?, ?, ?, ?, ?)",
-                (email, salt, digest, code_hash, int(time.time())),
+                "INSERT INTO users (email, email_sealed, salt, password, recovery_hash, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+                (fingerprint(email), seal(email), salt, digest, code_hash, int(time.time())),
             )
         except sqlite3.IntegrityError:
             note_fail(f"reg:{ctx.ip}")
@@ -218,7 +272,7 @@ def api_login(body, ctx):
         return 429, {"error": "Demasiados intentos. Prueba dentro de unos minutos."}
     db = connect()
     try:
-        row = db.execute("SELECT id, salt, password FROM users WHERE email = ?", (email,)).fetchone()
+        row = db.execute("SELECT id, salt, password FROM users WHERE email = ?", (fingerprint(email),)).fetchone()
         # Se calcula siempre para que no se note si el correo existe.
         digest = hash_password(password[:PASSWORD_MAX], row["salt"] if row else _dummy_salt)
         if not row or not hmac.compare_digest(digest, row["password"]):
@@ -244,7 +298,7 @@ def api_recover(body, ctx):
         return 429, {"error": "Demasiados intentos. Prueba dentro de unos minutos."}
     db = connect()
     try:
-        row = db.execute("SELECT id, recovery_hash FROM users WHERE email = ?", (email,)).fetchone()
+        row = db.execute("SELECT id, recovery_hash FROM users WHERE email = ?", (fingerprint(email),)).fetchone()
         stored = (row["recovery_hash"] if row else None) or ""
         if not stored or not hmac.compare_digest(stored, recovery_hash(code)):
             for key in keys:
@@ -348,7 +402,7 @@ def mail_changes(db, changes):
     """Un solo correo por persona con todos sus cambios de precio."""
     site = (mail_settings().get("SITE_URL") or "").rstrip("/")
     for user_id, lines in changes.items():
-        row = db.execute("SELECT email, email_alerts FROM users WHERE id = ?", (user_id,)).fetchone()
+        row = db.execute("SELECT email_sealed, email_alerts FROM users WHERE id = ?", (user_id,)).fetchone()
         if not row or not row["email_alerts"]:
             continue
         text = "Ha cambiado el precio de un vuelo que guardaste en TopTravel:\n\n" + "\n".join(lines)
@@ -357,7 +411,7 @@ def mail_changes(db, changes):
             text += f"\n\nVer tus avisos: {site}"
         text += "\n\nPuedes desactivar estos correos en «Mi cuenta»."
         try:
-            send_mail(row["email"], "Ha cambiado el precio de tu vuelo", text)
+            send_mail(unseal(row["email_sealed"]), "Ha cambiado el precio de tu vuelo", text)
         except (smtplib.SMTPException, OSError, ValueError) as error:
             # Sin el correo, el aviso sigue viéndose dentro de la web.
             print(f"No se ha podido enviar un aviso: {type(error).__name__}", flush=True)
@@ -379,12 +433,12 @@ def api_me(_query, ctx):
         return 200, {"user": None, "unread": 0}
     db = connect()
     try:
-        user = db.execute("SELECT email, email_alerts FROM users WHERE id = ?", (ctx.user_id,)).fetchone()
+        user = db.execute("SELECT email_sealed, email_alerts FROM users WHERE id = ?", (ctx.user_id,)).fetchone()
         unread = db.execute("SELECT COUNT(*) AS n FROM alerts WHERE user_id = ? AND is_read = 0", (ctx.user_id,)).fetchone()
     finally:
         db.close()
     return 200, {
-        "user": {"email": user["email"], "emailAlerts": bool(user["email_alerts"]), "mailReady": bool(mail_settings().get("SMTP_HOST"))} if user else None,
+        "user": {"email": unseal(user["email_sealed"]), "emailAlerts": bool(user["email_alerts"]), "mailReady": bool(mail_settings().get("SMTP_HOST"))} if user else None,
         "unread": unread["n"],
     }
 
@@ -491,7 +545,7 @@ def saved_out(row):
         "id": row["id"],
         "kind": row["kind"],
         "key": row["item_key"],
-        "data": json.loads(row["data"]),
+        "data": json.loads(unseal(row["data"])),
         "lastPrice": row["last_price"],
         "checkedAt": row["checked_at"],
     }
@@ -524,7 +578,7 @@ def make_save(price_of):
                 price = price_of(clean)
             except Exception:
                 price = None
-        key = item_key(kind, clean)
+        key = fingerprint(item_key(kind, clean))
         now = int(time.time())
         db = connect()
         try:
@@ -536,7 +590,7 @@ def make_save(price_of):
                 return 400, {"error": f"Puedes guardar hasta {MAX_SAVED} elementos."}
             cursor = db.execute(
                 "INSERT INTO saved (user_id, kind, item_key, data, last_price, checked_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                (ctx.user_id, kind, key, json.dumps(clean, ensure_ascii=False), price, now if price is not None else None, now),
+                (ctx.user_id, kind, key, seal(json.dumps(clean, ensure_ascii=False)), price, now if price is not None else None, now),
             )
             db.commit()
             row = db.execute("SELECT * FROM saved WHERE id = ?", (cursor.lastrowid,)).fetchone()
@@ -567,7 +621,7 @@ def api_alerts(_query, ctx):
         db.close()
     return 200, {"alerts": [{
         "id": r["id"],
-        "title": r["title"],
+        "title": unseal(r["title"]),
         "start": r["start_date"],
         "end": r["end_date"],
         "oldPrice": r["old_price"],
@@ -597,7 +651,7 @@ def check_prices(price_of, pause=1.0):
         rows = db.execute("SELECT * FROM saved WHERE kind = 'flight'").fetchall()
         known = {}
         for row in rows:
-            data = json.loads(row["data"])
+            data = json.loads(unseal(row["data"]))
             if data["start"] < today or data["pax"].get("cabin", "economy") != "economy":
                 continue
             route = (data["origin"]["code"], data["dest"]["code"], data["start"], data.get("end"), data.get("direct"))
@@ -616,7 +670,7 @@ def check_prices(price_of, pause=1.0):
             if old is not None and round(price) != round(old):
                 db.execute(
                     "INSERT INTO alerts (user_id, title, start_date, end_date, old_price, new_price, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                    (row["user_id"], f"{data['origin']['city']} → {data['dest']['city']}", data["start"], data.get("end"), old, price, now),
+                    (row["user_id"], seal(f"{data['origin']['city']} → {data['dest']['city']}"), data["start"], data.get("end"), old, price, now),
                 )
                 created += 1
                 when = f"{data['start']} a {data['end']}" if data.get("end") else data["start"]

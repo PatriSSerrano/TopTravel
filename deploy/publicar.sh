@@ -24,7 +24,8 @@ done
 tar -czf - "${FILES[@]}" | "${SSH[@]}" "$HOST" 'mkdir -p toptravel && tar -xzf - -C toptravel'
 
 if [ "$WITH_ENV" = "--con-env" ]; then
-  "${SSH[@]}" "$HOST" 'umask 077; cat > toptravel/.env' < .env
+  # Solo las claves que usa la web; el resto no sale de este ordenador.
+  grep -E '^(TRAVELPAYOUTS_TOKEN|CONTACT_EMAIL|SMTP_[A-Z]+|MAIL_FROM|SITE_URL|HOTEL_PRICES|NOMINATIM)=' .env     | "${SSH[@]}" "$HOST" 'umask 077; cat > toptravel/.env'
 fi
 
 echo "Archivos subidos. Falta reiniciar el sitio para que use el código nuevo."
