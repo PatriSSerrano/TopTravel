@@ -109,7 +109,7 @@ LOGO_DIR = ROOT / "data" / "logos"
 LOGO_SOURCE = "https://pics.avs.io/120/120/{}.png"
 LOGO_MAX_BYTES = 300 * 1024
 LOGO_RETRY_SECONDS = 3600
-ASSET = re.compile(r"^/assets/[a-z0-9]+\.jpg$")
+ASSET = re.compile(r"^/assets/[a-z0-9]+(-m)?\.jpg$")
 
 _cache = {}
 _xotelo_lists = {}
