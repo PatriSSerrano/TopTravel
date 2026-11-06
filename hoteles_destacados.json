@@ -2915,14 +2915,14 @@
    {
     "name": "Novotel Sofia",
     "key": "g294452-d3533454",
-    "lat": null,
-    "lon": null
+    "lat": 42.65909,
+    "lon": 23.383074
    },
    {
     "name": "InterContinental Sofia by IHG",
     "key": "g294452-d305129",
-    "lat": null,
-    "lon": null
+    "lat": 42.693295,
+    "lon": 23.33224
    },
    {
     "name": "Grand Sofia Hotel",
@@ -2951,8 +2951,8 @@
    {
     "name": "Hotel Favorit",
     "key": "g294452-d2485685",
-    "lat": null,
-    "lon": null
+    "lat": 42.70669,
+    "lon": 23.321758
    },
    {
     "name": "Crowne Plaza Sofia By IHG",
@@ -2981,8 +2981,8 @@
    {
     "name": "Metropolitan Hotel Sofia, a member of Radisson Individuals",
     "key": "g294452-d846709",
-    "lat": null,
-    "lon": null
+    "lat": 42.65699,
+    "lon": 23.38308
    }
   ]
  },
@@ -3079,14 +3079,14 @@
    {
     "name": "Villa 1927",
     "key": "g294472-d26433119",
-    "lat": null,
-    "lon": null
+    "lat": 44.807335,
+    "lon": 20.481491
    },
    {
     "name": "Hilton Belgrade",
     "key": "g294472-d13494348",
-    "lat": null,
-    "lon": null
+    "lat": 44.804443,
+    "lon": 20.466116
    },
    {
     "name": "Square Nine Hotel Belgrade",
@@ -3109,14 +3109,14 @@
    {
     "name": "Hotel Moskva",
     "key": "g294472-d317311",
-    "lat": null,
-    "lon": null
+    "lat": 44.813206,
+    "lon": 20.460476
    },
    {
     "name": "Privilege Suites by Central Park",
     "key": "g294472-d11687766",
-    "lat": null,
-    "lon": null
+    "lat": 44.817245,
+    "lon": 20.458666
    },
    {
     "name": "Hotel Bohemian",
@@ -3127,14 +3127,14 @@
    {
     "name": "The Bristol Belgrade",
     "key": "g294472-d31694745",
-    "lat": null,
-    "lon": null
+    "lat": 44.813038,
+    "lon": 20.452284
    },
    {
     "name": "Belgrade Waterfront Residences",
     "key": "g294472-d27697645",
-    "lat": null,
-    "lon": null
+    "lat": 44.80479,
+    "lon": 20.448645
    },
    {
     "name": "Mama Shelter Belgrade",
@@ -3151,14 +3151,14 @@
    {
     "name": "Kopernikus Hotel Prag",
     "key": "g294472-d506702",
-    "lat": null,
-    "lon": null
+    "lat": 44.81092,
+    "lon": 20.459822
    },
    {
     "name": "The St. Regis Belgrade",
     "key": "g294472-d27996070",
-    "lat": null,
-    "lon": null
+    "lat": 44.805435,
+    "lon": 20.446451
    }
   ]
  },
@@ -3340,8 +3340,8 @@
    {
     "name": "Isa Begov Hamam Hotel",
     "key": "g294450-d8417501",
-    "lat": null,
-    "lon": null
+    "lat": 43.857243,
+    "lon": 18.430069
    },
    {
     "name": "Residence Inn by Marriott Sarajevo",
@@ -3352,14 +3352,14 @@
    {
     "name": "Pansion River",
     "key": "g294450-d7622097",
-    "lat": null,
-    "lon": null
+    "lat": 43.86029,
+    "lon": 18.437088
    },
    {
     "name": "Hotel Colors Inn",
     "key": "g294450-d6363092",
-    "lat": null,
-    "lon": null
+    "lat": 43.860374,
+    "lon": 18.41438
    },
    {
     "name": "Hotel Old Town",
@@ -3370,14 +3370,14 @@
    {
     "name": "Garni Hotel Konak",
     "key": "g294450-d1203986",
-    "lat": null,
-    "lon": null
+    "lat": 43.86003,
+    "lon": 18.42997
    },
    {
     "name": "Hotel Boutique 36",
     "key": "g294450-d617003",
-    "lat": null,
-    "lon": null
+    "lat": 43.862747,
+    "lon": 18.431341
    }
   ]
  },
@@ -3401,8 +3401,8 @@
    {
     "name": "Maritim Hotel Plaza Tirana",
     "key": "g294446-d10384289",
-    "lat": null,
-    "lon": null
+    "lat": 41.32763,
+    "lon": 19.821556
    },
    {
     "name": "Hotel Mondial",
@@ -3413,8 +3413,8 @@
    {
     "name": "Tirana Marriott",
     "key": "g294446-d25044386",
-    "lat": null,
-    "lon": null
+    "lat": 41.319187,
+    "lon": 19.823227
    },
    {
     "name": "Xheko Imperial Luxury Hotel & SPA",
@@ -3425,8 +3425,8 @@
    {
     "name": "Lot Boutique Hotel by Hotels and Preference",
     "key": "g294446-d9771172",
-    "lat": null,
-    "lon": null
+    "lat": 41.328445,
+    "lon": 19.823286
    },
    {
     "name": "Radisson Collection Morina Hotel Tirana",
@@ -3449,8 +3449,8 @@
    {
     "name": "Destiny Hotel & Spa",
     "key": "g294446-d27174382",
-    "lat": null,
-    "lon": null
+    "lat": 41.327812,
+    "lon": 19.785534
    },
    {
     "name": "Central Inn Hotel",
@@ -3467,8 +3467,8 @@
    {
     "name": "Hotel Boutique Gloria",
     "key": "g294446-d10234084",
-    "lat": null,
-    "lon": null
+    "lat": 41.33059,
+    "lon": 19.823175
    }
   ]
  },
@@ -3486,8 +3486,8 @@
    {
     "name": "Hotel Senigallia",
     "key": "g295110-d9587641",
-    "lat": null,
-    "lon": null
+    "lat": 41.99568,
+    "lon": 21.434526
    },
    {
     "name": "Hotel Macedonia Square",
@@ -3504,14 +3504,14 @@
    {
     "name": "City5 Rooms & Suites By LSA",
     "key": "g295110-d3563985",
-    "lat": null,
-    "lon": null
+    "lat": 41.99462,
+    "lon": 21.41987
    },
    {
     "name": "Skopje Marriott Hotel",
     "key": "g295110-d10118054",
-    "lat": null,
-    "lon": null
+    "lat": 41.996277,
+    "lon": 21.430798
    },
    {
     "name": "Doubletree by Hilton Skopje",
@@ -3528,14 +3528,14 @@
    {
     "name": "ibis Skopje City Center",
     "key": "g295110-d7747160",
-    "lat": null,
-    "lon": null
+    "lat": 41.99691,
+    "lon": 21.429832
    },
    {
     "name": "Villa Vodno",
     "key": "g295110-d602948",
-    "lat": null,
-    "lon": null
+    "lat": 41.985725,
+    "lon": 21.415682
    },
    {
     "name": "Hotel De KOKA",
@@ -3552,8 +3552,8 @@
    {
     "name": "Premium Boutique Hotel",
     "key": "g295110-d17767012",
-    "lat": null,
-    "lon": null
+    "lat": 42.00158,
+    "lon": 21.438332
    }
   ]
  },
@@ -3966,8 +3966,8 @@
    {
     "name": "Radisson Blu Resort & Spa, Split",
     "key": "g295370-d304333",
-    "lat": null,
-    "lon": null
+    "lat": 43.502956,
+    "lon": 16.470018
    },
    {
     "name": "Hotel Ambasador Split",
@@ -3978,8 +3978,8 @@
    {
     "name": "Marvie Hotel & Health",
     "key": "g295370-d12338365",
-    "lat": null,
-    "lon": null
+    "lat": 43.502747,
+    "lon": 16.45724
    },
    {
     "name": "Hotel Luxe",
@@ -3990,8 +3990,8 @@
    {
     "name": "AC Hotel Split",
     "key": "g295370-d23996937",
-    "lat": null,
-    "lon": null
+    "lat": 43.520283,
+    "lon": 16.451239
    }
   ]
  },
@@ -6226,14 +6226,14 @@
    {
     "name": "Rixos Premium Dubrovnik",
     "key": "g295371-d651125",
-    "lat": null,
-    "lon": null
+    "lat": 42.64537,
+    "lon": 18.09095
    },
    {
     "name": "Palmotta Palace",
     "key": "g295371-d2099112",
-    "lat": null,
-    "lon": null
+    "lat": 42.64142,
+    "lon": 18.109133
    },
    {
     "name": "B&B Andio",
@@ -6512,14 +6512,14 @@
    {
     "name": "Hotel Voco Podgorica  Luxury IHG hotel",
     "key": "g304088-d11727505",
-    "lat": null,
-    "lon": null
+    "lat": 42.41737,
+    "lon": 19.200613
    },
    {
     "name": "Crowne Plaza Podgorica By IHG",
     "key": "g304088-d11668862",
-    "lat": null,
-    "lon": null
+    "lat": 42.440857,
+    "lon": 19.243174
    },
    {
     "name": "Hotel Laguna",
@@ -6560,20 +6560,20 @@
    {
     "name": "Hotel New Star",
     "key": "g304088-d6402984",
-    "lat": null,
-    "lon": null
+    "lat": 42.43253,
+    "lon": 19.258348
    },
    {
     "name": "Hotel Crnogorska Kuca",
     "key": "g304088-d6208099",
-    "lat": null,
-    "lon": null
+    "lat": 42.45248,
+    "lon": 19.242071
    },
    {
     "name": "Carine Hotel Centar",
     "key": "g304088-d23960840",
-    "lat": null,
-    "lon": null
+    "lat": 42.441986,
+    "lon": 19.263613
    },
    {
     "name": "Hotel Marienplatz Podgorica",
@@ -8176,8 +8176,8 @@
    {
     "name": "Mercure Prishtina City",
     "key": "g295385-d27421016",
-    "lat": null,
-    "lon": null
+    "lat": 42.661213,
+    "lon": 21.142046
    },
    {
     "name": "Grand Boutique Hotel",
@@ -8194,8 +8194,8 @@
    {
     "name": "Courtyard by Marriott Prishtina",
     "key": "g295385-d28145958",
-    "lat": null,
-    "lon": null
+    "lat": 42.657013,
+    "lon": 21.151833
    },
    {
     "name": "Hotel Parlament",

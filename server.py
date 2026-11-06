@@ -770,9 +770,34 @@ def add_price_keys(data):
     return {**data, "hotels": hotels}
 
 
+CITY_ANSWER_SECONDS = 3600
+CITY_ANSWERS_MAX = 150
+_city_answers = {}
+
+
+def ready_answer(key, build):
+    """La respuesta de una ciudad ya comprimida: calcularla cuesta mucho más que enviarla."""
+    now = time.time()
+    hit = _city_answers.get(key)
+    if hit and hit[0] > now:
+        return 200, hit[1]
+    status, data = build()
+    if status != 200 or not (data.get("hotels") or data.get("activities")):
+        return status, data
+    answer = GzJson(gzip.compress(json.dumps(data, ensure_ascii=False, separators=(",", ":")).encode("utf-8"), 6))
+    with _lock:
+        if len(_city_answers) >= CITY_ANSWERS_MAX and key not in _city_answers:
+            del _city_answers[next(iter(_city_answers))]
+        _city_answers[key] = (now + CITY_ANSWER_SECONDS, answer)
+    return 200, answer
+
+
 def api_hotels(q):
-    status, data = lodging_list(q)
-    return (status, add_price_keys(data)) if status == 200 else (status, data)
+    def build():
+        status, data = lodging_list(q)
+        return (status, add_price_keys(data)) if status == 200 else (status, data)
+
+    return ready_answer("h|" + " ".join(q.get("place", "").split()).casefold(), build)
 
 
 def read_center(q):
@@ -1022,11 +1047,14 @@ def api_city(q):
 
 
 def api_activities(q):
-    found = city_activities(q.get("place", ""))
-    if not found:
-        return 200, {"available": False, "activities": []}
-    point, _, items = found
-    return 200, {"available": True, "center": {"lat": point[0], "lon": point[1]}, "activities": [describe_activity(item) for item in items]}
+    def build():
+        found = city_activities(q.get("place", ""))
+        if not found:
+            return 200, {"available": False, "activities": []}
+        point, _, items = found
+        return 200, {"available": True, "center": {"lat": point[0], "lon": point[1]}, "activities": [describe_activity(item) for item in items]}
+
+    return ready_answer("a|" + " ".join(q.get("place", "").split()).casefold(), build)
 
 
 TRANSIT_KINDS = {"subway": "metro", "light_rail": "metro", "monorail": "metro", "tram": "tram", "bus": "bus", "trolleybus": "bus"}
