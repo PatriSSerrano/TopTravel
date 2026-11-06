@@ -127,26 +127,6 @@ function linkBooking(s) {
   return `https://www.booking.com/searchresults.es.html?${q}`;
 }
 
-function linkAirbnb(s) {
-  const place = s.dest.country ? `${s.dest.city}--${s.dest.country}` : s.dest.city;
-  const q = new URLSearchParams({
-    checkin: s.start,
-    checkout: s.end,
-    adults: s.pax.adults,
-    children: s.pax.children,
-    infants: s.pax.infants,
-  });
-  return `https://www.airbnb.es/s/${encodeURIComponent(place)}/homes?${q}`;
-}
-
-const PROVIDERS = {
-  flights: [],
-  stays: [
-    { name: 'Booking.com', badge: 'B', link: linkBooking, about: 'Hoteles, apartamentos y casas con valoraciones de clientes.' },
-    { name: 'Airbnb', badge: 'A', link: linkAirbnb, about: 'Casas y alojamientos de particulares.', note: (s) => (s.pax.rooms > 1 ? 'Airbnb no recibe el número de habitaciones: conviene elegir un alojamiento con espacio suficiente.' : '') },
-  ],
-};
-
 /* ---------- Destinos y sugerencias ---------- */
 function searchPlaces(text) {
   const t = norm(text);
@@ -787,8 +767,7 @@ function renderHotelResults(el, hotels, s, center) {
         fieldsetHtml('Tipo', kinds.map((k) => optHtml('checkbox', 'h_kind', k, k, count((h) => (h.kind || 'Alojamiento') === k), true)).join(''))
         + fieldsetHtml('Estrellas', optHtml('radio', 'h_stars', '0', 'Cualquiera', hotels.length, true)
           + [3, 4, 5].map((n) => optHtml('radio', 'h_stars', n, n === 5 ? '5 estrellas' : `${n} o más`, count((h) => h.stars >= n))).join(''))
-        + fieldsetHtml('Compra directa', optHtml('checkbox', 'h_web', '1', 'Con web oficial', count((h) => h.website))
-          + optHtml('checkbox', 'h_price', '1', 'Con precio', count((h) => h.key))),
+        + fieldsetHtml('Precio', optHtml('checkbox', 'h_price', '1', 'Solo con precio', count((h) => h.key))),
       )}
       <div class="layout__main">
         <div class="maptabs" role="group" aria-label="Elegir mapa">
@@ -824,10 +803,9 @@ function renderHotelResults(el, hotels, s, center) {
     const form = el.querySelector('form');
     const chosen = new Set([...form.querySelectorAll('[name=h_kind]:checked')].map((i) => i.value));
     const minStars = Number(form.elements.h_stars.value);
-    const needsWeb = form.elements.h_web.checked;
     const needsPrice = form.elements.h_price.checked;
     const rows = hotels
-      .filter((h) => chosen.has(h.kind || 'Alojamiento') && h.stars >= minStars && (!needsWeb || h.website) && (!needsPrice || h.key))
+      .filter((h) => chosen.has(h.kind || 'Alojamiento') && h.stars >= minStars && (!needsPrice || h.key))
       .sort(order);
     el.querySelector('[data-count]').textContent = `${rows.length} de ${hotels.length} alojamientos`;
     el.querySelector('[data-results]').innerHTML = rows.length
@@ -947,6 +925,7 @@ function paintAccount() {
   $('accountBtn').setAttribute('aria-label', account.user ? 'Cuenta' : 'Iniciar sesión');
   $('alertCount').textContent = account.unread;
   $('alertCount').hidden = !account.unread;
+  paintSavedCount();
 }
 
 async function refreshAccount() {
@@ -1041,7 +1020,19 @@ function datesText(start, end) {
   return end ? `${showDate(start)} – ${showDate(end)}` : `${showDate(start)} · solo ida`;
 }
 
+function paintSavedCount() {
+  const total = state.favs.length + account.saved.length;
+  $('savedCount').textContent = total;
+  $('savedCount').hidden = !total;
+}
+
 function renderSaved() {
+  const places = state.favs.map((code) => PLACES.find((p) => p.code === code)).filter(Boolean);
+  const placeRows = places.map((p) => `
+    <li>
+      <span>${esc(p.city)}<small>${esc(p.country)}</small></span>
+      <span class="saved__acts"><button type="button" class="btn btn--out" data-pick="${p.code}">Buscar</button><button type="button" class="linkbtn" data-unfav="${p.code}">Quitar</button></span>
+    </li>`).join('');
   const flights = account.saved.filter((x) => x.kind === 'flight');
   const stays = account.saved.filter((x) => x.kind === 'stay');
   const flightRows = flights.map((x) => `
@@ -1056,9 +1047,11 @@ function renderSaved() {
     </li>`).join('');
   $('dlg').innerHTML = `
     <h3>Guardados</h3>
+    ${places.length ? `<h4 class="dlg__sub">Destinos</h4><ul class="favs">${placeRows}</ul>` : ''}
     ${flights.length ? `<h4 class="dlg__sub">Vuelos</h4><p class="muted authform__note">El precio se revisa cada pocas horas.</p><ul class="favs">${flightRows}</ul>` : ''}
     ${stays.length ? `<h4 class="dlg__sub">Alojamientos</h4><p class="muted authform__note">Sin aviso de precio: de momento los avisos solo cubren los vuelos.</p><ul class="favs">${stayRows}</ul>` : ''}
-    ${account.saved.length ? '' : '<p class="muted">Aún no hay nada guardado. Los vuelos y alojamientos se guardan desde los resultados de búsqueda.</p>'}
+    ${places.length || account.saved.length ? '' : '<p class="muted">Aún no hay nada guardado. Los destinos se guardan con el corazón de su foto, y los vuelos y alojamientos desde los resultados de búsqueda.</p>'}
+    ${account.user ? '' : '<p class="muted authform__note" style="margin-top:12px">Con una cuenta también se guardan vuelos y alojamientos, y llegan avisos de precio. <button type="button" class="linkbtn" data-auth-switch="login">Iniciar sesión</button></p>'}
     <div class="dlg__actions" style="margin-top:16px"><button type="button" class="btn" data-close>Cerrar</button></div>`;
 }
 
@@ -1116,7 +1109,6 @@ function initAccount() {
     dlg.showModal();
   });
   $('savedBtn').addEventListener('click', () => {
-    if (!requireLogin(() => { renderSaved(); $('dlg').showModal(); })) return;
     renderSaved();
     dlg.showModal();
   });
@@ -1222,7 +1214,12 @@ function initAccount() {
     }
   });
 
-  refreshAccount();
+  refreshAccount().then(() => {
+    const opener = { '#guardados': 'savedBtn', '#avisos': 'alertsBtn', '#cuenta': 'accountBtn' }[location.hash];
+    if (!opener) return;
+    history.replaceState(null, '', location.pathname);
+    $(opener).click();
+  });
   setInterval(refreshAccount, 5 * 60 * 1000);
 }
 
@@ -1840,17 +1837,6 @@ function renderResults(s) {
   const dates = s.end ? `${showDate(s.start)} – ${showDate(s.end)}` : `${showDate(s.start)} · solo ida`;
   const extra = !flights ? ` · ${plural(nights(), 'noche', 'noches')}` : (s.direct ? ' · vuelos directos' : '');
 
-  const cards = PROVIDERS[s.mode].map((p) => {
-    const note = p.note ? p.note(s) : '';
-    return `
-      <article class="pcard">
-        <div class="pcard__top"><span class="pcard__badge" aria-hidden="true">${p.badge}</span><h3>${esc(p.name)}</h3></div>
-        <p>${esc(p.about)}</p>
-        ${note ? `<p class="pcard__note">${esc(note)}</p>` : ''}
-        <a class="btn btn--lg" href="${esc(p.link(s))}" target="_blank" rel="noopener">Ver precios en ${esc(p.name)}<span class="sr"> (se abre en una pestaña nueva)</span></a>
-      </article>`;
-  }).join('');
-
   const withHotels = !flights || (s.end && s.end !== s.start && s.dest.city !== s.dest.code);
   const hotelsTitle = `Hoteles y apartamentos en ${s.dest.city}`;
   const hotelsHtml = withHotels
@@ -1867,11 +1853,6 @@ function renderResults(s) {
       </span>
     </div>
     ${flights ? '<section class="offers" aria-label="Vuelos encontrados"><div id="offers"></div></section>' : hotelsHtml}
-    ${flights ? '' : `<div class="how">
-      <h3>Ver todas las ofertas de alojamiento</h3>
-      <p>Se abrirá en una pestaña nueva con los datos ya rellenados. El precio y la disponibilidad son los que muestre esa web.</p>
-    </div>
-    <div class="partners">${cards}</div>`}
     ${flights ? hotelsHtml : ''}
     <p class="legal" id="legal">TopTravel no vende billetes ni alojamientos y no procesa pagos: la reserva y el pago se hacen en la web del vendedor.</p>`;
   res.hidden = false;
@@ -2043,7 +2024,7 @@ function renderIdeas() {
         </button>
       </div>`;
   }).join('');
-  $('favCount').textContent = state.favs.length;
+  paintSavedCount();
 }
 
 function chooseDestination(code) {
@@ -2065,22 +2046,7 @@ function toggleFav(code) {
   // Sin volver a dibujar: la foto no salta al guardar en favoritos.
   const on = state.favs.includes(code);
   document.querySelectorAll(`[data-fav="${code}"]`).forEach((b) => b.setAttribute('aria-pressed', String(on)));
-  $('favCount').textContent = state.favs.length;
-}
-
-function renderFavs() {
-  const places = state.favs.map((code) => PLACES.find((p) => p.code === code)).filter(Boolean);
-  const list = places.length
-    ? `<ul class="favs">${places.map((p) => `
-        <li>
-          <span>${esc(p.city)}<small>${esc(p.country)}</small></span>
-          <span>
-            <button type="button" class="btn btn--out" data-pick="${p.code}">Buscar</button>
-            <button type="button" class="linkbtn" data-unfav="${p.code}">Quitar</button>
-          </span>
-        </li>`).join('')}</ul>`
-    : '<p class="muted">Todavía no hay favoritos. Los destinos se guardan aquí al pulsar su corazón.</p>';
-  $('dlg').innerHTML = `<h3>Favoritos</h3>${list}<div class="dlg__actions" style="margin-top:16px"><button type="button" class="btn" data-close>Cerrar</button></div>`;
+  paintSavedCount();
 }
 
 let toastTimer;
@@ -2212,10 +2178,6 @@ function init() {
     }
   });
 
-  $('favBtn').addEventListener('click', () => {
-    renderFavs();
-    $('dlg').showModal();
-  });
   $('dlg').addEventListener('click', (e) => {
     const pick = e.target.closest('[data-pick]');
     const unfav = e.target.closest('[data-unfav]');
@@ -2224,7 +2186,7 @@ function init() {
       chooseDestination(pick.dataset.pick);
     } else if (unfav) {
       toggleFav(unfav.dataset.unfav);
-      renderFavs();
+      renderSaved();
     } else if (e.target.closest('[data-close]') || (e.target === $('dlg') && !$('dlg').querySelector('[data-recovery-code]'))) {
       $('dlg').close();
     }

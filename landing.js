@@ -3,6 +3,17 @@
    hoteles, monumentos y transporte, todo en la misma proyección. */
 (() => {
   document.documentElement.classList.add('lp-js');
+
+  // Si ya hay sesión, la cabecera lo refleja.
+  fetch('/api/me').then((r) => r.json()).then((me) => {
+    if (!me.user) return;
+    document.getElementById('lpAccountText').textContent = 'Cuenta';
+    document.getElementById('lpAccount').setAttribute('aria-label', 'Cuenta');
+    const unread = document.getElementById('lpUnread');
+    unread.textContent = me.unread;
+    unread.hidden = !me.unread;
+  }).catch(() => {});
+
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   const canvas = document.getElementById('scene');
