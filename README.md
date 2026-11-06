@@ -15,6 +15,9 @@ Nadie gana dinero con esta web: no tiene publicidad, comisiones ni enlaces de af
 
 **Alojamientos**
 - Una sola búsqueda para el vuelo y el alojamiento, con el precio del viaje completo.
+- Comparador de vuelos, alojamientos y viajes, con una conclusión final.
+- Varios destinos en un mismo viaje.
+- Modo invitado: lo guardado se queda en el propio dispositivo.
 - Planes en cada destino, con filtros: bares, discotecas, restaurantes, museos, monumentos y sitios poco conocidos.
 - Búsqueda de hoteles y apartamentos en cualquier ciudad.
 - Tres mapas de cada ciudad, todos con anillos de distancia al centro: verde hasta 1 km, amarillo hasta 3 km y rojo a más de 3 km.

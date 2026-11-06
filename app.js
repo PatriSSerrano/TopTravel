@@ -704,6 +704,7 @@ function offerHtml(o, cheapest) {
         ${cheapest ? '<span class="badge-low">El más barato</span>' : ''}
         <div class="price">${esc(money(o.price))}<small>por adulto, orientativo</small></div>
         ${buy}
+        ${compareOfferButton(o)}
       </div>
     </article>`;
 }
@@ -901,6 +902,12 @@ function renderHotelResults(el, hotels, s, center) {
   el.addEventListener('click', (e) => {
     const tab = e.target.closest('[data-map-mode]');
     if (tab) setMapMode(el, tab.dataset.mapMode);
+    const compareButton = e.target.closest('[data-compare-stay]');
+    if (compareButton) {
+      const chosen = hotels.find((h) => h.name === compareButton.dataset.compareStay);
+      if (chosen) toggleCompareStay(chosen, s, compareButton, center);
+      return;
+    }
     const b = e.target.closest('[data-save-stay]');
     if (!b) return;
     const hotel = hotels.find((h) => h.name === b.dataset.saveStay);
@@ -913,7 +920,113 @@ function renderHotelResults(el, hotels, s, center) {
 }
 
 /* ---------- Cuentas, guardados y avisos ---------- */
-const account = { user: null, unread: 0, saved: [], afterLogin: null, insights: false };
+const account = { user: null, unread: 0, saved: [], afterLogin: null, insights: false, guest: store.get('tt.guest', false) };
+
+/* Invitado: lo guardado se queda en este navegador y nunca se envía al servidor. */
+const guestItems = () => store.get('tt.guest.saved', []);
+const setGuestItems = (items) => store.set('tt.guest.saved', items);
+
+function startGuest() {
+  account.guest = true;
+  store.set('tt.guest', true);
+  account.saved = guestItems();
+  $('dlg').close();
+  paintAccount();
+  paintSavedMarks();
+  toast('Modo invitado: lo guardado se queda solo en este dispositivo.');
+  const next = account.afterLogin;
+  account.afterLogin = null;
+  if (next) next();
+}
+
+function stopGuest() {
+  account.guest = false;
+  store.set('tt.guest', false);
+  account.saved = [];
+}
+
+/* Guarda o quita algo, en la cuenta o en el dispositivo según quién esté usando la web. */
+async function addSaved(kind, data) {
+  if (account.user) {
+    const { item } = await api('/api/saved', { kind, data });
+    account.saved.unshift(item);
+    return item;
+  }
+  const item = { id: Date.now() + Math.floor(Math.random() * 1000), kind, data, lastPrice: null, checkedAt: null };
+  account.saved.unshift(item);
+  setGuestItems(account.saved);
+  return item;
+}
+
+async function removeSaved(id) {
+  if (account.user) await api('/api/saved/delete', { id });
+  account.saved = account.saved.filter((x) => x.id !== id);
+  if (!account.user) setGuestItems(account.saved);
+}
+
+/* Al entrar con una cuenta se ofrece mover lo guardado como invitado. */
+function renderMoveGuest() {
+  const count = guestItems().length;
+  $('dlg').innerHTML = `
+    <h3>Mover lo guardado a la cuenta</h3>
+    <p class="muted">En este dispositivo hay ${esc(plural(count, 'elemento guardado', 'elementos guardados'))} como invitado. Se pueden mover a la cuenta para verlos en cualquier dispositivo y recibir avisos de precio.</p>
+    <p class="search__err" data-error role="alert" hidden></p>
+    <div class="dlg__actions authform__switch">
+      <button type="button" class="btn" data-guest-move>Mover a la cuenta</button>
+      <button type="button" class="btn btn--out" data-guest-keep>Dejarlos en este dispositivo</button>
+    </div>`;
+  if (!$('dlg').open) $('dlg').showModal();
+}
+
+async function moveGuestItems() {
+  const left = [];
+  let moved = 0;
+  let lastError = '';
+  for (const item of guestItems()) {
+    try {
+      await api('/api/saved', { kind: item.kind, data: item.data });
+      moved += 1;
+    } catch (error) {
+      left.push(item);
+      lastError = error.message;
+    }
+  }
+  // Solo se borra del dispositivo lo que la cuenta ya tiene.
+  setGuestItems(left);
+  await refreshAccount();
+  paintSavedMarks();
+  return { moved, left: left.length, lastError };
+}
+
+/* Tras entrar o crear una cuenta: primero mover lo de invitado y luego seguir con lo que se estaba haciendo. */
+function afterSignIn() {
+  account.guest = false;
+  store.set('tt.guest', false);
+  paintSavedMarks();
+  if (guestItems().length) {
+    renderMoveGuest();
+    return;
+  }
+  $('dlg').close();
+  const next = account.afterLogin;
+  account.afterLogin = null;
+  if (next) next();
+}
+
+function paintSavedMarks() {
+  if ($('results').hidden) return;
+  document.querySelectorAll('[data-save-stay]').forEach((b) => {
+    const rows = cityMap.hotels || [];
+    const hotel = rows.find((h) => h.name === b.dataset.saveStay);
+    if (hotel && cityMap.s) b.textContent = stayIsSaved(hotel, cityMap.s) ? 'Guardado ✓' : 'Guardar';
+  });
+  document.querySelectorAll('[data-save-plan]').forEach((b) => {
+    const city = planMap.trip?.dest.city;
+    b.textContent = city && findActivity({ name: b.dataset.savePlan }, city) ? 'Guardado ✓' : 'Guardar';
+  });
+  if (saveTripCurrent) paintSaveTrip(saveTripCurrent);
+  paintTransitFavorites();
+}
 
 async function api(path, body) {
   const options = body === undefined
@@ -947,18 +1060,16 @@ const stayIsSaved = (h, s) => Boolean(findStay(h, s));
 const findActivity = (a, city) => account.saved.find((x) => x.kind === 'activity' && x.data.name === a.name && x.data.city === city);
 
 async function toggleActivity(a, s, button) {
-  if (!requireLogin(() => toggleActivity(a, s, button))) return;
+  if (!canSave(() => toggleActivity(a, s, button))) return;
   const city = s.dest.city;
   const current = findActivity(a, city);
   try {
     if (current) {
-      await api('/api/saved/delete', { id: current.id });
-      account.saved = account.saved.filter((x) => x !== current);
+      await removeSaved(current.id);
     } else {
       const data = { name: a.name, type: a.kind, city, country: s.dest.country || '', lat: a.lat, lon: a.lon, website: a.website || '' };
-      const { item } = await api('/api/saved', { kind: 'activity', data });
-      account.saved.unshift(item);
-      toast('Actividad guardada.');
+      await addSaved('activity', data);
+      toast(account.user ? 'Actividad guardada.' : 'Actividad guardada en este dispositivo.');
     }
     paintSavedCount();
     const label = findActivity(a, city) ? 'Guardado ✓' : 'Guardar';
@@ -970,55 +1081,60 @@ async function toggleActivity(a, s, button) {
   }
 }
 
-function requireLogin(next) {
-  if (account.user) return true;
+function askLogin(next, notice, guestAllowed) {
   account.afterLogin = next;
-  renderAuth('login', 'Hay que iniciar sesión para guardar y recibir avisos.');
+  renderAuth('login', notice, guestAllowed);
   if (!$('dlg').open) $('dlg').showModal();
   return false;
 }
 
+/* Para lo que solo funciona con cuenta: los avisos de precio. */
+const requireLogin = (next, notice = 'Hace falta una cuenta para esto.') => account.user || askLogin(next, notice, false);
+/* Para guardar: vale con cuenta o como invitado. */
+const canSave = (next) => account.user || account.guest || askLogin(next, 'Para guardar hay que entrar o continuar como invitado.', true);
+
 function paintSaveTrip(s) {
   const b = $('saveTrip');
-  if (b) b.textContent = findTrip(s) ? 'Guardado ✓' : 'Guardar y recibir avisos';
+  if (b) b.textContent = findTrip(s) ? 'Guardado ✓' : (account.guest ? 'Guardar' : 'Guardar y recibir avisos');
 }
 
 async function toggleTrip(s) {
-  if (!requireLogin(() => toggleTrip(s))) return;
+  if (!canSave(() => toggleTrip(s))) return;
   const current = findTrip(s);
   try {
     if (current) {
-      await api('/api/saved/delete', { id: current.id });
-      account.saved = account.saved.filter((x) => x !== current);
+      await removeSaved(current.id);
       toast('Viaje quitado de guardados.');
     } else {
-      const { item } = await api('/api/saved', { kind: 'flight', data: tripPayload(s) });
-      account.saved.unshift(item);
-      toast(item.lastPrice === null ? 'Guardado. Aún no hay precio con el que comparar.' : `Guardado. Se enviará un aviso si cambia desde ${money(item.lastPrice)}.`);
+      const item = await addSaved('flight', tripPayload(s));
+      if (!account.user) toast('Guardado en este dispositivo. Los avisos de precio necesitan una cuenta.');
+      else toast(item.lastPrice === null ? 'Guardado. Aún no hay precio con el que comparar.' : `Guardado. Se enviará un aviso si cambia desde ${money(item.lastPrice)}.`);
     }
+    paintSavedCount();
     paintSaveTrip(s);
   } catch (error) {
     toast(error.message);
   }
 }
 
+let saveTripCurrent = null;
+
 function wireSaveTrip(s) {
+  saveTripCurrent = s;
   paintSaveTrip(s);
   $('saveTrip').addEventListener('click', () => toggleTrip(s));
 }
 
 async function toggleStay(h, s, button) {
-  if (!requireLogin(() => toggleStay(h, s, button))) return;
+  if (!canSave(() => toggleStay(h, s, button))) return;
   const current = findStay(h, s);
   try {
     if (current) {
-      await api('/api/saved/delete', { id: current.id });
-      account.saved = account.saved.filter((x) => x !== current);
+      await removeSaved(current.id);
     } else {
       const data = { name: h.name, key: h.key || '', lodging: h.kind || 'Alojamiento', stars: h.stars, address: h.address, website: h.website, lat: h.lat, lon: h.lon, dest: placeOut({ ...s.dest, code: s.dest.code || '' }), start: s.start, end: s.end, pax: s.pax };
-      const { item } = await api('/api/saved', { kind: 'stay', data });
-      account.saved.unshift(item);
-      toast('Alojamiento guardado.');
+      await addSaved('stay', data);
+      toast(account.user ? 'Alojamiento guardado.' : 'Alojamiento guardado en este dispositivo.');
     }
     button.textContent = findStay(h, s) ? 'Guardado ✓' : 'Guardar';
     paintSavedCount();
@@ -1029,8 +1145,8 @@ async function toggleStay(h, s, button) {
 }
 
 function paintAccount() {
-  $('accountLabel').textContent = account.user ? 'Cuenta' : 'Entrar';
-  $('accountBtn').setAttribute('aria-label', account.user ? 'Cuenta' : 'Iniciar sesión');
+  $('accountLabel').textContent = account.user ? 'Cuenta' : (account.guest ? 'Invitado' : 'Entrar');
+  $('accountBtn').setAttribute('aria-label', account.user ? 'Cuenta' : (account.guest ? 'Modo invitado' : 'Iniciar sesión'));
   $('alertCount').textContent = account.unread;
   $('alertCount').hidden = !account.unread;
   paintSavedCount();
@@ -1043,14 +1159,34 @@ async function refreshAccount() {
     account.user = me.user;
     account.unread = me.unread;
     account.insights = Boolean(me.insights);
-    account.saved = me.user ? (await api('/api/saved')).saved : [];
+    if (me.user) account.saved = (await api('/api/saved')).saved;
+    else account.saved = account.guest ? guestItems() : [];
   } catch {
-    // Sin servidor de cuentas la web sigue funcionando para buscar.
+    // Sin servidor de cuentas la web sigue funcionando para buscar, y lo de invitado sigue aquí.
+    if (!account.user && account.guest) account.saved = guestItems();
   }
   paintAccount();
 }
 
-function renderAuth(mode, notice = '') {
+function renderGuest() {
+  const count = guestItems().length;
+  $('dlg').innerHTML = `
+    <h3>Modo invitado</h3>
+    <p class="muted">Lo guardado se queda solo en este dispositivo y en este navegador: no se envía a TopTravel. Si se borran los datos del navegador, se pierde. Hay ${esc(plural(count, 'elemento guardado', 'elementos guardados'))}.</p>
+    <p class="muted">Con una cuenta se puede ver desde cualquier dispositivo, recibir avisos de precio. Al entrar, se ofrece mover lo guardado a la cuenta.</p>
+    <div class="dlg__actions authform__switch">
+      <button type="button" class="btn" data-auth-switch="login">Iniciar sesión</button>
+      <button type="button" class="btn btn--out" data-auth-switch="register">Crear cuenta</button>
+      <button type="button" class="linkbtn" data-close>Cerrar</button>
+    </div>
+    <details class="account__danger">
+      <summary>Salir del modo invitado y borrar lo guardado</summary>
+      <p class="muted authform__note">Se borra lo guardado como invitado en este dispositivo. No se puede deshacer.</p>
+      <button type="button" class="btn btn--out btn--block" data-guest-delete>Borrar y salir</button>
+    </details>`;
+}
+
+function renderAuth(mode, notice = '', guestAllowed = true) {
   const login = mode === 'login';
   $('dlg').innerHTML = `
     <h3>${login ? 'Iniciar sesión' : 'Crear cuenta'}</h3>
@@ -1062,6 +1198,8 @@ function renderAuth(mode, notice = '') {
       <p class="search__err" data-error role="alert" hidden></p>
       <button type="submit" class="btn btn--block">${login ? 'Entrar' : 'Crear cuenta'}</button>
     </form>
+    ${guestAllowed && !account.guest ? `<button type="button" class="btn btn--out btn--block authform__guest" data-guest-start>Continuar como invitado</button>
+    <p class="muted authform__note">Sin cuenta: lo guardado se queda solo en este dispositivo.</p>` : ''}
     <div class="dlg__actions authform__switch">
       <button type="button" class="linkbtn" data-auth-switch="${login ? 'register' : 'login'}">${login ? 'Crear una cuenta nueva' : 'Entrar con una cuenta existente'}</button>
       ${login ? '<button type="button" class="linkbtn" data-auth-recover>Contraseña olvidada</button>' : ''}
@@ -1235,7 +1373,8 @@ function renderSaved() {
       ${tabs.map(([id, label, count]) => `<button type="button" role="tab" class="savedtab${id === savedTab ? ' is-on' : ''}" data-saved-tab="${id}" aria-selected="${id === savedTab}">${esc(label)} <em>${count}</em></button>`).join('')}
     </div>
     ${tabs.map(([id, , count, rows, empty]) => `<div data-saved-panel="${id}"${id === savedTab ? '' : ' hidden'}>${count ? `<ul class="favs">${rows}</ul>` : `<p class="muted">${esc(empty)}</p>`}</div>`).join('')}
-    ${account.user ? '' : '<p class="muted authform__note" style="margin-top:12px">Con una cuenta se guardan vuelos, alojamientos y actividades, y llegan avisos de precio. <button type="button" class="linkbtn" data-auth-switch="login">Iniciar sesión</button></p>'}
+    ${account.guest && !account.user ? '<p class="muted authform__note" style="margin-top:12px">Modo invitado: esto se guarda solo en este dispositivo.</p>' : ''}
+    ${account.user || account.guest ? '' : '<p class="muted authform__note" style="margin-top:12px">Para guardar vuelos, alojamientos y actividades hay que entrar o continuar como invitado. <button type="button" class="linkbtn" data-auth-switch="login">Iniciar sesión</button></p>'}
     <div class="dlg__actions" style="margin-top:16px"><button type="button" class="btn" data-close>Cerrar</button></div>`;
 }
 
@@ -1280,7 +1419,6 @@ function afterAccountChange() {
   paintAccount();
   if (!$('results').hidden) {
     document.querySelectorAll('[data-save-stay], [data-save-plan]').forEach((b) => { b.textContent = 'Guardar'; });
-    loadMyVotes();
     paintTransitFavorites();
     const save = $('saveTrip');
     if (save) save.textContent = 'Guardar y recibir avisos';
@@ -1291,6 +1429,7 @@ function initAccount() {
   const dlg = $('dlg');
   $('accountBtn').addEventListener('click', () => {
     if (account.user) renderAccount();
+    else if (account.guest) renderGuest();
     else renderAuth('login');
     dlg.showModal();
   });
@@ -1299,7 +1438,7 @@ function initAccount() {
     dlg.showModal();
   });
   $('alertsBtn').addEventListener('click', () => {
-    if (!requireLogin(() => { $('dlg').showModal(); renderAlerts(); })) return;
+    if (!requireLogin(() => { $('dlg').showModal(); renderAlerts(); }, 'Los avisos de precio necesitan una cuenta.')) return;
     dlg.showModal();
     renderAlerts();
   });
@@ -1309,6 +1448,39 @@ function initAccount() {
     const open = e.target.closest('[data-open-saved]');
     const remove = e.target.closest('[data-remove-saved]');
     if (change) renderAuth(change.dataset.authSwitch);
+    if (e.target.closest('[data-guest-start]')) startGuest();
+    if (e.target.closest('[data-guest-delete]')) {
+      setGuestItems([]);
+      stopGuest();
+      dlg.close();
+      paintAccount();
+      paintSavedMarks();
+      toast('Datos de invitado borrados.');
+    }
+    if (e.target.closest('[data-guest-keep]')) {
+      dlg.close();
+      toast('Se quedan en este dispositivo. Se volverá a preguntar al entrar.');
+      const next = account.afterLogin;
+      account.afterLogin = null;
+      if (next) next();
+    }
+    if (e.target.closest('[data-guest-move]')) {
+      const button = e.target.closest('[data-guest-move]');
+      button.disabled = true;
+      const { moved, left, lastError } = await moveGuestItems();
+      if (left) {
+        renderMoveGuest();
+        const error = dlg.querySelector('[data-error]');
+        error.textContent = `Se ${moved === 1 ? 'ha movido 1' : `han movido ${moved}`}, pero ${left === 1 ? 'queda 1' : `quedan ${left}`} en este dispositivo. ${lastError}`;
+        error.hidden = false;
+        return;
+      }
+      dlg.close();
+      toast(`${plural(moved, 'elemento movido', 'elementos movidos')} a la cuenta.`);
+      const next = account.afterLogin;
+      account.afterLogin = null;
+      if (next) next();
+    }
     if (e.target.closest('[data-auth-recover]')) renderRecover();
     const history = e.target.closest('[data-history]');
     if (history) toggleHistory(history);
@@ -1316,19 +1488,14 @@ function initAccount() {
       const text = dlg.querySelector('[data-recovery-code]').textContent;
       navigator.clipboard?.writeText(text).then(() => toast('Código copiado.')).catch(() => toast('No se ha podido copiar. Hay que copiarlo a mano.'));
     }
-    if (e.target.closest('[data-recovery-done]')) {
-      dlg.close();
-      const next = account.afterLogin;
-      account.afterLogin = null;
-      if (next) next();
-    }
+    if (e.target.closest('[data-recovery-done]')) afterSignIn();
     if (open) openSaved(Number(open.dataset.openSaved));
     if (remove) {
       const id = Number(remove.dataset.removeSaved);
       try {
-        await api('/api/saved/delete', { id });
-        account.saved = account.saved.filter((x) => x.id !== id);
+        await removeSaved(id);
         renderSaved();
+        paintSavedMarks();
         paintTransitFavorites();
       } catch (error) {
         toast(error.message);
@@ -1374,11 +1541,8 @@ function initAccount() {
           toast('Cuenta creada.');
           return;
         }
-        dlg.close();
-        const next = account.afterLogin;
-        account.afterLogin = null;
         toast('Sesión iniciada.');
-        if (next) next();
+        afterSignIn();
       } else if ('recover' in form.dataset) {
         const body = { email: form.elements.email.value, code: form.elements.code.value, password: form.elements.password.value };
         const result = await api('/api/recover', body);
@@ -1404,7 +1568,7 @@ function initAccount() {
   });
 
   refreshAccount().then(() => {
-    const opener = { '#guardados': 'savedBtn', '#avisos': 'alertsBtn', '#cuenta': 'accountBtn' }[location.hash];
+    const opener = { '#comparar': 'compareBtn', '#guardados': 'savedBtn', '#avisos': 'alertsBtn', '#cuenta': 'accountBtn' }[location.hash];
     if (!opener) return;
     history.replaceState(null, '', location.pathname);
     $(opener).click();
@@ -1987,6 +2151,7 @@ function hotelHtml(h, s) {
         ${h.website ? `<a class="btn" href="${esc(h.website)}" target="_blank" rel="noopener nofollow">Web oficial<span class="sr"> (se abre en una pestaña nueva)</span></a>` : ''}
         <a class="btn ${h.website ? 'btn--out' : ''}" href="${esc(booking)}" target="_blank" rel="noopener">Ver precio en Booking<span class="sr"> (se abre en una pestaña nueva)</span></a>
         <button type="button" class="linkbtn" data-save-stay="${esc(h.name)}">${stayIsSaved(h, s) ? 'Guardado ✓' : 'Guardar'}</button>
+        <button type="button" class="linkbtn" data-compare-stay="${esc(h.name)}" aria-pressed="${inCompare('stays', stayCompareId(h, s))}">${compareLabel('stays', stayCompareId(h, s))}</button>
       </div>
     </article>`;
 }
@@ -2069,7 +2234,7 @@ function planPopup(a, city) {
   return `${a.image ? `<img class="map__photo" src="${esc(a.image)}" alt="" width="240" height="160" loading="lazy">` : ''}
     <b class="map__title">${esc(a.name)}</b>
     <span class="map__sub">${esc(PLAN_KIND_ONE[a.kind] || 'Plan')} · ${esc(price)}</span>
-    ${noteHtml(a, city)}
+    <a class="btn btn--out" href="${esc(googleLink(a, city))}" target="_blank" rel="noopener">Ver en Google</a>
     ${kmHtml(a)}
     ${a.website ? `<a class="btn btn--out" href="${esc(a.website)}" target="_blank" rel="noopener nofollow">Web oficial</a>` : ''}
     <button type="button" class="btn" data-save-plan="${esc(a.name)}">${findActivity(a, city) ? 'Guardado ✓' : 'Guardar'}</button>`;
@@ -2127,58 +2292,6 @@ function setupPlanMap(el, center) {
 
 const googleLink = (a, city) => `https://www.google.com/maps/search/?${new URLSearchParams({ api: 1, query: `${a.name}, ${city}` })}`;
 
-/* La nota es la media de los votos de TopTravel. Al pulsarla se abre el sitio en Google. */
-const noteText = (n) => String(n).replace('.', ',');
-
-function noteHtml(a, city) {
-  const r = a.rating;
-  return `<a class="note${r ? '' : ' note--none'}" data-note="${esc(a.id)}" href="${esc(googleLink(a, city))}" target="_blank" rel="noopener">
-    ${r ? `<b>${esc(noteText(r.average))}/10</b><small>${esc(plural(r.votes, 'voto', 'votos'))}</small>` : '<b>Sin nota</b>'}<span class="sr"> Abrir en Google, en una pestaña nueva</span></a>`;
-}
-
-function voteHtml(a) {
-  const mine = a.mine || '';
-  const options = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1].map((n) => `<option value="${n}"${n === mine ? ' selected' : ''}>${n}</option>`).join('');
-  return `<label class="vote"><span>Tu nota</span><select data-vote="${esc(a.id)}"><option value="">–</option>${options}${mine ? '<option value="0">Quitar</option>' : ''}</select></label>`;
-}
-
-async function castVote(a, s, select, score) {
-  const place = s.dest.country ? `${s.dest.city}, ${s.dest.country}` : s.dest.city;
-  if (!requireLogin(() => castVote(a, s, select, score))) {
-    select.value = a.mine || '';
-    return;
-  }
-  try {
-    const { rating, mine } = await api('/api/votes', { place, id: a.id, score });
-    a.rating = rating;
-    a.mine = mine;
-    document.querySelectorAll(`[data-note="${a.id}"]`).forEach((el) => { el.outerHTML = noteHtml(a, s.dest.city); });
-    document.querySelectorAll(`[data-vote="${a.id}"]`).forEach((el) => { el.closest('.vote').outerHTML = voteHtml(a); });
-  } catch (error) {
-    select.value = a.mine || '';
-    toast(error.message);
-  }
-}
-
-/* Las notas propias de la cuenta: se piden aparte porque la lista de planes es pública. */
-const planVotes = { items: null, place: null, redraw: null };
-
-async function loadMyVotes() {
-  const { items, place, redraw } = planVotes;
-  if (!items) return;
-  items.forEach((a) => { a.mine = null; });
-  if (account.user) {
-    try {
-      const { votes } = await api(`/api/votes/mine?${new URLSearchParams({ place })}`);
-      if (planVotes.items !== items) return;
-      items.forEach((a) => { a.mine = votes[a.id] || null; });
-    } catch {
-      return;
-    }
-  }
-  redraw();
-}
-
 function planHtml(a, city) {
   const chips = [];
   if (a.free === true) chips.push('<span class="ok">Gratis</span>');
@@ -2196,12 +2309,12 @@ function planHtml(a, city) {
       <div class="hotel__body">
         <span class="stay__type">${esc(PLAN_KIND_ONE[a.kind] || 'Plan')}${a.cuisine ? ` · ${esc(a.cuisine.replaceAll(';', ', ').replaceAll('_', ' '))}` : ''}</span>
         <h3 class="stay__name">${esc(a.name)}</h3>
-        <div class="plan__rate">${noteHtml(a, city)}${voteHtml(a)}</div>
         <div class="chips">${chips.join('')}</div>
         ${a.opening_hours ? `<span class="stay__loc"><span>Horario: ${esc(a.opening_hours)}</span></span>` : ''}
         ${a.credit ? `<a class="plan__credit" href="${esc(a.credit)}" target="_blank" rel="noopener">Foto y licencia: Wikimedia Commons</a>` : ''}
       </div>
       <div class="hotel__buy">
+        <a class="btn btn--out" href="${esc(googleLink(a, city))}" target="_blank" rel="noopener">Ver en Google<span class="sr"> (se abre en una pestaña nueva)</span></a>
         ${a.website ? `<a class="linkbtn" href="${esc(a.website)}" target="_blank" rel="noopener nofollow">Web oficial<span class="sr"> (se abre en una pestaña nueva)</span></a>` : ''}
         <button type="button" class="linkbtn" data-save-plan="${esc(a.name)}">${findActivity(a, city) ? 'Guardado ✓' : 'Guardar'}</button>
       </div>
@@ -2237,11 +2350,10 @@ function renderPlans(el, items, city, center, s) {
           <p class="map__note" data-plan-note role="status"></p>
           <p class="count">El mapa y la lista muestran lo mismo: los filtros cambian los dos.</p>
         </div>
-        ${sortbarHtml([{ id: 'near', label: 'Más cerca' }, { id: 'known', label: 'Más conocidos' }, { id: 'best', label: 'Mejor nota' }])}
+        ${sortbarHtml([{ id: 'near', label: 'Más cerca' }, { id: 'known', label: 'Más conocidos' }])}
         <p class="count" data-count></p>
         <div class="list" data-results></div>
         <button type="button" class="btn btn--out btn--block more">Ver más planes</button>
-        <p class="count">La nota es la media de los votos de los usuarios de TopTravel, de 1 a 10. Al pulsarla, se abre en Google.</p>
         <p class="count">El precio, el presupuesto y el tipo de plan son orientativos: si el sitio no lo indica, se deducen de su tipo. «Poco conocido» significa que no tiene ficha en Wikipedia ni en Wikidata. Conviene confirmar los horarios antes de ir.</p>
         <p class="legal">Datos: © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">colaboradores de OpenStreetMap</a> y <a href="https://www.wikidata.org" target="_blank" rel="noopener">Wikidata</a>.</p>
       </div>
@@ -2249,7 +2361,7 @@ function renderPlans(el, items, city, center, s) {
 
   const view = { sort: 'near', step: PLANS_STEP, limit: PLANS_STEP };
   const nearest = (a, b) => (a.km ?? 99) - (b.km ?? 99);
-  const sorters = { near: nearest, best: (a, b) => (b.rating?.average ?? -1) - (a.rating?.average ?? -1) || (b.rating?.votes ?? 0) - (a.rating?.votes ?? 0) || nearest(a, b), known: (a, b) => Number(b.known) - Number(a.known) || Boolean(b.image) - Boolean(a.image) || nearest(a, b) };
+  const sorters = { near: nearest, known: (a, b) => Number(b.known) - Number(a.known) || Boolean(b.image) - Boolean(a.image) || nearest(a, b) };
 
   const draw = () => {
     const form = el.querySelector('form');
@@ -2285,13 +2397,7 @@ function renderPlans(el, items, city, center, s) {
 
   setupPlanMap(el, center);
   let framed = false;
-  Object.assign(planVotes, { items, place: s.dest.country ? `${s.dest.city}, ${s.dest.country}` : s.dest.city, redraw: () => draw() });
   wireControls(el, view, draw);
-  el.addEventListener('change', (e) => {
-    if (!e.target.matches('[data-vote]') || e.target.value === '') return;
-    const item = items.find((a) => a.id === e.target.dataset.vote);
-    if (item) castVote(item, s, e.target, Number(e.target.value));
-  });
   el.addEventListener('click', (e) => {
     const save = e.target.closest('.list [data-save-plan]');
     if (!save) return;
@@ -2316,7 +2422,6 @@ function renderPlans(el, items, city, center, s) {
     }
   });
   draw();
-  loadMyVotes();
 }
 
 let plansRun = 0;
@@ -2481,6 +2586,7 @@ function renderResults(s, target = null) {
       <div><h2>${esc(title)}</h2><p>${esc(dates + extra)} · ${esc(paxSummary())}</p></div>
       ${s.leg ? '' : `<span class="summary__actions">
         ${flights ? '<button type="button" class="btn" id="saveTrip"></button>' : ''}
+        ${flights && s.end ? `<button type="button" class="btn btn--out" id="compareTrip" aria-pressed="${inCompare('trips', tripCompareId(s))}">${compareTripLabel(s)}</button>` : ''}
         <button type="button" class="btn btn--out" id="newSearch">Nueva búsqueda</button>
       </span>`}
     </div>
@@ -2499,6 +2605,7 @@ function renderResults(s, target = null) {
     if (b) $(b.dataset.jump).scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
   if (flights && !s.leg) wireSaveTrip(s);
+  if (flights && !s.leg && s.end) $('compareTrip').addEventListener('click', (e) => toggleCompareTrip(s, e.currentTarget));
   if (flights) loadOffers(s);
   if (withHotels) loadHotels(s);
   if (withPlans) loadPlans(s);
@@ -2719,6 +2826,467 @@ document.addEventListener('error', (e) => {
   if (e.target.classList?.contains('air__logo') || e.target.classList?.contains('plan__img')) e.target.remove();
 }, true);
 
+/* ---------- Comparar vuelos, alojamientos y viajes ---------- */
+const MAX_COMPARE = 4;
+const compareList = { flights: [], stays: [], trips: [], ...store.get('tt.compare', {}) };
+const COMPARE_TABS = { flights: 'Vuelos', stays: 'Alojamientos', trips: 'Viajes' };
+let compareTab = 'stays';
+let compareRun = 0;
+const offerIndex = new Map();
+
+const inCompare = (tab, id) => compareList[tab].some((x) => x.id === id);
+const compareLabel = (tab, id) => (inCompare(tab, id) ? 'En comparación ✓' : 'Comparar');
+const offerCompareId = (o) => [o.airline, o.flightNumber, o.origin, o.destination, o.departureAt, o.returnAt].join('|');
+const stayCompareId = (h, s) => [h.name, s.dest.city, s.start, s.end].join('|');
+const tripCompareId = (s) => [s.origin.code, s.dest.code, s.start, s.end, s.direct ? 1 : 0].join('|');
+const compareTripLabel = (s) => (inCompare('trips', tripCompareId(s)) ? 'En comparación ✓' : 'Comparar este viaje');
+
+function paintCompareCount() {
+  const total = Object.values(compareList).reduce((sum, list) => sum + list.length, 0);
+  $('compareCount').textContent = total;
+  $('compareCount').hidden = !total;
+}
+
+/* Devuelve true si ha quedado dentro de la lista. */
+function toggleCompare(tab, item) {
+  const list = compareList[tab];
+  const at = list.findIndex((x) => x.id === item.id);
+  if (at >= 0) {
+    list.splice(at, 1);
+  } else {
+    if (list.length >= MAX_COMPARE) {
+      toast(`Se pueden comparar hasta ${MAX_COMPARE} a la vez. Hay que quitar alguno antes.`);
+      return false;
+    }
+    list.push(item);
+    compareTab = tab;
+    toast(list.length > 1 ? `${list.length} para comparar. Se ven en «Comparar».` : 'Añadido a «Comparar». Falta elegir otro.');
+  }
+  store.set('tt.compare', compareList);
+  paintCompareCount();
+  return at < 0;
+}
+
+function compareOfferButton(o) {
+  const id = offerCompareId(o);
+  offerIndex.set(id, o);
+  return `<button type="button" class="linkbtn" data-compare-offer="${esc(id)}" aria-pressed="${inCompare('flights', id)}">${compareLabel('flights', id)}</button>`;
+}
+
+function toggleCompareStay(h, s, button, center) {
+  const id = stayCompareId(h, s);
+  const rates = h.key ? rateCache.get(rateId(h.key, s)) : null;
+  toggleCompare('stays', {
+    id, name: h.name, kind: h.kind || 'Alojamiento', stars: h.stars || 0, key: h.key || '', lat: h.lat, lon: h.lon, km: h.km ?? null, website: h.website || '',
+    city: s.dest.city, country: s.dest.country || '', center: center || null, start: s.start, end: s.end, pax: s.pax,
+    night: rates && rates.length ? perPerson(rates[0].rate, s) : null,
+  });
+  button.textContent = compareLabel('stays', id);
+  button.setAttribute('aria-pressed', String(inCompare('stays', id)));
+}
+
+function toggleCompareTrip(s, button) {
+  const id = tripCompareId(s);
+  toggleCompare('trips', { id, origin: s.origin, dest: s.dest, start: s.start, end: s.end, direct: Boolean(s.direct), pax: s.pax, flight: tripTotal.flight, night: tripTotal.night });
+  button.textContent = compareTripLabel(s);
+  button.setAttribute('aria-pressed', String(inCompare('trips', id)));
+}
+
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-compare-offer]');
+  if (!b) return;
+  const o = offerIndex.get(b.dataset.compareOffer);
+  if (!o) return;
+  const id = b.dataset.compareOffer;
+  const city = (code) => PLACES.find((p) => p.code === code)?.city || code;
+  toggleCompare('flights', {
+    id, price: o.price, airline: o.airlineName || o.airline, url: o.url || '', from: city(o.origin), to: city(o.destination),
+    departureAt: o.departureAt, returnAt: o.returnAt || null, durationTo: o.durationTo || 0, durationBack: o.durationBack || 0, transfers: o.transfers ?? null, returnTransfers: o.returnTransfers ?? null,
+  });
+  b.textContent = compareLabel('flights', id);
+  b.setAttribute('aria-pressed', String(inCompare('flights', id)));
+});
+
+/* --- Cálculos --- */
+const distanceM = (a, b, c, d) => {
+  const rad = Math.PI / 180;
+  const x = (d - b) * rad * Math.cos(((a + c) / 2) * rad);
+  return Math.hypot(x, (c - a) * rad) * 6371000;
+};
+const placeText = (x) => (x.country ? `${x.city}, ${x.country}` : x.city);
+const kmShort = (km) => `${km.toLocaleString('es-ES', { maximumFractionDigits: 1 })} km`;
+const metres = (m) => (m < 1000 ? `${Math.round(m / 10) * 10} m` : kmShort(m / 1000));
+const hoursText = (mins) => (mins ? `${Math.floor(mins / 60)} h ${pad(Math.round(mins % 60))} min` : 'Sin dato');
+const nightsOf = (x) => Math.round((fromIso(x.end) - fromIso(x.start)) / 864e5);
+
+const jsonCache = new Map();
+function getJson(url) {
+  if (!jsonCache.has(url)) {
+    jsonCache.set(url, fetch(url).then((r) => (r.ok ? r.json() : null)).catch(() => null).then((body) => {
+      if (!body) jsonCache.delete(url);
+      return body;
+    }));
+  }
+  return jsonCache.get(url);
+}
+const cityInfo = (place) => getJson(`/api/city?${new URLSearchParams({ place })}`);
+const cityPlans = (place) => getJson(`/api/activities?${new URLSearchParams({ place })}`);
+
+/* Diferencia con UTC, en horas, de una zona horaria en una fecha. */
+function zoneHours(zone, iso) {
+  if (!zone) return null;
+  try {
+    const part = new Intl.DateTimeFormat('en', { timeZone: zone, timeZoneName: 'longOffset' })
+      .formatToParts(new Date(`${iso}T12:00:00Z`)).find((p) => p.type === 'timeZoneName').value;
+    const match = part.match(/GMT([+-])(\d{2}):(\d{2})/);
+    if (!match) return 0;
+    return (match[1] === '-' ? -1 : 1) * (Number(match[2]) + Number(match[3]) / 60);
+  } catch {
+    return null;
+  }
+}
+
+/* Salida y puesta de sol aproximadas (unos minutos de margen), en hora local. */
+function sunTimes(lat, lon, iso, offset) {
+  if (offset === null) return null;
+  const date = fromIso(iso);
+  const day = Math.round((date - new Date(date.getFullYear(), 0, 0)) / 864e5);
+  const rad = Math.PI / 180;
+  const angle = (360 / 365) * (day - 81) * rad;
+  const declination = 23.44 * Math.sin(angle) * rad;
+  const equation = 9.87 * Math.sin(2 * angle) - 7.53 * Math.cos(angle) - 1.5 * Math.sin(angle);
+  const cosHour = (Math.sin(-0.833 * rad) - Math.sin(lat * rad) * Math.sin(declination)) / (Math.cos(lat * rad) * Math.cos(declination));
+  if (Math.abs(cosHour) > 1) return { polar: cosHour < 0 };
+  const half = Math.acos(cosHour) / rad / 15;
+  const noon = 12 - lon / 15 - equation / 60 + offset;
+  const clock = (h) => `${pad(Math.floor((h + 24) % 24))}:${pad(Math.floor((((h + 24) % 24) % 1) * 60))}`;
+  return { rise: clock(noon - half), set: clock(noon + half), hours: half * 2 };
+}
+
+const currencyName = (code) => {
+  if (!code) return 'Sin dato';
+  try {
+    return new Intl.DisplayNames(['es'], { type: 'currency' }).of(code);
+  } catch {
+    return code;
+  }
+};
+const FRIEND_KINDS = ['bar', 'discoteca', 'ocio'];
+const FAMILY_KINDS = ['familiar', 'playa', 'naturaleza', 'museo'];
+const sumKinds = (kinds, list) => list.reduce((sum, k) => sum + (kinds[k] || 0), 0);
+
+/* --- Tabla y conclusión --- */
+const LETTERS = 'ABCD';
+
+function compareTable(items, rows) {
+  const cells = (row) => {
+    const values = items.map(row.value);
+    const numbers = items.map((x) => (row.number ? row.number(x) : null));
+    const usable = numbers.filter((n) => typeof n === 'number');
+    const best = usable.length > 1 && new Set(usable).size > 1 ? (row.high ? Math.max(...usable) : Math.min(...usable)) : null;
+    return values.map((value, i) => `<td${numbers[i] === best && best !== null ? ' class="is-best"' : ''}>${esc(value)}</td>`).join('');
+  };
+  return `<div class="cmp__scroll"><table class="cmp">
+    <thead><tr><th scope="col"><span class="sr">Dato</span></th>${items.map((x, i) => `<th scope="col"><b>${LETTERS[i]}</b> ${esc(x.title)}<button type="button" class="linkbtn cmp__del" data-compare-del="${esc(x.id)}">Quitar</button></th>`).join('')}</tr></thead>
+    <tbody>${rows.map((row) => `<tr><th scope="row">${esc(row.label)}</th>${cells(row)}</tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+const bestOf = (items, fn, high = false) => {
+  const usable = items.filter((x) => typeof fn(x) === 'number');
+  if (usable.length < 2) return null;
+  const values = usable.map(fn);
+  if (new Set(values).size < 2) return null;
+  const target = high ? Math.max(...values) : Math.min(...values);
+  return usable.find((x) => fn(x) === target);
+};
+const worstOf = (items, fn) => bestOf(items, fn, true);
+const nameOf = (items, x) => `${LETTERS[items.indexOf(x)]} (${x.title})`;
+
+function conclusionHtml(points, summary) {
+  return `<section class="cmp__end" aria-labelledby="cmpEnd">
+    <h3 id="cmpEnd">Conclusión</h3>
+    ${points.length ? `<ul>${points.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : '<p>Con estos datos no hay diferencias claras entre las opciones.</p>'}
+    ${summary.length ? `<p class="cmp__sum"><b>En resumen:</b> ${esc(summary.join(' '))}</p>` : ''}
+  </section>`;
+}
+
+/* --- Vuelos --- */
+function compareFlights(items) {
+  items.forEach((x) => {
+    x.title = `${x.from} → ${x.to}`;
+    x.total = (x.durationTo + x.durationBack) || null;
+    x.stops = Math.max(x.transfers ?? 0, x.returnTransfers ?? 0);
+    x.hour = Number(hhmm(x.departureAt).slice(0, 2));
+  });
+  const when = (at) => (at ? `${showDate(at.slice(0, 10))}, ${hhmm(at)}` : 'Solo ida');
+  const rows = [
+    { label: 'Precio por adulto', value: (x) => money(x.price), number: (x) => x.price },
+    { label: 'Aerolínea', value: (x) => x.airline },
+    { label: 'Ida', value: (x) => when(x.departureAt) },
+    { label: 'Vuelta', value: (x) => when(x.returnAt) },
+    { label: 'Tiempo total de vuelo', value: (x) => hoursText(x.total), number: (x) => x.total },
+    { label: 'Escalas', value: (x) => (x.stops ? String(x.stops) : 'Directo'), number: (x) => x.stops },
+  ];
+  const points = [];
+  const summary = [];
+  const cheap = bestOf(items, (x) => x.price);
+  const fast = bestOf(items, (x) => x.total);
+  const direct = bestOf(items, (x) => x.stops);
+  if (cheap) {
+    const most = worstOf(items, (x) => x.price);
+    points.push(`${nameOf(items, cheap)} es el más barato: ${money(cheap.price)}, ${money(most.price - cheap.price)} menos que el más caro.`);
+    summary.push(`Para gastar menos, ${LETTERS[items.indexOf(cheap)]}.`);
+  }
+  if (fast) {
+    points.push(cheap && fast === cheap ? `Además, es el más rápido: ${hoursText(fast.total)}.` : `${nameOf(items, fast)} es el más rápido: ${hoursText(fast.total)}${cheap && cheap.total ? `, ${hoursText(cheap.total - fast.total)} menos que el más barato, a cambio de ${money(fast.price - cheap.price)} más` : ''}.`);
+    if (fast !== cheap) summary.push(`Para llegar antes, ${LETTERS[items.indexOf(fast)]}.`);
+  }
+  if (direct && direct.stops === 0) points.push(`${nameOf(items, direct)} va directo${items.filter((x) => x.stops === 0).length > 1 ? ', igual que alguna otra opción' : ''}.`);
+  items.forEach((x) => {
+    if (x.hour < 7) points.push(`${nameOf(items, x)} sale muy temprano, a las ${hhmm(x.departureAt)}: conviene mirar cómo llegar al aeropuerto a esa hora.`);
+    else if (x.hour >= 21) points.push(`${nameOf(items, x)} sale de noche, a las ${hhmm(x.departureAt)}.`);
+  });
+  return compareTable(items, rows) + conclusionHtml(points, summary);
+}
+
+/* --- Alojamientos --- */
+async function enrichStay(x) {
+  if (x.night === null && x.key) {
+    const q = new URLSearchParams({ key: x.key, in: x.start, out: x.end, adults: x.pax.adults, rooms: x.pax.rooms });
+    const body = await getJson(`/api/rates?${q}`);
+    if (body?.rates?.length) x.night = Math.round(body.rates[0].rate / peopleIn(x));
+  }
+  const place = placeText(x);
+  const [plans, info] = await Promise.all([cityPlans(place), cityInfo(place)]);
+  const hasPoint = typeof x.lat === 'number' && typeof x.lon === 'number';
+  x.nearPlans = null;
+  x.line = null;
+  if (hasPoint && plans?.activities?.length) {
+    x.nearPlans = plans.activities.filter((a) => distanceM(x.lat, x.lon, a.lat, a.lon) <= 1000).length;
+  }
+  const center = x.center || (info?.known ? { lat: info.lat, lon: info.lon } : null);
+  if (hasPoint && center) {
+    if (x.km === null) x.km = distanceM(x.lat, x.lon, center.lat, center.lon) / 1000;
+    const rail = await getJson(`/api/transit?${new URLSearchParams({ lat: center.lat, lon: center.lon, part: 'rail' })}`);
+    let best = Infinity;
+    (rail?.lines || []).forEach((line) => line.paths.forEach((path) => path.forEach(([lat, lon]) => {
+      best = Math.min(best, distanceM(x.lat, x.lon, lat, lon));
+    })));
+    if (Number.isFinite(best)) x.line = best;
+  }
+  x.title = x.name;
+  return x;
+}
+
+function compareStays(items) {
+  const rows = [
+    { label: 'Ciudad', value: (x) => x.city },
+    { label: 'Fechas', value: (x) => `${showDate(x.start)} – ${showDate(x.end)}` },
+    { label: 'Precio por noche y persona', value: (x) => (x.night === null ? 'Sin precio' : money(x.night)), number: (x) => x.night },
+    { label: 'Distancia al centro', value: (x) => (typeof x.km === 'number' ? kmShort(x.km) : 'Sin dato'), number: (x) => x.km },
+    { label: 'Metro o tranvía más cercano', value: (x) => (x.line === null ? 'Sin dato' : metres(x.line)), number: (x) => x.line },
+    { label: 'Planes a menos de 1 km', value: (x) => (x.nearPlans === null ? 'Sin dato' : String(x.nearPlans)), number: (x) => x.nearPlans, high: true },
+    { label: 'Categoría', value: (x) => (x.stars ? '★'.repeat(x.stars) : 'Sin dato'), number: (x) => x.stars || null, high: true },
+  ];
+  const points = [];
+  const summary = [];
+  const cheap = bestOf(items, (x) => x.night);
+  const near = bestOf(items, (x) => x.km);
+  const metro = bestOf(items, (x) => x.line);
+  const plans = bestOf(items, (x) => x.nearPlans, true);
+  const stars = bestOf(items, (x) => x.stars || null, true);
+  const far = worstOf(items, (x) => x.km);
+  if (cheap) {
+    points.push(`${nameOf(items, cheap)} es la opción más barata: ${money(cheap.night)} por noche y persona${typeof cheap.km === 'number' && far === cheap ? `, pero es la más lejana del centro (${kmShort(cheap.km)})` : ''}.`);
+    summary.push(`Para gastar menos, ${LETTERS[items.indexOf(cheap)]}.`);
+  }
+  if (near) {
+    const extra = cheap && near !== cheap && typeof near.night === 'number' ? `, y cuesta ${money(near.night - cheap.night)} más por noche que la más barata` : '';
+    points.push(`${nameOf(items, near)} es la más céntrica: a ${kmShort(near.km)} del centro${extra}. Se tarda menos en ver las cosas.`);
+    if (near !== cheap) summary.push(`Para ir andando a casi todo, ${LETTERS[items.indexOf(near)]}.`);
+  }
+  if (far && far !== near && typeof far.line === 'number') {
+    points.push(far.line <= 500
+      ? `${nameOf(items, far)} es la más lejana (${kmShort(far.km)}), pero tiene metro o tranvía a ${metres(far.line)}: va bien con transporte público, aunque se tarda más en ver las cosas.`
+      : `${nameOf(items, far)} es la más lejana (${kmShort(far.km)}) y el metro o tranvía más cercano está a ${metres(far.line)}: se depende más del autobús o del taxi.`);
+  }
+  if (metro && metro !== far) points.push(`${nameOf(items, metro)} es la mejor conectada: metro o tranvía a ${metres(metro.line)}.`);
+  if (plans) points.push(`${nameOf(items, plans)} tiene más planes alrededor: ${plans.nearPlans} a menos de 1 km.`);
+  if (stars) {
+    points.push(`${nameOf(items, stars)} tiene la mejor categoría (${'★'.repeat(stars.stars)}): conviene si se va a pasar mucho tiempo en el alojamiento.`);
+    if (stars !== cheap && stars !== near) summary.push(`Para pasar más tiempo en el alojamiento, ${LETTERS[items.indexOf(stars)]}.`);
+  }
+  const noPrice = items.filter((x) => x.night === null);
+  if (noPrice.length) points.push(`De ${noPrice.map((x) => LETTERS[items.indexOf(x)]).join(' y ')} no hay precio para estas fechas, así que no entra en la comparación de precio.`);
+  if (new Set(items.map((x) => x.city)).size > 1) points.push('Son ciudades distintas: para comparar también vuelos, moneda y horarios, está la pestaña «Viajes».');
+  return compareTable(items, rows) + conclusionHtml(points, summary)
+    + '<p class="count">La categoría son las estrellas del alojamiento, no una nota de opiniones. La distancia al metro o tranvía se mide hasta la línea, en línea recta.</p>';
+}
+
+/* --- Viajes --- */
+async function enrichTrip(x) {
+  const place = placeText(x.dest);
+  const direct = x.direct ? 1 : 0;
+  if (x.flight === null) {
+    const q = new URLSearchParams({ origin: x.origin.code, dest: x.dest.code, direct, depart: x.start, return: x.end });
+    const body = await getJson(`/api/day?${q}`);
+    if (body?.offers?.length) x.flight = Math.min(...body.offers.map((o) => o.price));
+  }
+  if (x.night === null) {
+    const hotels = await getJson(`/api/hotels?${new URLSearchParams({ place })}`);
+    const keys = (hotels?.hotels || []).filter((h) => h.key).slice(0, 6).map((h) => h.key);
+    const prices = await Promise.all(keys.map((key) => getJson(`/api/rates?${new URLSearchParams({ key, in: x.start, out: x.end, adults: x.pax.adults, rooms: x.pax.rooms })}`)));
+    const nights = prices.flatMap((b) => (b?.rates?.length ? [Math.round(b.rates[0].rate / peopleIn(x))] : []));
+    if (nights.length) x.night = Math.min(...nights);
+  }
+  const [info, home] = await Promise.all([cityInfo(place), cityInfo(placeText(x.origin))]);
+  x.info = info?.known ? info : null;
+  x.home = home?.known ? home : null;
+  x.nights = nightsOf(x);
+  x.total = x.flight !== null && x.night !== null ? x.flight + x.night * x.nights : null;
+  x.perDay = x.total === null ? null : Math.round(x.total / Math.max(1, x.nights));
+  x.friends = x.info?.hasPlans ? sumKinds(x.info.kinds, FRIEND_KINDS) : null;
+  x.family = x.info?.hasPlans ? sumKinds(x.info.kinds, FAMILY_KINDS) : null;
+  const offset = x.info ? zoneHours(x.info.timezone, x.start) : null;
+  const homeOffset = x.home ? zoneHours(x.home.timezone, x.start) : null;
+  x.offset = offset;
+  x.shift = offset !== null && homeOffset !== null ? offset - homeOffset : null;
+  x.sun = x.info ? sunTimes(x.info.lat, x.info.lon, x.start, offset) : null;
+  x.title = `${x.origin.city} → ${x.dest.city}`;
+  return x;
+}
+
+const shiftText = (h) => {
+  if (h === null) return 'Sin dato';
+  if (!h) return 'La misma hora';
+  const abs = Math.abs(h);
+  return `${String(abs).replace('.', ',')} h ${h > 0 ? 'más' : 'menos'}`;
+};
+const lightText = (x) => {
+  if (!x.sun) return 'Sin dato';
+  if (x.sun.rise === undefined) return x.sun.polar ? 'Sol todo el día' : 'Sin sol ese día';
+  return `${x.sun.rise} a ${x.sun.set} (${Math.round(x.sun.hours)} h)`;
+};
+
+function compareTrips(items) {
+  const rows = [
+    { label: 'Fechas', value: (x) => `${showDate(x.start)} – ${showDate(x.end)} (${plural(x.nights, 'noche', 'noches')})` },
+    { label: 'Total por persona', value: (x) => (x.total === null ? 'Sin dato' : money(x.total)), number: (x) => x.total },
+    { label: 'Total por día', value: (x) => (x.total === null ? 'Sin dato' : money(x.perDay)), number: (x) => x.perDay },
+    { label: 'Vuelo', value: (x) => (x.flight === null ? 'Sin precio' : money(x.flight)), number: (x) => x.flight },
+    { label: 'Alojamiento por noche', value: (x) => (x.night === null ? 'Sin precio' : money(x.night)), number: (x) => x.night },
+    { label: 'Planes de amigos', value: (x) => (x.friends === null ? 'Sin dato' : String(x.friends)), number: (x) => x.friends, high: true },
+    { label: 'Planes en familia', value: (x) => (x.family === null ? 'Sin dato' : String(x.family)), number: (x) => x.family, high: true },
+    { label: 'Planes gratis', value: (x) => (x.info?.hasPlans ? String(x.info.free) : 'Sin dato'), number: (x) => (x.info?.hasPlans ? x.info.free : null), high: true },
+    { label: 'Moneda', value: (x) => (x.info ? currencyName(x.info.currency) : 'Sin dato') },
+    { label: 'Hora respecto al origen', value: (x) => shiftText(x.shift) },
+    { label: 'Horas de luz', value: lightText, number: (x) => (x.sun?.hours ? Math.round(x.sun.hours) : null), high: true },
+  ];
+  const points = [];
+  const summary = [];
+  const cheap = bestOf(items, (x) => x.total);
+  const dear = worstOf(items, (x) => x.total);
+  const cheapStay = bestOf(items, (x) => x.night);
+  const friends = bestOf(items, (x) => x.friends, true);
+  const family = bestOf(items, (x) => x.family, true);
+  const free = bestOf(items, (x) => (x.info?.hasPlans ? x.info.free : null), true);
+  const light = bestOf(items, (x) => (x.sun?.hours ? Math.round(x.sun.hours) : null), true);
+  if (cheap) {
+    points.push(`${nameOf(items, cheap)} es el viaje más barato: ${money(cheap.total)} por persona, ${money(dear.total - cheap.total)} menos que el más caro.`);
+    summary.push(`Para gastar menos, ${LETTERS[items.indexOf(cheap)]}.`);
+  }
+  if (new Set(items.map((x) => x.nights)).size > 1) {
+    const daily = bestOf(items, (x) => x.perDay);
+    if (daily) points.push(`Los viajes no duran lo mismo. Por día, el más barato es ${nameOf(items, daily)}: ${money(daily.perDay)}.`);
+  }
+  if (cheapStay) points.push(`El alojamiento más barato encontrado está en ${cheapStay.dest.city}: desde ${money(cheapStay.night)} por noche. Es solo una pista de qué ciudad es más económica: no incluye comida ni transporte.`);
+  if (friends && friends === family) {
+    points.push(`${friends.dest.city} tiene más oferta de todo tipo: ${friends.friends} bares, discotecas y sitios de ocio, y ${friends.family} museos, parques, playas y zoos.`);
+    summary.push(`Con amigos o en familia, ${friends.dest.city}.`);
+  } else {
+    if (friends) {
+      points.push(`${friends.dest.city} es más de amigos: ${friends.friends} bares, discotecas y sitios de ocio guardados.`);
+      summary.push(`Con amigos, ${friends.dest.city}.`);
+    }
+    if (family) {
+      points.push(`${family.dest.city} es más familiar: ${family.family} museos, parques, playas y zoos guardados.`);
+      summary.push(`En familia, ${family.dest.city}.`);
+    }
+  }
+  if (free) points.push(`${free.dest.city} tiene más planes gratis: ${free.info.free}.`);
+  const known = items.filter((x) => x.info?.currency);
+  const currencies = new Set(known.map((x) => x.info.currency));
+  if (known.length > 1 && currencies.size === 1) points.push(`Todos los destinos usan la misma moneda: ${currencyName(known[0].info.currency)}.`);
+  known.forEach((x) => {
+    if (x.home?.currency && x.home.currency !== x.info.currency) points.push(`En ${x.dest.city} se paga en ${currencyName(x.info.currency)}, distinta de la de ${x.origin.city}: conviene mirar el cambio y las comisiones de la tarjeta.`);
+  });
+  items.forEach((x) => {
+    if (x.shift !== null && Math.abs(x.shift) >= 3) points.push(`${x.dest.city} va con ${shiftText(x.shift)} que ${x.origin.city}: es posible notar el cambio de horario los primeros días.`);
+  });
+  if (light) points.push(`En ${light.dest.city} hay más horas de luz en esas fechas: ${lightText(light)}. Da más margen para ver cosas de día.`);
+  const missing = items.filter((x) => x.total === null);
+  if (missing.length) points.push(`De ${missing.map((x) => x.dest.city).join(' y ')} falta algún precio para estas fechas, así que no entra en el total.`);
+  const noPlans = items.filter((x) => x.info && !x.info.hasPlans);
+  if (noPlans.length) points.push(`De ${noPlans.map((x) => x.dest.city).join(' y ')} todavía no hay planes guardados.`);
+  return compareTable(items, rows) + conclusionHtml(points, summary)
+    + '<p class="count">Los precios son orientativos y salen de lo más barato encontrado. Los planes son los que hay guardados de cada ciudad, con un tope por tipo, así que sirven para orientarse. Las horas de sol son aproximadas y corresponden al primer día del viaje.</p>';
+}
+
+async function renderCompare() {
+  const run = ++compareRun;
+  const res = $('results');
+  const items = compareList[compareTab].map((x) => ({ ...x }));
+  res.innerHTML = `
+    <div class="summary">
+      <div><h2>Comparar</h2><p>Se eligen con el botón «Comparar» de cada vuelo, alojamiento o viaje. Se queda solo en este dispositivo.</p></div>
+      <span class="summary__actions"><button type="button" class="btn btn--out" id="newSearch">Volver a buscar</button></span>
+    </div>
+    <div class="savedtabs" role="tablist" aria-label="Qué comparar">
+      ${Object.entries(COMPARE_TABS).map(([id, label]) => `<button type="button" role="tab" class="savedtab${id === compareTab ? ' is-on' : ''}" data-compare-tab="${id}" aria-selected="${id === compareTab}">${esc(label)} <em>${compareList[id].length}</em></button>`).join('')}
+    </div>
+    <div id="compareBody"></div>`;
+  res.hidden = false;
+  $('home').hidden = true;
+  $('newSearch').addEventListener('click', goHome);
+  const body = $('compareBody');
+  if (items.length < 2) {
+    body.innerHTML = `<div class="empty"><b>${items.length ? 'Falta elegir otra opción' : 'Todavía no hay nada que comparar'}</b>Hay que pulsar «Comparar» en al menos dos ${{ flights: 'vuelos', stays: 'alojamientos', trips: 'viajes' }[compareTab]} de los resultados de búsqueda.${items.length ? `<br><button type="button" class="linkbtn" data-compare-del="${esc(items[0].id)}">Quitar el elegido</button>` : ''}</div>`;
+  } else if (compareTab === 'flights') {
+    body.innerHTML = compareFlights(items);
+  } else {
+    body.innerHTML = '<div class="list"><div class="skel"></div></div>';
+    const ready = await Promise.all(items.map(compareTab === 'stays' ? enrichStay : enrichTrip));
+    if (run !== compareRun || !$('compareBody')) return;
+    body.innerHTML = compareTab === 'stays' ? compareStays(ready) : compareTrips(ready);
+  }
+  res.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function initCompare() {
+  $('compareBtn').addEventListener('click', () => {
+    if (!compareList[compareTab].length) compareTab = Object.keys(COMPARE_TABS).find((id) => compareList[id].length) || compareTab;
+    closePops();
+    renderCompare();
+  });
+  $('results').addEventListener('click', (e) => {
+    const tab = e.target.closest('[data-compare-tab]');
+    if (tab) {
+      compareTab = tab.dataset.compareTab;
+      renderCompare();
+      return;
+    }
+    const del = e.target.closest('[data-compare-del]');
+    if (del) {
+      compareList[compareTab] = compareList[compareTab].filter((x) => x.id !== del.dataset.compareDel);
+      store.set('tt.compare', compareList);
+      paintCompareCount();
+      renderCompare();
+    }
+  });
+  paintCompareCount();
+}
+
 function init() {
   setupCombo('origin', $('origin'), $('originList'), $('segOrigin'));
   setupCombo('dest', $('dest'), $('destList'), $('segDest'));
@@ -2870,6 +3438,7 @@ function init() {
   initGallery();
   initExplore();
   initAccount();
+  initCompare();
 }
 
 init();

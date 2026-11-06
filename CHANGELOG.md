@@ -6,10 +6,18 @@ Cada versión tiene tres números, por ejemplo 1.2.3:
 - **El segundo** cambia al añadir algo nuevo, como más ciudades o una función.
 - **El tercero** cambia al corregir un error o hacer un retoque.
 
+## 1.8.0 · 6 de noviembre de 2026
+
+- Nuevo apartado «Comparar»: vuelos, alojamientos o viajes juntos, con una conclusión final. Los viajes comparan precio, tipo de plan, moneda, hora y horas de luz.
+- Se quitan las notas puestas por usuarios. Cada plan enlaza a su ficha en Google.
+
+## 1.7.0 · 6 de noviembre de 2026
+
+- Opción «Continuar como invitado»: lo guardado se queda solo en este dispositivo.
+- Al entrar con una cuenta, se ofrece mover a ella lo guardado como invitado.
+
 ## 1.6.0 · 6 de noviembre de 2026
 
-- Nota de 1 a 10 en cada actividad: es la media de los votos de los usuarios de TopTravel, con un voto por cuenta. Al pulsar la nota, se abre en Google.
-- Las actividades se pueden ordenar por mejor nota.
 - Fotos de destinos y monumentos con mucha más calidad: las mismas fotos, ahora en alta resolución.
 
 ## 1.5.1 · 6 de noviembre de 2026

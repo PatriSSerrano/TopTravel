@@ -5,6 +5,9 @@
   document.documentElement.classList.add('lp-js');
 
   // Si ya hay sesión, la cabecera lo refleja.
+  try {
+    if (JSON.parse(localStorage.getItem('tt.guest'))) document.getElementById('lpAccountText').textContent = 'Invitado';
+  } catch { /* sin almacenamiento: se queda «Entrar» */ }
   fetch('/api/me').then((r) => r.json()).then((me) => {
     if (!me.user) return;
     document.getElementById('lpAccountText').textContent = 'Cuenta';

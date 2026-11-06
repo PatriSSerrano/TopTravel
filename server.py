@@ -438,7 +438,7 @@ def plain_name(text):
     return " ".join(unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode().casefold().split())
 
 
-def geocode_local(place):
+def city_row(place):
     """Busca «Ciudad, País» en la base propia. Entre ciudades con igual nombre, gana la mayor."""
     if not CITIES_DB.exists():
         return None
@@ -447,16 +447,20 @@ def geocode_local(place):
     codes = [code for code, name in places_or_empty().items() if plain_name(name) == wanted]
     if wanted in COUNTRY_ALIASES:
         codes.append(COUNTRY_ALIASES[wanted])
-    query = "SELECT c.lat, c.lon FROM names n JOIN cities c ON c.id = n.city WHERE n.name = ?"
+    query = "SELECT c.lat, c.lon, c.timezone, c.country, k.currency FROM names n JOIN cities c ON c.id = n.city LEFT JOIN countries k ON k.code = c.country WHERE n.name = ?"
     params = [plain_name(city)]
     if codes:
         query += f" AND c.country IN ({','.join('?' * len(codes))})"
         params += codes
     db = sqlite3.connect(f"file:{CITIES_DB}?mode=ro", uri=True)
     try:
-        row = db.execute(query + " ORDER BY c.population DESC LIMIT 1", params).fetchone()
+        return db.execute(query + " ORDER BY c.population DESC LIMIT 1", params).fetchone()
     finally:
         db.close()
+
+
+def geocode_local(place):
+    row = city_row(place)
     return (row[0], row[1]) if row else None
 
 
@@ -896,10 +900,6 @@ def read_map(key):
         return None
 
 
-def activity_id(name):
-    return hashlib.sha1(plain_name(name).encode("utf-8")).hexdigest()[:16]
-
-
 def city_activities(place):
     """Devuelve el centro, la clave de la ciudad y sus planes con monumentos; None si no los hay."""
     point = geocode_local(place[:200])
@@ -921,41 +921,27 @@ def city_activities(place):
     return point, f"{center[0]}|{center[1]}", items
 
 
+def api_city(q):
+    """Lo que hace falta para comparar dos ciudades. Todo sale de los datos propios."""
+    row = city_row(q.get("place", "")[:200])
+    if not row:
+        return 200, {"known": False}
+    lat, lon, timezone, country, currency = row
+    plans = read_map(f"a|{round(lat, 2)}|{round(lon, 2)}")
+    kinds = {}
+    free = 0
+    for item in (plans or {}).get("activities", []):
+        kinds[item["kind"]] = kinds.get(item["kind"], 0) + 1
+        free += bool(describe_activity(item)["free"])
+    return 200, {"known": True, "lat": lat, "lon": lon, "timezone": timezone, "country": country, "currency": currency, "hasPlans": bool(plans), "kinds": kinds, "free": free}
+
+
 def api_activities(q):
     found = city_activities(q.get("place", ""))
     if not found:
         return 200, {"available": False, "activities": []}
-    point, city, items = found
-    try:
-        totals = accounts.vote_totals(city)
-    except sqlite3.Error:
-        totals = {}
-    rows = []
-    for item in items:
-        row = describe_activity(item)
-        row["id"] = activity_id(item["name"])
-        row["rating"] = totals.get(row["id"])
-        rows.append(row)
-    return 200, {"available": True, "center": {"lat": point[0], "lon": point[1]}, "activities": rows}
-
-
-def api_my_votes(q, ctx):
-    point = geocode_local(q.get("place", "")[:200])
-    if not point:
-        return 200, {"votes": {}}
-    return 200, {"votes": accounts.my_votes(ctx.user_id, f"{round(point[0], 2)}|{round(point[1], 2)}")}
-
-
-def api_vote(body, ctx):
-    score = body.get("score")
-    if type(score) is not int or not 0 <= score <= 10:
-        return 400, {"error": "La nota debe ser de 1 a 10."}
-    found = city_activities(str(body.get("place", "")))
-    wanted = str(body.get("id", ""))
-    # Solo se vota lo que existe: así nadie puede llenar la base con textos inventados.
-    if not found or not any(activity_id(item["name"]) == wanted for item in found[2]):
-        return 404, {"error": "No se ha encontrado esta actividad."}
-    return 200, {"rating": accounts.set_vote(ctx.user_id, found[1], wanted, score), "mine": score or None}
+    point, _, items = found
+    return 200, {"available": True, "center": {"lat": point[0], "lon": point[1]}, "activities": [describe_activity(item) for item in items]}
 
 
 TRANSIT_KINDS = {"subway": "metro", "light_rail": "metro", "monorail": "metro", "tram": "tram", "bus": "bus", "trolleybus": "bus"}
@@ -1215,7 +1201,7 @@ def api_explore(q):
     }
 
 
-ROUTES = {"/api/calendar": api_calendar, "/api/day": api_day, "/api/hotels": api_hotels, "/api/explore": api_explore, "/api/rates": api_rates, "/api/monuments": api_monuments, "/api/transit": api_transit, "/api/activities": api_activities}
+ROUTES = {"/api/calendar": api_calendar, "/api/day": api_day, "/api/hotels": api_hotels, "/api/explore": api_explore, "/api/rates": api_rates, "/api/monuments": api_monuments, "/api/transit": api_transit, "/api/activities": api_activities, "/api/city": api_city}
 
 
 def lowest_price(params):
@@ -1245,7 +1231,6 @@ ACCOUNT_POST = {
 PRIVATE_POST = {
     "/api/saved": accounts.make_save(saved_price),
     "/api/saved/delete": accounts.api_unsave,
-    "/api/votes": api_vote,
     "/api/alerts/read": accounts.api_alerts_read,
     "/api/account/delete": accounts.api_delete_account,
     "/api/account/recovery-code": accounts.api_new_recovery_code,
@@ -1254,7 +1239,7 @@ PRIVATE_POST = {
 MAX_BODY = 16 * 1024
 
 # Peticiones por minuto y por visitante en lo que llama a servicios externos.
-RATE_LIMITS = {"/logos": 240, "/api/register": 10, "/api/login": 20, "/api/recover": 10, "/api/calendar": 120, "/api/day": 120, "/api/explore": 60, "/api/hotels": 20, "/api/rates": 90, "/api/monuments": 20, "/api/transit": 20, "/api/activities": 30, "/api/votes": 60, "/api/votes/mine": 60}
+RATE_LIMITS = {"/logos": 240, "/api/register": 10, "/api/login": 20, "/api/recover": 10, "/api/calendar": 120, "/api/day": 120, "/api/explore": 60, "/api/hotels": 20, "/api/rates": 90, "/api/monuments": 20, "/api/transit": 20, "/api/activities": 30, "/api/city": 60}
 _hits = {}
 _hits_lock = threading.Lock()
 
@@ -1546,7 +1531,6 @@ def main():
     accounts.mail_settings = settings
     accounts.init_db()
     accounts.PRIVATE_GET["/api/saved/history"] = accounts.make_history(cheaper_day)
-    accounts.PRIVATE_GET["/api/votes/mine"] = api_my_votes
     accounts.insights_ready = lambda: settings()["PRICE_INSIGHTS"] == "on"
     accounts.start_price_checks(saved_price)
     parser = argparse.ArgumentParser()
