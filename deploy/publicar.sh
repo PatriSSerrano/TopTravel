@@ -25,7 +25,7 @@ tar -czf - "${FILES[@]}" | "${SSH[@]}" "$HOST" 'mkdir -p toptravel && tar -xzf -
 
 if [ "$WITH_ENV" = "--con-env" ]; then
   # Solo las claves que usa la web; el resto no sale de este ordenador.
-  grep -E '^(TRAVELPAYOUTS_TOKEN|CONTACT_EMAIL|SMTP_[A-Z]+|MAIL_FROM|SITE_URL|HOTEL_PRICES|NOMINATIM)=' .env     | "${SSH[@]}" "$HOST" 'umask 077; cat > toptravel/.env'
+  grep -E '^(TRAVELPAYOUTS_TOKEN|CONTACT_EMAIL|SMTP_[A-Z]+|MAIL_FROM|SITE_URL|HOTEL_PRICES|NOMINATIM|PRICE_INSIGHTS)=' .env     | "${SSH[@]}" "$HOST" 'umask 077; cat > toptravel/.env'
 fi
 
 # La web comprueba este archivo cada 5 segundos y se reinicia sola con el código nuevo.
