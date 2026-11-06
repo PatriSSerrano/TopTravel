@@ -47,7 +47,7 @@ const PLACES = [
 
 const IDEAS = ['CDG', 'FCO', 'LIS', 'LHR', 'JFK', 'NRT', 'CUN', 'AMS'];
 // Subirlo al cambiar las fotos: así el navegador no enseña las antiguas.
-const PHOTOS_VERSION = 2;
+const PHOTOS_VERSION = 3;
 const PHOTOS = {
   CDG: 'paris',
   FCO: 'roma',
@@ -1280,6 +1280,7 @@ function afterAccountChange() {
   paintAccount();
   if (!$('results').hidden) {
     document.querySelectorAll('[data-save-stay], [data-save-plan]').forEach((b) => { b.textContent = 'Guardar'; });
+    loadMyVotes();
     paintTransitFavorites();
     const save = $('saveTrip');
     if (save) save.textContent = 'Guardar y recibir avisos';
@@ -2066,8 +2067,9 @@ const planMap = { map: null, plans: null, hotelsLayer: null, center: null, hotel
 function planPopup(a, city) {
   const price = a.free === true ? 'Gratis' : (a.free === false ? 'De pago' : 'Precio sin confirmar');
   return `${a.image ? `<img class="map__photo" src="${esc(a.image)}" alt="" width="240" height="160" loading="lazy">` : ''}
-    <b class="map__title"><a href="${esc(googleLink(a, city))}" target="_blank" rel="noopener">${esc(a.name)}<span class="sr"> (se abre en Google, en una pestaña nueva)</span></a></b>
+    <b class="map__title">${esc(a.name)}</b>
     <span class="map__sub">${esc(PLAN_KIND_ONE[a.kind] || 'Plan')} · ${esc(price)}</span>
+    ${noteHtml(a, city)}
     ${kmHtml(a)}
     ${a.website ? `<a class="btn btn--out" href="${esc(a.website)}" target="_blank" rel="noopener nofollow">Web oficial</a>` : ''}
     <button type="button" class="btn" data-save-plan="${esc(a.name)}">${findActivity(a, city) ? 'Guardado ✓' : 'Guardar'}</button>`;
@@ -2125,6 +2127,58 @@ function setupPlanMap(el, center) {
 
 const googleLink = (a, city) => `https://www.google.com/maps/search/?${new URLSearchParams({ api: 1, query: `${a.name}, ${city}` })}`;
 
+/* La nota es la media de los votos de TopTravel. Al pulsarla se abre el sitio en Google. */
+const noteText = (n) => String(n).replace('.', ',');
+
+function noteHtml(a, city) {
+  const r = a.rating;
+  return `<a class="note${r ? '' : ' note--none'}" data-note="${esc(a.id)}" href="${esc(googleLink(a, city))}" target="_blank" rel="noopener">
+    ${r ? `<b>${esc(noteText(r.average))}/10</b><small>${esc(plural(r.votes, 'voto', 'votos'))}</small>` : '<b>Sin nota</b>'}<span class="sr"> Abrir en Google, en una pestaña nueva</span></a>`;
+}
+
+function voteHtml(a) {
+  const mine = a.mine || '';
+  const options = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1].map((n) => `<option value="${n}"${n === mine ? ' selected' : ''}>${n}</option>`).join('');
+  return `<label class="vote"><span>Tu nota</span><select data-vote="${esc(a.id)}"><option value="">–</option>${options}${mine ? '<option value="0">Quitar</option>' : ''}</select></label>`;
+}
+
+async function castVote(a, s, select, score) {
+  const place = s.dest.country ? `${s.dest.city}, ${s.dest.country}` : s.dest.city;
+  if (!requireLogin(() => castVote(a, s, select, score))) {
+    select.value = a.mine || '';
+    return;
+  }
+  try {
+    const { rating, mine } = await api('/api/votes', { place, id: a.id, score });
+    a.rating = rating;
+    a.mine = mine;
+    document.querySelectorAll(`[data-note="${a.id}"]`).forEach((el) => { el.outerHTML = noteHtml(a, s.dest.city); });
+    document.querySelectorAll(`[data-vote="${a.id}"]`).forEach((el) => { el.closest('.vote').outerHTML = voteHtml(a); });
+  } catch (error) {
+    select.value = a.mine || '';
+    toast(error.message);
+  }
+}
+
+/* Las notas propias de la cuenta: se piden aparte porque la lista de planes es pública. */
+const planVotes = { items: null, place: null, redraw: null };
+
+async function loadMyVotes() {
+  const { items, place, redraw } = planVotes;
+  if (!items) return;
+  items.forEach((a) => { a.mine = null; });
+  if (account.user) {
+    try {
+      const { votes } = await api(`/api/votes/mine?${new URLSearchParams({ place })}`);
+      if (planVotes.items !== items) return;
+      items.forEach((a) => { a.mine = votes[a.id] || null; });
+    } catch {
+      return;
+    }
+  }
+  redraw();
+}
+
 function planHtml(a, city) {
   const chips = [];
   if (a.free === true) chips.push('<span class="ok">Gratis</span>');
@@ -2141,7 +2195,8 @@ function planHtml(a, city) {
       ${a.image ? `<img class="plan__img" src="${esc(a.image)}" alt="" loading="lazy" width="160" height="120">` : ''}
       <div class="hotel__body">
         <span class="stay__type">${esc(PLAN_KIND_ONE[a.kind] || 'Plan')}${a.cuisine ? ` · ${esc(a.cuisine.replaceAll(';', ', ').replaceAll('_', ' '))}` : ''}</span>
-        <h3 class="stay__name"><a href="${esc(googleLink(a, city))}" target="_blank" rel="noopener">${esc(a.name)}<span class="sr"> (se abre en Google, en una pestaña nueva)</span></a></h3>
+        <h3 class="stay__name">${esc(a.name)}</h3>
+        <div class="plan__rate">${noteHtml(a, city)}${voteHtml(a)}</div>
         <div class="chips">${chips.join('')}</div>
         ${a.opening_hours ? `<span class="stay__loc"><span>Horario: ${esc(a.opening_hours)}</span></span>` : ''}
         ${a.credit ? `<a class="plan__credit" href="${esc(a.credit)}" target="_blank" rel="noopener">Foto y licencia: Wikimedia Commons</a>` : ''}
@@ -2182,18 +2237,19 @@ function renderPlans(el, items, city, center, s) {
           <p class="map__note" data-plan-note role="status"></p>
           <p class="count">El mapa y la lista muestran lo mismo: los filtros cambian los dos.</p>
         </div>
-        ${sortbarHtml([{ id: 'near', label: 'Más cerca' }, { id: 'known', label: 'Más conocidos' }])}
+        ${sortbarHtml([{ id: 'near', label: 'Más cerca' }, { id: 'known', label: 'Más conocidos' }, { id: 'best', label: 'Mejor nota' }])}
         <p class="count" data-count></p>
         <div class="list" data-results></div>
         <button type="button" class="btn btn--out btn--block more">Ver más planes</button>
+        <p class="count">La nota es la media de los votos de los usuarios de TopTravel, de 1 a 10. Al pulsarla, se abre en Google.</p>
         <p class="count">El precio, el presupuesto y el tipo de plan son orientativos: si el sitio no lo indica, se deducen de su tipo. «Poco conocido» significa que no tiene ficha en Wikipedia ni en Wikidata. Conviene confirmar los horarios antes de ir.</p>
-        <p class="legal">Datos: © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">colaboradores de OpenStreetMap</a> y <a href="https://www.wikidata.org" target="_blank" rel="noopener">Wikidata</a>. Al pulsar el nombre de un plan, se abre en Google.</p>
+        <p class="legal">Datos: © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">colaboradores de OpenStreetMap</a> y <a href="https://www.wikidata.org" target="_blank" rel="noopener">Wikidata</a>.</p>
       </div>
     </div>`;
 
   const view = { sort: 'near', step: PLANS_STEP, limit: PLANS_STEP };
   const nearest = (a, b) => (a.km ?? 99) - (b.km ?? 99);
-  const sorters = { near: nearest, known: (a, b) => Number(b.known) - Number(a.known) || Boolean(b.image) - Boolean(a.image) || nearest(a, b) };
+  const sorters = { near: nearest, best: (a, b) => (b.rating?.average ?? -1) - (a.rating?.average ?? -1) || (b.rating?.votes ?? 0) - (a.rating?.votes ?? 0) || nearest(a, b), known: (a, b) => Number(b.known) - Number(a.known) || Boolean(b.image) - Boolean(a.image) || nearest(a, b) };
 
   const draw = () => {
     const form = el.querySelector('form');
@@ -2229,7 +2285,13 @@ function renderPlans(el, items, city, center, s) {
 
   setupPlanMap(el, center);
   let framed = false;
+  Object.assign(planVotes, { items, place: s.dest.country ? `${s.dest.city}, ${s.dest.country}` : s.dest.city, redraw: () => draw() });
   wireControls(el, view, draw);
+  el.addEventListener('change', (e) => {
+    if (!e.target.matches('[data-vote]') || e.target.value === '') return;
+    const item = items.find((a) => a.id === e.target.dataset.vote);
+    if (item) castVote(item, s, e.target, Number(e.target.value));
+  });
   el.addEventListener('click', (e) => {
     const save = e.target.closest('.list [data-save-plan]');
     if (!save) return;
@@ -2254,6 +2316,7 @@ function renderPlans(el, items, city, center, s) {
     }
   });
   draw();
+  loadMyVotes();
 }
 
 let plansRun = 0;
@@ -2514,7 +2577,7 @@ function startGallery(wrap) {
   stopGallery();
   galleryWrap = wrap;
   const images = [...wrap.querySelectorAll('.dest__img img')];
-  images.forEach((img) => { if (img.dataset.src && !img.getAttribute('src')) img.src = img.dataset.src; });
+  images.forEach(loadPhoto);
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   let index = 0;
   galleryTimer = setInterval(() => {
@@ -2549,7 +2612,7 @@ function initGallery() {
   grid.addEventListener('touchstart', (e) => {
     const area = e.target.closest('.dest__img');
     if (!area || e.touches.length !== 1) { touch = null; return; }
-    area.querySelectorAll('img[data-src]').forEach((img) => { if (!img.getAttribute('src')) img.src = img.dataset.src; });
+    area.querySelectorAll('img[data-src]').forEach(loadPhoto);
     touch = { wrap: area.closest('.dest-wrap'), x: e.touches[0].clientX, y: e.touches[0].clientY };
     swiped = false;
   }, { passive: true });
@@ -2583,6 +2646,19 @@ function initGallery() {
   });
 }
 
+/* Cada foto existe en dos tamaños: el navegador baja la que necesita su pantalla. */
+const PHOTO_WIDTH = 1400;
+const PHOTO_SIZES = '(max-width: 640px) 50vw, (max-width: 1100px) 33vw, 25vw';
+const photoSmall = (name) => `assets/${name}-m.jpg?v=${PHOTOS_VERSION}`;
+const photoSet = (name) => `${photoSmall(name)} 700w, assets/${name}.jpg?v=${PHOTOS_VERSION} ${PHOTO_WIDTH}w`;
+
+function loadPhoto(img) {
+  if (img.dataset.src && !img.getAttribute('src')) {
+    img.srcset = img.dataset.srcset || '';
+    img.src = img.dataset.src;
+  }
+}
+
 function renderIdeas() {
   stopGallery();
   $('trendTitle').textContent = 'Ideas de destino';
@@ -2594,8 +2670,8 @@ function renderIdeas() {
         ${heartHtml(code, p.city)}
         <button type="button" class="dest" data-code="${code}">
           <span class="dest__img" style="display:block">
-            <img class="is-on" src="assets/${PHOTOS[code]}.jpg?v=${PHOTOS_VERSION}" alt="" width="640" height="640" loading="lazy" decoding="async">
-            ${[2, 3, 4].map((n) => `<img data-src="assets/${PHOTOS[code]}${n}.jpg?v=${PHOTOS_VERSION}" alt="" width="640" height="640" decoding="async">`).join('')}
+            <img class="is-on" src="${photoSmall(PHOTOS[code])}" srcset="${photoSet(PHOTOS[code])}" sizes="${PHOTO_SIZES}" alt="" width="${PHOTO_WIDTH}" height="${PHOTO_WIDTH}" loading="lazy" decoding="async">
+            ${[2, 3, 4].map((n) => `<img data-src="${photoSmall(PHOTOS[code] + n)}" data-srcset="${photoSet(PHOTOS[code] + n)}" sizes="${PHOTO_SIZES}" alt="" width="${PHOTO_WIDTH}" height="${PHOTO_WIDTH}" decoding="async">`).join('')}
             <span class="dest__dots" aria-hidden="true"><i class="is-on"></i><i></i><i></i><i></i></span>
           </span>
           <span class="dest__t">${esc(p.city)}</span>

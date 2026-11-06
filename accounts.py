@@ -74,6 +74,15 @@ CREATE TABLE IF NOT EXISTS alerts (
   is_read INTEGER NOT NULL DEFAULT 0,
   created_at INTEGER NOT NULL
 );
+CREATE TABLE IF NOT EXISTS activity_votes (
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  city TEXT NOT NULL,
+  item TEXT NOT NULL,
+  score INTEGER NOT NULL CHECK (score BETWEEN 1 AND 10),
+  updated_at INTEGER NOT NULL,
+  PRIMARY KEY (user_id, city, item)
+);
+CREATE INDEX IF NOT EXISTS activity_votes_item ON activity_votes (city, item);
 CREATE TABLE IF NOT EXISTS price_history (
   route TEXT NOT NULL,
   day TEXT NOT NULL,
@@ -775,6 +784,45 @@ def api_alerts_read(_body, ctx):
     finally:
         db.close()
     return 200, {"ok": True}
+
+
+# ---------- Notas de actividades ----------
+def vote_totals(city):
+    """Media y número de votos por actividad. Nunca se devuelve quién ha votado."""
+    db = connect()
+    try:
+        rows = db.execute("SELECT item, AVG(score) AS average, COUNT(*) AS votes FROM activity_votes WHERE city = ? GROUP BY item", (city,)).fetchall()
+    finally:
+        db.close()
+    return {row["item"]: {"average": round(row["average"], 1), "votes": row["votes"]} for row in rows}
+
+
+def my_votes(user_id, city):
+    db = connect()
+    try:
+        rows = db.execute("SELECT item, score FROM activity_votes WHERE user_id = ? AND city = ?", (user_id, city)).fetchall()
+    finally:
+        db.close()
+    return {row["item"]: row["score"] for row in rows}
+
+
+def set_vote(user_id, city, item, score):
+    """Cada cuenta tiene un solo voto por actividad; volver a votar lo cambia y 0 lo quita."""
+    db = connect()
+    try:
+        if score:
+            db.execute(
+                "INSERT INTO activity_votes (user_id, city, item, score, updated_at) VALUES (?, ?, ?, ?, ?) "
+                "ON CONFLICT (user_id, city, item) DO UPDATE SET score = excluded.score, updated_at = excluded.updated_at",
+                (user_id, city, item, score, int(time.time())),
+            )
+        else:
+            db.execute("DELETE FROM activity_votes WHERE user_id = ? AND city = ? AND item = ?", (user_id, city, item))
+        db.commit()
+        row = db.execute("SELECT AVG(score) AS average, COUNT(*) AS votes FROM activity_votes WHERE city = ? AND item = ?", (city, item)).fetchone()
+    finally:
+        db.close()
+    return {"average": round(row["average"], 1), "votes": row["votes"]} if row["votes"] else None
 
 
 def saved_title(kind, data):

@@ -21,7 +21,8 @@ for cache in data/hotels.json data/places.json data/mapas data/ciudades.db data/
   [ -e "$cache" ] && FILES+=("$cache")
 done
 
-tar -czf - "${FILES[@]}" | "${SSH[@]}" "$HOST" 'mkdir -p toptravel && tar -xzf - -C toptravel'
+# Tar devuelve 1 si un archivo cambia mientras se lee (los datos se pueden estar generando): no es un fallo.
+{ rc=0; tar -czf - "${FILES[@]}" || rc=$?; [ "$rc" -le 1 ]; } | "${SSH[@]}" "$HOST" 'mkdir -p toptravel && tar -xzf - -C toptravel'
 
 if [ "$WITH_ENV" = "--con-env" ]; then
   # Solo las claves que usa la web; el resto no sale de este ordenador.

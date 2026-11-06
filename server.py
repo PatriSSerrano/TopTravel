@@ -102,7 +102,7 @@ OVERPASS_URLS = (
 OVERPASS_MAIN_TIMEOUT = 110
 OVERPASS_BACKUP_TIMEOUT = 45  # si el principal falla, los de reserva no deben alargar la espera
 LEGAL_PAGES = {"/privacidad": "privacidad.html", "/aviso-legal": "aviso-legal.html"}
-PHOTO = re.compile(r"^/fotos/[0-9a-f]{16}\.jpg$")
+PHOTO = re.compile(r"^/fotos/[0-9a-fh]{16}\.jpg$")
 PHOTO_DIR = ROOT / "data" / "fotos"
 LOGO = re.compile(r"^/logos/([A-Z0-9]{2})\.png$")
 LOGO_DIR = ROOT / "data" / "logos"
@@ -713,6 +713,14 @@ def store_map(key, data, stamp=None):
     return path
 
 
+def store_map_file(path, data, stamp):
+    """Reescribe un mapa ya guardado sin cambiar su fecha, que indica cuándo caduca."""
+    temp = path.with_suffix(f".{threading.get_ident()}.tmp")
+    temp.write_bytes(gzip.compress(json.dumps(data, ensure_ascii=False, separators=(",", ":")).encode("utf-8"), 9))
+    temp.replace(path)
+    os.utime(path, (stamp, stamp))
+
+
 def migrate_map_cache():
     """Pasa el archivo único antiguo a un archivo por ciudad, que no ocupa memoria."""
     try:
@@ -822,7 +830,7 @@ SELECT ?item ?itemLabel (SAMPLE(?img) AS ?image) (SAMPLE(?c) AS ?coord) (MAX(?li
             "name": name[:120],
             "lat": float(point.group(2)),
             "lon": float(point.group(1)),
-            "image": f"https://commons.wikimedia.org/wiki/Special:FilePath/{quoted}?width=480",
+            "image": f"https://commons.wikimedia.org/wiki/Special:FilePath/{quoted}?width=960",
             "credit": f"https://commons.wikimedia.org/wiki/File:{quoted}",
         })
     return {"monuments": monuments}
@@ -888,15 +896,19 @@ def read_map(key):
         return None
 
 
-def api_activities(q):
-    """Planes guardados de una ciudad, con sus monumentos. No se pide nada a servicios externos."""
-    point = geocode_local(q.get("place", "")[:200])
+def activity_id(name):
+    return hashlib.sha1(plain_name(name).encode("utf-8")).hexdigest()[:16]
+
+
+def city_activities(place):
+    """Devuelve el centro, la clave de la ciudad y sus planes con monumentos; None si no los hay."""
+    point = geocode_local(place[:200])
     plans = None
     if point:
         center = (round(point[0], 2), round(point[1], 2))
         plans = read_map(f"a|{center[0]}|{center[1]}")
     if not plans:
-        return 200, {"available": False, "activities": []}
+        return None
     items = plans["activities"]
     by_name = {plain_name(item["name"]): item for item in items}
     for monument in (read_map(f"m|{center[0]}|{center[1]}") or {}).get("monuments", []):
@@ -906,7 +918,44 @@ def api_activities(q):
         else:
             km = round(distance_km(point[0], point[1], monument["lat"], monument["lon"]), 2)
             items.append({**monument, "kind": "monumento", "km": km, "stop_m": None})
-    return 200, {"available": True, "center": {"lat": point[0], "lon": point[1]}, "activities": [describe_activity(item) for item in items]}
+    return point, f"{center[0]}|{center[1]}", items
+
+
+def api_activities(q):
+    found = city_activities(q.get("place", ""))
+    if not found:
+        return 200, {"available": False, "activities": []}
+    point, city, items = found
+    try:
+        totals = accounts.vote_totals(city)
+    except sqlite3.Error:
+        totals = {}
+    rows = []
+    for item in items:
+        row = describe_activity(item)
+        row["id"] = activity_id(item["name"])
+        row["rating"] = totals.get(row["id"])
+        rows.append(row)
+    return 200, {"available": True, "center": {"lat": point[0], "lon": point[1]}, "activities": rows}
+
+
+def api_my_votes(q, ctx):
+    point = geocode_local(q.get("place", "")[:200])
+    if not point:
+        return 200, {"votes": {}}
+    return 200, {"votes": accounts.my_votes(ctx.user_id, f"{round(point[0], 2)}|{round(point[1], 2)}")}
+
+
+def api_vote(body, ctx):
+    score = body.get("score")
+    if type(score) is not int or not 0 <= score <= 10:
+        return 400, {"error": "La nota debe ser de 1 a 10."}
+    found = city_activities(str(body.get("place", "")))
+    wanted = str(body.get("id", ""))
+    # Solo se vota lo que existe: así nadie puede llenar la base con textos inventados.
+    if not found or not any(activity_id(item["name"]) == wanted for item in found[2]):
+        return 404, {"error": "No se ha encontrado esta actividad."}
+    return 200, {"rating": accounts.set_vote(ctx.user_id, found[1], wanted, score), "mine": score or None}
 
 
 TRANSIT_KINDS = {"subway": "metro", "light_rail": "metro", "monorail": "metro", "tram": "tram", "bus": "bus", "trolleybus": "bus"}
@@ -1196,6 +1245,7 @@ ACCOUNT_POST = {
 PRIVATE_POST = {
     "/api/saved": accounts.make_save(saved_price),
     "/api/saved/delete": accounts.api_unsave,
+    "/api/votes": api_vote,
     "/api/alerts/read": accounts.api_alerts_read,
     "/api/account/delete": accounts.api_delete_account,
     "/api/account/recovery-code": accounts.api_new_recovery_code,
@@ -1204,7 +1254,7 @@ PRIVATE_POST = {
 MAX_BODY = 16 * 1024
 
 # Peticiones por minuto y por visitante en lo que llama a servicios externos.
-RATE_LIMITS = {"/logos": 240, "/api/register": 10, "/api/login": 20, "/api/recover": 10, "/api/calendar": 120, "/api/day": 120, "/api/explore": 60, "/api/hotels": 20, "/api/rates": 90, "/api/monuments": 20, "/api/transit": 20, "/api/activities": 30}
+RATE_LIMITS = {"/logos": 240, "/api/register": 10, "/api/login": 20, "/api/recover": 10, "/api/calendar": 120, "/api/day": 120, "/api/explore": 60, "/api/hotels": 20, "/api/rates": 90, "/api/monuments": 20, "/api/transit": 20, "/api/activities": 30, "/api/votes": 60, "/api/votes/mine": 60}
 _hits = {}
 _hits_lock = threading.Lock()
 
@@ -1496,6 +1546,7 @@ def main():
     accounts.mail_settings = settings
     accounts.init_db()
     accounts.PRIVATE_GET["/api/saved/history"] = accounts.make_history(cheaper_day)
+    accounts.PRIVATE_GET["/api/votes/mine"] = api_my_votes
     accounts.insights_ready = lambda: settings()["PRICE_INSIGHTS"] == "on"
     accounts.start_price_checks(saved_price)
     parser = argparse.ArgumentParser()

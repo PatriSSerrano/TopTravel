@@ -738,4 +738,18 @@ dialog .favs li:has(.history) { flex-wrap: wrap; }
 .pin-fav--stay { background: #3a2314; }
 .pin-fav--activity { background: #d35400; }
 .transit-favs { flex-basis: 100%; font-weight: 500; color: var(--muted); }
-.stay__name a, .map__title a { color: inherit; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+
+/* Nota de las actividades */
+.plan__rate { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 4px 0; }
+.note { display: inline-flex; align-items: baseline; gap: 6px; padding: 5px 12px; border-radius: 10px 10px 10px 2px; background: var(--brown-900); color: #fff7e8; text-decoration: none; }
+.note b { font-size: 16px; }
+.note small { font-size: 12px; opacity: .85; }
+.note--none { background: var(--soft); color: var(--muted); }
+.note--none b { font-size: 13px; font-weight: 600; }
+.note:hover { text-decoration: underline; }
+.leaflet-popup-content .note { margin: 6px 0; color: #fff7e8; }
+.leaflet-popup-content .note--none { color: var(--muted); }
+[data-theme="dark"] .note:not(.note--none) { background: var(--orange-dark); color: #1c120b; }
+[data-theme="dark"] .leaflet-popup-content .note:not(.note--none) { color: #1c120b; }
+.vote { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+.vote select { padding: 4px 6px; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--surface); color: var(--ink); font-size: 14px; }

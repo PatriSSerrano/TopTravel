@@ -19,8 +19,8 @@ from PIL import Image  # noqa: E402
 import ciudades  # noqa: E402
 import server  # noqa: E402
 
-PHOTOS_PER_CITY = 12  # con unos 100 pueblos y ciudades, unos 40 MB en total
-PHOTO_WIDTH = 420
+PHOTOS_PER_CITY = 12  # con unas 100 ciudades, unos 150 MB en total
+PHOTO_WIDTH = 960
 QUERY_PAUSE = 12
 PHOTO_PAUSE = 1.2
 FOREVER = 10 * 365 * 86400
@@ -28,7 +28,7 @@ AGENT = {"User-Agent": server.WIKIDATA_AGENT}
 
 
 def local_photo(url):
-    name = hashlib.sha1(url.encode("utf-8")).hexdigest()[:16] + ".jpg"
+    name = "h" + hashlib.sha1(url.encode("utf-8")).hexdigest()[:15] + ".jpg"
     path = server.PHOTO_DIR / name
     if not path.exists():
         request = urllib.request.Request(url, headers=AGENT)
@@ -36,7 +36,7 @@ def local_photo(url):
             image = Image.open(io.BytesIO(response.read())).convert("RGB")
         image.thumbnail((PHOTO_WIDTH, PHOTO_WIDTH))
         server.PHOTO_DIR.mkdir(parents=True, exist_ok=True)
-        image.save(path, "JPEG", quality=78, optimize=True)
+        image.save(path, "JPEG", quality=84, optimize=True, progressive=True)
         time.sleep(PHOTO_PAUSE)
     return f"fotos/{name}"
 
