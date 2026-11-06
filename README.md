@@ -4,7 +4,7 @@ Web gratuita para comparar vuelos y alojamientos. Reúne en un solo sitio lo que
 
 Nadie gana dinero con esta web: no tiene publicidad, comisiones ni enlaces de afiliado.
 
-> La web todavía no está publicada. Cuando lo esté, el enlace aparecerá aquí.
+**Entra en la web: <https://toptravel.alwaysdata.net>** (versión beta)
 
 ## Qué puedes hacer
 
@@ -22,7 +22,8 @@ Nadie gana dinero con esta web: no tiene publicidad, comisiones ni enlaces de af
 
 **Tu cuenta**
 - Guardar los vuelos y alojamientos que te interesen.
-- Recibir avisos dentro de la web cuando baja o sube el precio de un vuelo guardado.
+- Recibir avisos cuando baja o sube el precio de un vuelo guardado.
+- Recuperar tu cuenta con un código si olvidas la contraseña.
 
 Funciona en ordenador, tableta y móvil.
 
@@ -41,9 +42,15 @@ Funciona en ordenador, tableta y móvil.
 ## Qué conviene saber
 
 - **Los precios son orientativos.** Confirma siempre el precio final antes de comprar o reservar.
-- **No todos los alojamientos tienen precio.** De momento lo tienen 114 hoteles de 8 ciudades.
-- **La primera búsqueda de una ciudad puede tardar.** Los monumentos tardan cerca de un minuto y el transporte, un par de minutos. Después salen al momento.
-- **Los avisos solo se ven dentro de la web.** Todavía no se envían por correo, y tampoco se puede recuperar una contraseña olvidada.
+- **No todos los alojamientos tienen precio.** De momento lo tienen 342 hoteles de 26 ciudades, y seguimos añadiendo más.
+- **Las ciudades más buscadas salen al momento.** En las demás, la primera búsqueda puede tardar un par de minutos y las siguientes ya son inmediatas.
+- **Los avisos se ven dentro de la web.** El envío por correo llegará más adelante.
+
+## Privacidad y seguridad
+
+- Toda la conexión va cifrada con HTTPS.
+- Los correos, los guardados y los avisos se guardan cifrados, y las contraseñas nunca se guardan tal cual.
+- Puedes borrar tu cuenta y todos tus datos desde «Mi cuenta». Más información en la [política de privacidad](https://toptravel.alwaysdata.net/privacidad).
 
 ## Autora
 

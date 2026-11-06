@@ -225,8 +225,8 @@
    {
     "name": "Vincci Alfama",
     "key": "g189158-d23328315",
-    "lat": null,
-    "lon": null
+    "lat": 38.71345,
+    "lon": -9.127727
    },
    {
     "name": "Star Inn Lisbon",
@@ -243,8 +243,8 @@
    {
     "name": "Blue Liberdade Hotel",
     "key": "g189158-d23381482",
-    "lat": null,
-    "lon": null
+    "lat": 38.715485,
+    "lon": -9.140791
    },
    {
     "name": "Jupiter Lisboa Hotel - Rooftop & Spa",
@@ -255,8 +255,8 @@
    {
     "name": "LX Boutique Hotel",
     "key": "g189158-d1859127",
-    "lat": null,
-    "lon": null
+    "lat": 38.706969,
+    "lon": -9.143318
    },
    {
     "name": "Brown's Central Hotel",
@@ -316,14 +316,14 @@
    {
     "name": "The Pelham London - Starhotels Collezione",
     "key": "g186338-d193147",
-    "lat": null,
-    "lon": null
+    "lat": 51.494479,
+    "lon": -0.17513
    },
    {
     "name": "Travelodge London Docklands Central",
     "key": "g186338-d23950281",
-    "lat": null,
-    "lon": null
+    "lat": 51.51144,
+    "lon": -0.00036
    },
    {
     "name": "Travelodge London City Hotel",
@@ -401,8 +401,8 @@
    {
     "name": "Hotel AKA Nomad",
     "key": "g60763-d80110",
-    "lat": null,
-    "lon": null
+    "lat": 40.745584,
+    "lon": -73.984203
    },
    {
     "name": "Crowne Plaza HY36 Midtown Manhattan",
@@ -413,8 +413,8 @@
    {
     "name": "ROW NYC",
     "key": "g60763-d1938661",
-    "lat": null,
-    "lon": null
+    "lat": 40.758713,
+    "lon": -73.988298
    },
    {
     "name": "YOTEL New York Times Square",
@@ -425,8 +425,8 @@
    {
     "name": "Park Central Hotel New York",
     "key": "g60763-d93520",
-    "lat": null,
-    "lon": null
+    "lat": 40.764726,
+    "lon": -73.981184
    },
    {
     "name": "Motto by Hilton New York City Chelsea",
@@ -534,8 +534,8 @@
    {
     "name": "Park Hotel Tokyo",
     "key": "g1066451-d301657",
-    "lat": null,
-    "lon": null
+    "lat": 35.663346,
+    "lon": 139.759628
    },
    {
     "name": "APA Hotel Shinjuku Gyoemmae",
@@ -736,6 +736,1500 @@
     "key": "g188590-d230616",
     "lat": 52.365426,
     "lon": 4.893195
+   }
+  ]
+ },
+ {
+  "city": "Madrid",
+  "lat": 40.4168,
+  "lon": -3.7035,
+  "hotels": [
+   {
+    "name": "Hotel Montera Madrid, Curio Collection by Hilton",
+    "key": "g187514-d24959842",
+    "lat": 40.419771,
+    "lon": -3.701896
+   },
+   {
+    "name": "UMusic Hotel Madrid",
+    "key": "g187514-d25055202",
+    "lat": 40.415362,
+    "lon": -3.703794
+   },
+   {
+    "name": "CoolRooms Palacio de Atocha",
+    "key": "g187514-d15011688",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Barceló Imagine",
+    "key": "g187514-d13313533",
+    "lat": 40.470352,
+    "lon": -3.684993
+   },
+   {
+    "name": "Relais & Chateaux Heritage Madrid Hotel",
+    "key": "g187514-d12828930",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Villa Real",
+    "key": "g187514-d190149",
+    "lat": 40.41573,
+    "lon": -3.697082
+   },
+   {
+    "name": "The Palace, a Luxury Collection Hotel, Madrid",
+    "key": "g187514-d190569",
+    "lat": 40.415454,
+    "lon": -3.695802
+   },
+   {
+    "name": "Hotel Ópera",
+    "key": "g187514-d190159",
+    "lat": 40.418922,
+    "lon": -3.710047
+   },
+   {
+    "name": "Hotel Europa",
+    "key": "g187514-d266529",
+    "lat": 40.417527,
+    "lon": -3.703549
+   },
+   {
+    "name": "SLEEP'N Atocha",
+    "key": "g187514-d1475454",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel101 - Madrid",
+    "key": "g187514-d33974326",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "ApartoSuites Jardines de Sabatini",
+    "key": "g187514-d1657593",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Innside By Meliá Madrid Valdebebas",
+    "key": "g187514-d27704876",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Travelodge Madrid Metropolitano",
+    "key": "g187514-d3931426",
+    "lat": 40.436773,
+    "lon": -3.631226
+   }
+  ]
+ },
+ {
+  "city": "Barcelona",
+  "lat": 41.3826,
+  "lon": 2.1771,
+  "hotels": [
+   {
+    "name": "Serras Barcelona",
+    "key": "g187497-d7142609",
+    "lat": 41.380237,
+    "lon": 2.180667
+   },
+   {
+    "name": "H10 Cubik",
+    "key": "g187497-d8778628",
+    "lat": 41.38802,
+    "lon": 2.173161
+   },
+   {
+    "name": "Hotel El Palace Barcelona",
+    "key": "g187497-d190617",
+    "lat": 41.38907,
+    "lon": 2.167182
+   },
+   {
+    "name": "Mercer Hotel Barcelona",
+    "key": "g187497-d3400654",
+    "lat": 41.382581,
+    "lon": 2.178966
+   },
+   {
+    "name": "Antiga Casa Buenavista",
+    "key": "g187497-d24155801",
+    "lat": 41.383888,
+    "lon": 2.164011
+   },
+   {
+    "name": "Majestic Hotel & Spa Barcelona",
+    "key": "g187497-d190616",
+    "lat": 41.393681,
+    "lon": 2.16414
+   },
+   {
+    "name": "Claris Hotel & Spa",
+    "key": "g187497-d190615",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Astoria",
+    "key": "g187497-d228590",
+    "lat": 41.394069,
+    "lon": 2.153414
+   },
+   {
+    "name": "Hotel Arc La Rambla",
+    "key": "g187497-d232778",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Acta Voraport",
+    "key": "g187497-d17839515",
+    "lat": 41.399084,
+    "lon": 2.200631
+   },
+   {
+    "name": "Andante Drassanes",
+    "key": "g187497-d2545026",
+    "lat": 41.376598,
+    "lon": 2.172704
+   },
+   {
+    "name": "H10 Madison",
+    "key": "g187497-d13223478",
+    "lat": 41.386094,
+    "lon": 2.175422
+   },
+   {
+    "name": "H10 Universitat",
+    "key": "g187497-d483102",
+    "lat": 41.386855,
+    "lon": 2.166628
+   }
+  ]
+ },
+ {
+  "city": "Sevilla",
+  "lat": 37.3886,
+  "lon": -5.9953,
+  "hotels": [
+   {
+    "name": "Cavalta Boutique Hotel",
+    "key": "g187443-d25180439",
+    "lat": 37.38125,
+    "lon": -6.008469
+   },
+   {
+    "name": "Hotel Tayko Sevilla",
+    "key": "g187443-d24912528",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Mercer Plaza Sevilla",
+    "key": "g187443-d25565289",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Colón Gran Meliá",
+    "key": "g187443-d191204",
+    "lat": 37.390851,
+    "lon": -5.998708
+   },
+   {
+    "name": "Hotel Occidental Sevilla Viapol",
+    "key": "g187443-d206960",
+    "lat": 37.378586,
+    "lon": -5.977853
+   },
+   {
+    "name": "NH Sevilla Plaza De Armas",
+    "key": "g187443-d206961",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Alfonso XIII, a Luxury Collection Hotel, Seville",
+    "key": "g187443-d191205",
+    "lat": 37.381517,
+    "lon": -5.992719
+   },
+   {
+    "name": "Las Casas de la Juderia",
+    "key": "g187443-d191207",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Fernando III",
+    "key": "g187443-d231712",
+    "lat": 37.387021,
+    "lon": -5.987981
+   },
+   {
+    "name": "Meliá Lebreros",
+    "key": "g187443-d234546",
+    "lat": 37.386473,
+    "lon": -5.972904
+   },
+   {
+    "name": "Hotel Giralda Center",
+    "key": "g187443-d23932367",
+    "lat": 37.381102,
+    "lon": -5.982991
+   },
+   {
+    "name": "Hotel Posada del Lucero",
+    "key": "g187443-d573370",
+    "lat": 37.392857,
+    "lon": -5.989237
+   },
+   {
+    "name": "Hotel Rey Alfonso X",
+    "key": "g187443-d275023",
+    "lat": 37.38672,
+    "lon": -5.988177
+   }
+  ]
+ },
+ {
+  "city": "Valencia",
+  "lat": 39.4697,
+  "lon": -0.3763,
+  "hotels": [
+   {
+    "name": "Room Mate Oliveira",
+    "key": "g187529-d5556355",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Malcom And Barret",
+    "key": "g187529-d206949",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Petit Palace Plaza de la Reina",
+    "key": "g187529-d277520",
+    "lat": 39.473143,
+    "lon": -0.375293
+   },
+   {
+    "name": "Vincci Lys",
+    "key": "g187529-d249401",
+    "lat": 39.4684,
+    "lon": -0.374762
+   },
+   {
+    "name": "Hotel Dimar",
+    "key": "g187529-d238987",
+    "lat": 39.468092,
+    "lon": -0.364697
+   },
+   {
+    "name": "NH Valencia Center",
+    "key": "g187529-d206944",
+    "lat": 39.480817,
+    "lon": -0.387205
+   },
+   {
+    "name": "Hotel Las Arenas Balneario Resort",
+    "key": "g187529-d559406",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Room Mate Cosmo",
+    "key": "g187529-d17513946",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "One Shot Puerta Ruzafa",
+    "key": "g187529-d33066197",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Kramer",
+    "key": "g187529-d503546",
+    "lat": 39.480783,
+    "lon": -0.393514
+   },
+   {
+    "name": "Innside by Melia Valencia Oceanic",
+    "key": "g187529-d281196",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Only YOU Hotel Valencia",
+    "key": "g187529-d17240464",
+    "lat": 39.471361,
+    "lon": -0.374926
+   }
+  ]
+ },
+ {
+  "city": "Málaga",
+  "lat": 36.7648,
+  "lon": -4.4422,
+  "hotels": [
+   {
+    "name": "Hotel MS Maestranza Málaga Centro",
+    "key": "g187438-d535547",
+    "lat": 36.719786,
+    "lon": -4.411497
+   },
+   {
+    "name": "NH Málaga",
+    "key": "g187438-d206956",
+    "lat": 36.718233,
+    "lon": -4.426401
+   },
+   {
+    "name": "Atarazanas Malaga Boutique Hotel",
+    "key": "g187438-d498946",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Catalonia Molina Lario",
+    "key": "g187438-d596603",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Ilunion Málaga",
+    "key": "g187438-d530504",
+    "lat": 36.710555,
+    "lon": -4.427324
+   },
+   {
+    "name": "Hotel Málaga Alameda Centro Affiliated By Meliá",
+    "key": "g187438-d228521",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Sallés hotel Málaga Centro",
+    "key": "g187438-d231661",
+    "lat": 36.721862,
+    "lon": -4.426475
+   },
+   {
+    "name": "Parador de Málaga Gibralfaro",
+    "key": "g187438-d191216",
+    "lat": 36.72305,
+    "lon": -4.409968
+   },
+   {
+    "name": "Gran Hotel Miramar GL",
+    "key": "g187438-d10128553",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Palacio Solecio",
+    "key": "g187438-d17829008",
+    "lat": 36.722283,
+    "lon": -4.417881
+   },
+   {
+    "name": "Vincci Larios Diez",
+    "key": "g187438-d24837884",
+    "lat": 36.719068,
+    "lon": -4.421777
+   },
+   {
+    "name": "Barcelo Malaga",
+    "key": "g187438-d650588",
+    "lat": 36.711407,
+    "lon": -4.431991
+   },
+   {
+    "name": "Casual del Mar Málaga",
+    "key": "g187438-d12449129",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Berlín",
+  "lat": 52.5174,
+  "lon": 13.3951,
+  "hotels": [
+   {
+    "name": "KPM Hotel & Residences",
+    "key": "g187323-d17659173",
+    "lat": 52.515648,
+    "lon": 13.332346
+   },
+   {
+    "name": "Hotel Art Nouveau",
+    "key": "g187323-d190597",
+    "lat": 52.50288,
+    "lon": 13.313163
+   },
+   {
+    "name": "The Mandala Hotel",
+    "key": "g187323-d248857",
+    "lat": 52.508938,
+    "lon": 13.373866
+   },
+   {
+    "name": "Radisson RED Berlin Kudamm",
+    "key": "g187323-d199363",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "art'otel Berlin Mitte",
+    "key": "g187323-d190599",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Adlon Kempinski Berlin",
+    "key": "g187323-d190694",
+    "lat": 52.515576,
+    "lon": 13.38007
+   },
+   {
+    "name": "Crowne Plaza Berlin City Centre Ku'Damm by IHG",
+    "key": "g187323-d199360",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "The Westin Grand Berlin",
+    "key": "g187323-d191437",
+    "lat": 52.515877,
+    "lon": 13.388604
+   },
+   {
+    "name": "Meliá Berlin",
+    "key": "g187323-d589462",
+    "lat": 52.521343,
+    "lon": 13.388468
+   },
+   {
+    "name": "Scandic Berlin Potsdamer Platz",
+    "key": "g187323-d1674685",
+    "lat": 52.504722,
+    "lon": 13.37524
+   },
+   {
+    "name": "Titanic Gendarmenmarkt Berlin",
+    "key": "g187323-d7374653",
+    "lat": 52.514908,
+    "lon": 13.394513
+   },
+   {
+    "name": "Hotel Riu Plaza Berlin",
+    "key": "g187323-d8147299",
+    "lat": 52.500358,
+    "lon": 13.346938
+   },
+   {
+    "name": "Holiday Inn Express Berlin - Alexanderplatz by IHG",
+    "key": "g187323-d12160352",
+    "lat": 52.515648,
+    "lon": 13.411884
+   }
+  ]
+ },
+ {
+  "city": "Praga",
+  "lat": 50.0875,
+  "lon": 14.4213,
+  "hotels": [
+   {
+    "name": "Hotel Élite Prague",
+    "key": "g274707-d275247",
+    "lat": 50.080892,
+    "lon": 14.418956
+   },
+   {
+    "name": "Grand Hotel Bohemia",
+    "key": "g274707-d275498",
+    "lat": 50.0877,
+    "lon": 14.426563
+   },
+   {
+    "name": "Hotel Paris Prague",
+    "key": "g274707-d275253",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hilton Prague Old Town",
+    "key": "g274707-d275254",
+    "lat": 50.08877,
+    "lon": 14.431934
+   },
+   {
+    "name": "Fairmont Golden Prague",
+    "key": "g274707-d275246",
+    "lat": 50.091898,
+    "lon": 14.41901
+   },
+   {
+    "name": "Best Western City Hotel Moran",
+    "key": "g274707-d275497",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Jalta Boutique Hotel",
+    "key": "g274707-d275250",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Mosaic House Design Hotel",
+    "key": "g274707-d1656616",
+    "lat": 50.077431,
+    "lon": 14.418069
+   },
+   {
+    "name": "Hermitage Hotel Prague",
+    "key": "g274707-d1235795",
+    "lat": 50.068046,
+    "lon": 14.418214
+   },
+   {
+    "name": "Hotel Bookquet",
+    "key": "g274707-d295549",
+    "lat": 50.0836,
+    "lon": 14.414267
+   },
+   {
+    "name": "BoHo Prague Hotel - Small Luxury Hotels of the World",
+    "key": "g274707-d8501421",
+    "lat": 50.086085,
+    "lon": 14.429337
+   },
+   {
+    "name": "Kings Court Prague Deluxe Hotel",
+    "key": "g274707-d1485015",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Viena",
+  "lat": 48.2084,
+  "lon": 16.3725,
+  "hotels": [
+   {
+    "name": "The Harmonie Vienna, BW Premier Collection",
+    "key": "g190454-d227177",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Sans Souci Wien",
+    "key": "g190454-d3346123",
+    "lat": 48.204591,
+    "lon": 16.356506
+   },
+   {
+    "name": "Hotel Kaiserhof Wien",
+    "key": "g190454-d227176",
+    "lat": 48.197586,
+    "lon": 16.368625
+   },
+   {
+    "name": "Hotel Imperial, a Luxury Collection Hotel, Vienna",
+    "key": "g190454-d195098",
+    "lat": 48.20105,
+    "lon": 16.372834
+   },
+   {
+    "name": "Eurostars Grand Hotel Wien",
+    "key": "g190454-d206597",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Intercontinental Vienna By IHG",
+    "key": "g190454-d194094",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Grand Mercure Hotel Biedermeier",
+    "key": "g190454-d192273",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Boutique Hotel Donauwalzer",
+    "key": "g190454-d231982",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Austria Classic Hotel Wien",
+    "key": "g190454-d257204",
+    "lat": 48.217065,
+    "lon": 16.389498
+   },
+   {
+    "name": "Leonardo Hotel Vienna Hauptbahnhof",
+    "key": "g190454-d7403121",
+    "lat": 48.183518,
+    "lon": 16.379035
+   },
+   {
+    "name": "Holiday Inn Vienna City by IHG",
+    "key": "g190454-d227967",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Ibis Styles Wien City",
+    "key": "g190454-d4569296",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "ibis Wien Hauptbahnhof",
+    "key": "g190454-d12283586",
+    "lat": 48.185672,
+    "lon": 16.378719
+   }
+  ]
+ },
+ {
+  "city": "Milán",
+  "lat": 45.4642,
+  "lon": 9.1896,
+  "hotels": [
+   {
+    "name": "Hotel Spadari al Duomo True Stay",
+    "key": "g187849-d194976",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Grand Hotel et de Milan",
+    "key": "g187849-d194973",
+    "lat": 45.469923,
+    "lon": 9.192498
+   },
+   {
+    "name": "Principe di Savoia",
+    "key": "g187849-d194975",
+    "lat": 45.479788,
+    "lon": 9.196393
+   },
+   {
+    "name": "c-Hotels Atlantic",
+    "key": "g187849-d202569",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Starhotels E.c.ho.",
+    "key": "g187849-d202844",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hilton Milan",
+    "key": "g187849-d202853",
+    "lat": 45.486164,
+    "lon": 9.200127
+   },
+   {
+    "name": "Starhotels Tourist",
+    "key": "g187849-d202833",
+    "lat": 45.526668,
+    "lon": 9.212884
+   },
+   {
+    "name": "Hotel Berna",
+    "key": "g187849-d229090",
+    "lat": 45.482648,
+    "lon": 9.203401
+   },
+   {
+    "name": "INNSiDE by Meliá Milano Torre GalFa",
+    "key": "g187849-d19239938",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Bernina",
+    "key": "g187849-d260953",
+    "lat": 45.483251,
+    "lon": 9.20299
+   },
+   {
+    "name": "iQ Hotel Milano",
+    "key": "g187849-d563622",
+    "lat": 45.484138,
+    "lon": 9.201166
+   },
+   {
+    "name": "Ostello Bello Grande",
+    "key": "g187849-d9701793",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Milano Castello",
+    "key": "g187849-d13237496",
+    "lat": 45.467366,
+    "lon": 9.185018
+   }
+  ]
+ },
+ {
+  "city": "Venecia",
+  "lat": 45.4372,
+  "lon": 12.3346,
+  "hotels": [
+   {
+    "name": "Hotel Moresco",
+    "key": "g187870-d3348175",
+    "lat": 45.435959,
+    "lon": 12.321374
+   },
+   {
+    "name": "Santa Croce Boutique Hotel",
+    "key": "g187870-d14117477",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Ca' Di Dio - Vretreats",
+    "key": "g187870-d21506265",
+    "lat": 45.433718,
+    "lon": 12.348677
+   },
+   {
+    "name": "Palazzina Grassi",
+    "key": "g187870-d614363",
+    "lat": 45.43401,
+    "lon": 12.32792
+   },
+   {
+    "name": "Cà Bonfadini Historic Experience",
+    "key": "g187870-d14011373",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Rosa Salva Hotel",
+    "key": "g187870-d12579192",
+    "lat": 45.435265,
+    "lon": 12.337884
+   },
+   {
+    "name": "Hotel Antiche Figure",
+    "key": "g187870-d289202",
+    "lat": 45.440237,
+    "lon": 12.322059
+   },
+   {
+    "name": "B&b Hotel Venezia Laguna",
+    "key": "g187870-d32759879",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "H10 Palazzo Canova",
+    "key": "g187870-d15458491",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Carnival Palace Hotel",
+    "key": "g187870-d2558563",
+    "lat": 45.446086,
+    "lon": 12.320405
+   }
+  ]
+ },
+ {
+  "city": "Florencia",
+  "lat": 43.7698,
+  "lon": 11.2556,
+  "hotels": [
+   {
+    "name": "Milu Hotel",
+    "key": "g187895-d10462189",
+    "lat": 43.770857,
+    "lon": 11.251457
+   },
+   {
+    "name": "Portrait Firenze",
+    "key": "g187895-d5827160",
+    "lat": 43.768822,
+    "lon": 11.25286
+   },
+   {
+    "name": "Golden Tower Hotel & Spa",
+    "key": "g187895-d1461957",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Lungarno",
+    "key": "g187895-d195006",
+    "lat": 43.767926,
+    "lon": 11.251579
+   },
+   {
+    "name": "Ariele Hotel",
+    "key": "g187895-d195402",
+    "lat": 43.775514,
+    "lon": 11.239047
+   },
+   {
+    "name": "Villa Cora",
+    "key": "g187895-d195005",
+    "lat": 43.757268,
+    "lon": 11.247542
+   },
+   {
+    "name": "The St. Regis Florence",
+    "key": "g187895-d191159",
+    "lat": 43.772491,
+    "lon": 11.244347
+   },
+   {
+    "name": "Helvetia & Bristol Firenze - Starhotels Collezione",
+    "key": "g187895-d191158",
+    "lat": 43.771727,
+    "lon": 11.252236
+   },
+   {
+    "name": "Hotel Pendini",
+    "key": "g187895-d203948",
+    "lat": 43.771585,
+    "lon": 11.253272
+   },
+   {
+    "name": "Hotel Calimala Florence",
+    "key": "g187895-d17703706",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel La Fortezza",
+    "key": "g187895-d266802",
+    "lat": 43.783533,
+    "lon": 11.253057
+   },
+   {
+    "name": "Grand Hotel Cavour",
+    "key": "g187895-d195406",
+    "lat": 43.771105,
+    "lon": 11.257795
+   },
+   {
+    "name": "Hotel Albani Firenze",
+    "key": "g187895-d202982",
+    "lat": 43.776904,
+    "lon": 11.250321
+   },
+   {
+    "name": "Santa Maria Novella Hotel",
+    "key": "g187895-d278586",
+    "lat": 43.77336,
+    "lon": 11.250076
+   }
+  ]
+ },
+ {
+  "city": "Dublín",
+  "lat": 53.3494,
+  "lon": -6.2606,
+  "hotels": [
+   {
+    "name": "The Merrion Hotel Dublin",
+    "key": "g186605-d208232",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "The Alex Hotel",
+    "key": "g186605-d224706",
+    "lat": 53.34186,
+    "lon": -6.248968
+   },
+   {
+    "name": "Intercontinental Dublin By IHG",
+    "key": "g186605-d212658",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Number 31",
+    "key": "g186605-d213281",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Waterloo Townhouse & Suites",
+    "key": "g186605-d213283",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "The Shelbourne, Autograph Collection",
+    "key": "g186605-d187627",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Dylan Hotel",
+    "key": "g186605-d601516",
+    "lat": 53.333775,
+    "lon": -6.242163
+   },
+   {
+    "name": "Clayton Hotel Charlemont",
+    "key": "g186605-d14934452",
+    "lat": 53.330649,
+    "lon": -6.26149
+   },
+   {
+    "name": "Travelodge Plus Dublin City Centre",
+    "key": "g186605-d23515619",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "The Mercantile Hotel",
+    "key": "g186605-d1881313",
+    "lat": 53.344064,
+    "lon": -6.263858
+   },
+   {
+    "name": "Dublin Skylon Hotel",
+    "key": "g186605-d206795",
+    "lat": 53.372715,
+    "lon": -6.253469
+   },
+   {
+    "name": "Marlin Hotel Stephens Green",
+    "key": "g186605-d17512363",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Budapest",
+  "lat": 47.4818,
+  "lon": 19.1449,
+  "hotels": [
+   {
+    "name": "Hotel Moments Budapest",
+    "key": "g274887-d9250207",
+    "lat": 47.501071,
+    "lon": 19.056447
+   },
+   {
+    "name": "Kimpton BEM Budapest by IHG",
+    "key": "g274887-d27786638",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Aria Hotel Budapest by Library Hotel Collection",
+    "key": "g274887-d7306673",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Ambra Hotel",
+    "key": "g274887-d276356",
+    "lat": 47.500987,
+    "lon": 19.061823
+   },
+   {
+    "name": "Budapest Marriott Hotel",
+    "key": "g274887-d276351",
+    "lat": 47.494871,
+    "lon": 19.049427
+   },
+   {
+    "name": "Hilton Budapest",
+    "key": "g274887-d276362",
+    "lat": 47.502664,
+    "lon": 19.033808
+   },
+   {
+    "name": "Exe Carlton Budapest",
+    "key": "g274887-d276352",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Oktogon Haggenmacher",
+    "key": "g274887-d24046643",
+    "lat": 47.50596,
+    "lon": 19.063889
+   },
+   {
+    "name": "Continental Hotel Budapest",
+    "key": "g274887-d1655445",
+    "lat": 47.497116,
+    "lon": 19.066986
+   },
+   {
+    "name": "Hotel Vision Budapest",
+    "key": "g274887-d20767878",
+    "lat": 47.490311,
+    "lon": 19.053187
+   },
+   {
+    "name": "Corinthia Budapest",
+    "key": "g274887-d285437",
+    "lat": 47.502672,
+    "lon": 19.066793
+   }
+  ]
+ },
+ {
+  "city": "Atenas",
+  "lat": 37.9756,
+  "lon": 23.7348,
+  "hotels": [
+   {
+    "name": "Acropolis Stay",
+    "key": "g189400-d12606994",
+    "lat": 37.966747,
+    "lon": 23.729049
+   },
+   {
+    "name": "Herodion Hotel",
+    "key": "g189400-d228864",
+    "lat": 37.968413,
+    "lon": 23.727135
+   },
+   {
+    "name": "The Athens Gate Hotel",
+    "key": "g189400-d227384",
+    "lat": 37.968832,
+    "lon": 23.731374
+   },
+   {
+    "name": "Hotel Grande Bretagne, a Luxury Collection Hotel, Athens",
+    "key": "g189400-d198715",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Periscope Hotel",
+    "key": "g189400-d198991",
+    "lat": 37.978241,
+    "lon": 23.743943
+   },
+   {
+    "name": "Philippos Hotel",
+    "key": "g189400-d228893",
+    "lat": 37.967425,
+    "lon": 23.727203
+   },
+   {
+    "name": "St George Lycabettus Hotel",
+    "key": "g189400-d198990",
+    "lat": 37.979422,
+    "lon": 23.74248
+   },
+   {
+    "name": "The Stanley",
+    "key": "g189400-d233051",
+    "lat": 37.985936,
+    "lon": 23.720931
+   },
+   {
+    "name": "Hellenic Vibes Smart Hotel",
+    "key": "g189400-d21302530",
+    "lat": 37.976886,
+    "lon": 23.727242
+   },
+   {
+    "name": "Victory Inn",
+    "key": "g189400-d658607",
+    "lat": 37.996097,
+    "lon": 23.734238
+   },
+   {
+    "name": "AVA Hotel Athens",
+    "key": "g189400-d529729",
+    "lat": 37.97068,
+    "lon": 23.731182
+   }
+  ]
+ },
+ {
+  "city": "Estambul",
+  "lat": 41.0064,
+  "lon": 28.9759,
+  "hotels": [
+   {
+    "name": "White House Hotel Istanbul",
+    "key": "g293974-d1604061",
+    "lat": 41.009305,
+    "lon": 28.975678
+   },
+   {
+    "name": "Golden Horn Bosphorus Hotel",
+    "key": "g293974-d4990603",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Conrad Istanbul Bosphorus",
+    "key": "g293974-d294658",
+    "lat": 41.047134,
+    "lon": 29.009458
+   },
+   {
+    "name": "Seven Hills Hotel",
+    "key": "g293974-d294659",
+    "lat": 41.006379,
+    "lon": 28.979694
+   },
+   {
+    "name": "Hilton Istanbul Bosphorus",
+    "key": "g293974-d294614",
+    "lat": 41.044516,
+    "lon": 28.989572
+   },
+   {
+    "name": "Grand Hyatt Istanbul",
+    "key": "g293974-d294608",
+    "lat": 41.041007,
+    "lon": 28.988474
+   },
+   {
+    "name": "Ciragan Palace Kempinski Istanbul",
+    "key": "g293974-d294616",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Divan Istanbul",
+    "key": "g293974-d294611",
+    "lat": 41.018785,
+    "lon": 28.951253
+   },
+   {
+    "name": "Seven Hills Palace Hotel & Spa",
+    "key": "g293974-d17323488",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "The And Hotel",
+    "key": "g293974-d296566",
+    "lat": 41.009117,
+    "lon": 28.977507
+   },
+   {
+    "name": "Union Hotel Port",
+    "key": "g293974-d21364648",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Romance Istanbul Hotel",
+    "key": "g293974-d8364987",
+    "lat": 41.012661,
+    "lon": 28.977981
+   },
+   {
+    "name": "Hotel Sultania",
+    "key": "g293974-d1732739",
+    "lat": 41.012803,
+    "lon": 28.977646
+   },
+   {
+    "name": "Amiral Palace Hotel",
+    "key": "g293974-d737328",
+    "lat": 41.004926,
+    "lon": 28.980549
+   }
+  ]
+ },
+ {
+  "city": "Dubái",
+  "lat": 25.2647,
+  "lon": 55.2924,
+  "hotels": [
+   {
+    "name": "Waldorf Astoria Dubai International Financial Centre",
+    "key": "g295424-d15872094",
+    "lat": 25.210669,
+    "lon": 55.282111
+   },
+   {
+    "name": "Banyan Tree Dubai",
+    "key": "g295424-d26802603",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Conrad Dubai",
+    "key": "g295424-d1456254",
+    "lat": 25.2262,
+    "lon": 55.283369
+   },
+   {
+    "name": "Avani+ Palm View Dubai Hotel & Suites",
+    "key": "g295424-d21511241",
+    "lat": 25.098781,
+    "lon": 55.156769
+   },
+   {
+    "name": "Radisson Blu Hotel, Dubai Deira Creek",
+    "key": "g295424-d299239",
+    "lat": 25.264958,
+    "lon": 55.311084
+   },
+   {
+    "name": "Novotel World Trade Centre Dubai",
+    "key": "g295424-d299705",
+    "lat": 25.22136,
+    "lon": 55.288215
+   },
+   {
+    "name": "Pullman Dubai Creek City Centre",
+    "key": "g295424-d299708",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Millennium Plaza Downtown Hotel",
+    "key": "g295424-d299235",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel DXB - Dubai International Hotel",
+    "key": "g295424-d623825",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Atlantis, The Palm",
+    "key": "g295424-d1022759",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Mövenpick Hotel & Apartments Bur Dubai",
+    "key": "g295424-d301908",
+    "lat": 25.233882,
+    "lon": 55.311663
+   },
+   {
+    "name": "Holiday Inn Express Dubai Airport By IHG",
+    "key": "g295424-d1675299",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Premier Inn Dubai International Airport",
+    "key": "g295424-d1631237",
+    "lat": 25.242725,
+    "lon": 55.358987
+   },
+   {
+    "name": "LEGOLAND Hotel",
+    "key": "g295424-d21121518",
+    "lat": null,
+    "lon": null
+   }
+  ]
+ },
+ {
+  "city": "Bangkok",
+  "lat": 13.7525,
+  "lon": 100.4935,
+  "hotels": [
+   {
+    "name": "VIE Hotel Bangkok - MGallery Collection",
+    "key": "g293916-d1201150",
+    "lat": 13.750742,
+    "lon": 100.532084
+   },
+   {
+    "name": "Gardina Asoke Hotel & Residence",
+    "key": "g293916-d23864228",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "The Okura Prestige Bangkok",
+    "key": "g293916-d2624290",
+    "lat": 13.742608,
+    "lon": 100.547647
+   },
+   {
+    "name": "Kimpton Maa-Lai Bangkok by IHG",
+    "key": "g293916-d19626625",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Public House Bangkok",
+    "key": "g293916-d25302405",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Marriott Executive Apartments, Bangkok Townhall Sukhumvit",
+    "key": "g293916-d28150223",
+    "lat": 13.724309,
+    "lon": 100.566679
+   },
+   {
+    "name": "Praya Palazzo",
+    "key": "g293916-d1876575",
+    "lat": 13.766057,
+    "lon": 100.493565
+   },
+   {
+    "name": "Eastin Grand Hotel Phayathai",
+    "key": "g293916-d25794929",
+    "lat": 13.756787,
+    "lon": 100.532379
+   },
+   {
+    "name": "Eastin Grand Hotel Sathorn",
+    "key": "g293916-d2318761",
+    "lat": 13.718648,
+    "lon": 100.521848
+   },
+   {
+    "name": "Grande Centre Point Sukhumvit 55",
+    "key": "g293916-d10719657",
+    "lat": 13.731763,
+    "lon": 100.582375
+   },
+   {
+    "name": "Grande Centre Point Terminal 21",
+    "key": "g293916-d2422237",
+    "lat": 13.738245,
+    "lon": 100.560731
+   },
+   {
+    "name": "Chatrium Bangkok Riverside",
+    "key": "g293916-d1315544",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Rembrandt Hotel Bangkok",
+    "key": "g293916-d305496",
+    "lat": 13.71786,
+    "lon": 100.478732
+   }
+  ]
+ },
+ {
+  "city": "Oporto",
+  "lat": 41.1502,
+  "lon": -8.6103,
+  "hotels": [
+   {
+    "name": "Torel Saboaria",
+    "key": "g189180-d24853912",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Torel Palace Porto",
+    "key": "g189180-d17786186",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Torel 1884 Suites & Apartments",
+    "key": "g189180-d15619658",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Canto de Luz",
+    "key": "g189180-d4737366",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Hotel Porto River Infante",
+    "key": "g189180-d23875367",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Cocorico - Hotel & Restaurant",
+    "key": "g189180-d15132794",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Porto River Aparthotel",
+    "key": "g189180-d8694736",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Moov Hotel Porto Centro",
+    "key": "g189180-d2522678",
+    "lat": 41.145592,
+    "lon": -8.606547
+   },
+   {
+    "name": "Porto A.S. 1829 Hotel",
+    "key": "g189180-d7780542",
+    "lat": 41.142993,
+    "lon": -8.614913
+   },
+   {
+    "name": "Artcore Hotel Porto",
+    "key": "g189180-d33471488",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "Moov Hotel Porto Norte",
+    "key": "g189180-d8674713",
+    "lat": 41.180285,
+    "lon": -8.653035
+   },
+   {
+    "name": "Porto Palácio Hotel by The Editory",
+    "key": "g189180-d229305",
+    "lat": null,
+    "lon": null
+   },
+   {
+    "name": "PortoBay Flores",
+    "key": "g189180-d17571945",
+    "lat": 41.143994,
+    "lon": -8.614629
    }
   ]
  }
