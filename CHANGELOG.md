@@ -6,6 +6,12 @@ Cada versión tiene tres números, por ejemplo 1.2.3:
 - **El segundo** cambia al añadir algo nuevo, como más ciudades o una función.
 - **El tercero** cambia al corregir un error o hacer un retoque.
 
+## 1.11.0 · 7 de noviembre de 2026
+
+- Muchos más días con precio en el calendario de vuelos, con la misma fuente gratuita.
+- Se recorren todas las rutas de Europa con datos y sus precios se guardan en el historial.
+- Niza y Montecarlo ya no muestran los hoteles de la otra ciudad.
+
 ## 1.10.0 · 7 de noviembre de 2026
 
 - Se quitan de los planes los negocios cerrados o sin confirmar, comparándolos con Overture Maps.

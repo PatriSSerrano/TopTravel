@@ -35,6 +35,12 @@ REMOVED_FILE = ROOT / "data" / "planes-quitados.json"
 GENERIC = {"bar", "cafe", "cafeteria", "restaurante", "restaurant", "the", "la", "el", "los", "las", "de", "del", "y", "and", "club", "pub", "museo", "museum", "parque", "park"}
 # Solo cuando el nombre lo avisa de forma expresa: «Cerrado de Calderón» es un parque.
 CLOSED_NAME = re.compile(r"\((cerrado|closed|geschlossen|fermé|ferme)\)|permanently closed|cerrado permanentemente", re.I)
+# Comprobados uno a uno en noviembre de 2026: siguen abiertos aunque los datos digan lo contrario.
+CONFIRMED_OPEN = {
+    "Państwowe Muzeum Archeologiczne", "Kölner Senfmuseum", "Museu Nacional da Imprensa", "Museo dell'Osservatorio Astronomico",
+    "Collezione Luigi Bellini", '"Theodor Aman" Museum', '"Maria and Dr. George Severeanu" Collection', "Conrad Prebys Theatre Center",
+    "Brick and Mortar", "Théatre Forum Meyrin", "Arena-näyttämö", "Le Miroir", "St. Pauli Nachtmarkt", "China Cultural Center",
+}
 
 
 def plain(text):
@@ -77,6 +83,8 @@ def find(cells, item):
 
 def verdict(item, match):
     """Devuelve por qué se quita, o None si se queda."""
+    if item["name"] in CONFIRMED_OPEN:
+        return None
     if CLOSED_NAME.search(item["name"]):
         return "marcado cerrado en OpenStreetMap"
     if item["kind"] in LANDMARKS:

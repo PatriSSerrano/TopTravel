@@ -400,12 +400,26 @@ def history_destinations(origin):
     return unique[:price_collector.MAX_DESTINATIONS]
 
 
-def history_month_prices(origin, destination, month):
+def history_route_prices(origin, destination):
     _background.on = True
-    status, body = api_calendar({"origin": origin, "dest": destination, "month": month, "historial": True})
-    if status != 200:
-        raise ValueError("sin datos")
-    return body["days"]
+    return {day: item["price"] for day, item in route_days(origin, destination).items()}
+
+
+def history_all_destinations(origin):
+    """Todos los destinos con precio desde un origen, sin límite: para recorrer Europa entera."""
+    _background.on = True
+    rows = tp_request("/v2/prices/latest", {
+        "origin": origin, "currency": "eur", "period_type": "year", "one_way": "true", "show_to_affiliates": "false", "limit": 1000,
+    }) or []
+    return sorted({row["destination"] for row in rows if IATA.match(row.get("destination") or "") and row["destination"] != origin})
+
+
+def history_hubs():
+    """Los grandes aeropuertos del mundo y todos los orígenes de Europa, una vez por ciudad."""
+    data = places()
+    europe = [code for code, city in data["cities"].items() if city[3] in price_collector.EUROPE_COUNTRIES]
+    world = [data["airports"].get(code, code) for code in price_collector.WORLD_HUBS]
+    return list(dict.fromkeys(world + sorted(europe)))
 
 
 def history_hotel_keys():
@@ -450,9 +464,55 @@ def api_calendar(q):
         price = row.get("price")
         if date.startswith(month) and isinstance(price, (int, float)):
             days[date] = min(days.get(date, price), price)
-    if q.get("direct") != "1" and q.get("historial") is not True:
+    for day, item in optional_route_days(origin, dest, q.get("direct") == "1").items():
+        if day.startswith(month):
+            days[day] = min(days.get(day, item["price"]), item["price"])
+    if q.get("direct") != "1":
         price_collector.note_flights(origin, dest, days)
     return 200, {"days": days}
+
+
+def route_days(origin, dest, direct=False):
+    """Todos los días con precio de una ruta: esta consulta trae más días que la de cada mes, pero sin aerolínea ni hora."""
+    rows = tp_request("/v2/prices/latest", {
+        "origin": origin, "destination": dest, "currency": "eur", "period_type": "year",
+        "one_way": "true", "show_to_affiliates": "false", "limit": 1000,
+    }) or []
+    first, last = date.today().isoformat(), search_limit().isoformat()
+    days = {}
+    for row in rows:
+        day, price = row.get("depart_date") or "", row.get("value")
+        if not first <= day <= last or not isinstance(price, (int, float)) or row.get("return_date") or row.get("actual") is False:
+            continue
+        if direct and row.get("number_of_changes"):
+            continue
+        if day not in days or price < days[day]["price"]:
+            days[day] = {"price": price, "transfers": row.get("number_of_changes"), "duration": row.get("duration"), "seller": row.get("gate") or ""}
+    return days
+
+
+def optional_route_days(origin, dest, direct=False):
+    """Es un añadido: si falla, se sigue con lo de la consulta principal."""
+    try:
+        return route_days(origin, dest, direct)
+    except Unavailable:
+        return {}
+
+
+SELLER_DOMAIN = re.compile(r"^[a-z0-9-]+(\.[a-z0-9-]+)+$", re.I)
+OTHER_SEARCH_ENGINES = re.compile(r"aviasales|skyscanner|kayak|momondo|google", re.I)
+
+
+def seller_offer(origin, dest, day, item):
+    """Un precio real del que solo se sabe el día y quién lo vende."""
+    seller = item["seller"]
+    linkable = SELLER_DOMAIN.match(seller) and not OTHER_SEARCH_ENGINES.search(seller)
+    return {
+        "price": item["price"], "airline": "", "airlineName": "Aerolínea sin indicar", "flightNumber": None,
+        "origin": origin, "destination": dest, "departureAt": day, "returnAt": None,
+        "transfers": item["transfers"], "returnTransfers": None, "durationTo": item["duration"], "durationBack": None,
+        "seller": seller, "url": f"https://www.{seller.lower().removeprefix('www.')}" if linkable else "",
+    }
 
 
 def api_day(q):
@@ -481,6 +541,11 @@ def api_day(q):
         offers.append(offer(row))
         if len(offers) == 30:
             break
+    if not back:
+        # El calendario puede enseñar un día o un precio que aquí no sale con detalle: debe coincidir.
+        item = optional_route_days(origin, dest, q.get("direct") == "1").get(depart)
+        if item and (not offers or item["price"] < offers[0]["price"]):
+            offers.insert(0, seller_offer(origin, dest, depart, item))
     return 200, {"offers": offers}
 
 
@@ -742,10 +807,15 @@ def add_price_keys(data):
     hotels = [dict(h) for h in data["hotels"]]
     if center:
         # Hoteles elegidos a mano: su código no depende de la lista de Xotelo.
-        for group in CURATED_HOTELS:
-            if distance_km(center["lat"], center["lon"], group["lat"], group["lon"]) > XOTELO_CITY_KM:
-                continue
+        groups = [g for g in CURATED_HOTELS if distance_km(center["lat"], center["lon"], g["lat"], g["lon"]) <= XOTELO_CITY_KM]
+        nearest = lambda lat, lon: min(groups, key=lambda g: distance_km(lat, lon, g["lat"], g["lon"]))
+        home = nearest(center["lat"], center["lon"]) if groups else None
+        for group in groups:
             for item in group["hotels"]:
+                # Con dos ciudades cerca, cada hotel es de la más próxima: Niza no enseña los de Montecarlo.
+                place = nearest(item["lat"], item["lon"]) if item.get("lat") is not None else group
+                if place is not home:
+                    continue
                 match = next((h for h in hotels if same_curated_hotel(h, item)), None)
                 if match:
                     match["key"] = item["key"]
@@ -1708,7 +1778,7 @@ def main():
     if TRUST_PROXY:
         threading.Thread(target=watch_restart_flag, daemon=True).start()
         # Solo en la web publicada: en local no hace falta llenar el historial.
-        price_collector.start(history_destinations, history_month_prices, history_hotel_keys, history_stay_price)
+        price_collector.start(history_destinations, history_all_destinations, history_hubs, history_route_prices, history_hotel_keys, history_stay_price)
     state = "activados" if settings()["TRAVELPAYOUTS_TOKEN"] else "sin activar (falta la clave en .env)"
     print(f"TopTravel en http://localhost:{args.port} · precios {state}", flush=True)
     (ServerV6 if ":" in args.host else Server)((args.host, args.port), Handler).serve_forever()
