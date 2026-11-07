@@ -702,9 +702,9 @@ function legHtml(o, at, from, to, mins, stops) {
   const track = [duration(mins), stopsText(stops)].filter(Boolean).join(' · ');
   return `
     <div class="leg">
-      <div class="air"><i style="background:hsl(${hue} 55% 38%)" aria-hidden="true">${esc(o.airline || '✈')}${/^[A-Z0-9]{2}$/.test(o.airline) ? `<img class="air__logo" src="logos/${o.airline}.png" alt="" loading="lazy" decoding="async" width="40" height="40">` : ''}</i><span>${esc(o.airlineName || o.airline)}</span></div>
+      <div class="air"><i style="background:hsl(${hue} 55% 38%)" aria-hidden="true">${esc(o.airline)}${/^[A-Z0-9]{2}$/.test(o.airline) ? `<img class="air__logo" src="logos/${o.airline}.png" alt="" loading="lazy" decoding="async" width="40" height="40">` : ''}</i><span>${esc(o.airlineName || o.airline)}</span></div>
       <div class="times">
-        <div><strong>${esc(hhmm(at) || 'Hora sin indicar')}</strong><small>${esc(from)} · ${esc(at ? showDate(at.slice(0, 10)) : '')}</small></div>
+        <div><strong>${esc(hhmm(at))}</strong><small>${esc(from)} · ${esc(at ? showDate(at.slice(0, 10)) : '')}</small></div>
         <div class="track ${stops === 0 ? 'direct' : 'stop'}">${esc(track)}</div>
         <div><strong>${esc(to)}</strong></div>
       </div>
@@ -714,12 +714,8 @@ function legHtml(o, at, from, to, mins, stops) {
 function offerHtml(o, cheapest) {
   const legs = legHtml(o, o.departureAt, o.origin, o.destination, o.durationTo, o.transfers)
     + (o.returnAt ? legHtml(o, o.returnAt, o.destination, o.origin, o.durationBack, o.returnTransfers) : '');
-  const seller = o.seller || o.airlineName || o.airline;
-  const sellerNote = o.seller ? '<small class="pcard__note">La aerolínea y la hora se confirman en la web de venta.</small>' : '';
   const buy = o.url
-    ? `<a class="btn" href="${esc(o.url)}" target="_blank" rel="noopener" style="text-align:center">Web de ${esc(seller)}<span class="sr"> (se abre en una pestaña nueva)</span></a>${sellerNote}`
-    : o.seller ? `<small class="pcard__note">Precio encontrado en ${esc(seller)}. La aerolínea y la hora se confirman allí.</small>`
-    : !o.airline ? '<small class="pcard__note">Precio real encontrado hace pocos días. La fuente no indica la aerolínea, la hora ni dónde se vende.</small>'
+    ? `<a class="btn" href="${esc(o.url)}" target="_blank" rel="noopener" style="text-align:center">Web de ${esc(o.airlineName || o.airline)}<span class="sr"> (se abre en una pestaña nueva)</span></a>`
     : `<small class="pcard__note">Se compra en la web de ${esc(o.airlineName || o.airline)}.</small>`;
   return `
     <article class="card flight">
@@ -834,7 +830,7 @@ function renderFlightResults(el, lists) {
     const chosen = new Set([...form.querySelectorAll('[name=f_air]:checked')].map((i) => i.value));
     const keep = (o) => chosen.has(o.airline)
       && (stopsValue === 'any' || (stopsValue === 'direct' ? stops(o) === 0 : stops(o) <= 1))
-      && (timeValue === 'any' || !hhmm(o.departureAt) || slot(o) === timeValue);
+      && (timeValue === 'any' || slot(o) === timeValue);
 
     const visible = lists.map((l) => ({ ...l, cheapest: l.offers[0], rows: l.offers.filter(keep).sort(sorters[state.sort]) }));
     const rows = visible.flatMap((l) => l.rows);
@@ -2158,6 +2154,16 @@ function ratesHtml(rates, s) {
 const rateId = (key, s) => [key, s.start, s.end, s.pax.adults, s.pax.rooms].join('|');
 const MAP_PRICES = 16;
 const PRICES_BEFORE_SCROLL = 6;
+const NO_INFO_AFTER = 6;
+const NO_CITY_INFO = '<b>Actualmente no hay información de precios de alojamiento en esta ciudad</b>Se está trabajando en ello.';
+
+/* Un hotel sin precio es normal; que no tenga ninguno de los primeros, no: se avisa. */
+function paintNoCityInfo(root, rateLists) {
+  const answered = rateLists.filter(Boolean);
+  const none = answered.length >= NO_INFO_AFTER && !answered.some((rates) => rates.length);
+  root.querySelector('[data-no-info]')?.remove();
+  if (none) root.insertAdjacentHTML('afterbegin', `<div class="empty" data-no-info>${NO_CITY_INFO}</div>`);
+}
 const CHEAP_FIRST = { Albergue: 0, 'Casa de huéspedes': 1, Hostal: 1, Apartamento: 2 };
 
 async function loadVisibleRates(root, s, rows = []) {
@@ -2176,7 +2182,9 @@ async function loadVisibleRates(root, s, rows = []) {
       root.reloadRates?.();
     });
   }
+  const seen = new Map();
   const paint = (key, rates) => {
+    seen.set(key, rates);
     root.querySelectorAll(`[data-rates="${key}"]`).forEach((el) => { el.innerHTML = ratesHtml(rates, s); });
     if (rates && rates.length) {
       const night = perPerson(rates[0].rate, s);
@@ -2200,6 +2208,7 @@ async function loadVisibleRates(root, s, rows = []) {
     }
   };
   await Promise.all([next(), next(), next()]);
+  if (run === ratesRun) paintNoCityInfo(root, [...seen.values()]);
 }
 
 /* La nota media de viajeros que da Xotelo. Al pulsarla se abren las opiniones en TripAdvisor. */
@@ -2250,7 +2259,7 @@ async function loadHotels(s) {
     if (run !== hotelsRun) return;
     if (!r.ok) throw new Error(body.error || 'error');
     if (!body.hotels.length) {
-      el.innerHTML = '<div class="empty"><b>No se han encontrado alojamientos en esa zona</b>La búsqueda funciona mejor con el nombre de la ciudad.</div>';
+      el.innerHTML = '<div class="empty"><b>Actualmente no hay información de alojamiento en esta ciudad</b>Se está trabajando en ello.</div>';
       return;
     }
     planMap.hotels = body.hotels;
@@ -2258,7 +2267,7 @@ async function loadHotels(s) {
     paintPlanHotels();
     renderHotelResults(el, body.hotels, s, body.center);
   } catch {
-    if (run === hotelsRun) el.innerHTML = '<div class="empty"><b>Todavía no hay alojamientos de esta ciudad</b>Se van añadiendo más ciudades poco a poco. También se puede probar con la ciudad grande más cercana.</div>';
+    if (run === hotelsRun) el.innerHTML = '<div class="empty"><b>Actualmente no hay información de alojamiento en esta ciudad</b>Se está trabajando en ello.</div>';
   } finally {
     stop();
   }

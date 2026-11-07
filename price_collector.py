@@ -93,6 +93,17 @@ def compact_old_tables(db):
             db.commit()
 
 
+def forget_invented_prices(db):
+    """El 7-11-2026 entraron precios sin vuelo detrás, sin forma de distinguirlos: se borra ese día y se recoge de nuevo."""
+    if db.execute("PRAGMA user_version").fetchone()[0] < 1:
+        db.execute("DELETE FROM flight_prices WHERE seen_day = '2026-11-07'")
+        db.execute("DELETE FROM runs WHERE day = '2026-11-07' AND job IN ('vuelos', 'mundo')")
+        db.execute("DELETE FROM world_routes")
+        db.execute("DELETE FROM world_hubs")
+        db.execute("DELETE FROM world_state")
+        db.execute("PRAGMA user_version = 1")
+
+
 def init_db():
     DB_PATH.parent.mkdir(exist_ok=True)
     db = connect()
@@ -100,6 +111,7 @@ def init_db():
         db.execute("PRAGMA journal_mode = WAL")
         compact_old_tables(db)
         db.executescript(SCHEMA)
+        forget_invented_prices(db)
         db.commit()
     finally:
         db.close()

@@ -6,9 +6,13 @@ Cada versión tiene tres números, por ejemplo 1.2.3:
 - **El segundo** cambia al añadir algo nuevo, como más ciudades o una función.
 - **El tercero** cambia al corregir un error o hacer un retoque.
 
+## 1.11.1 · 7 de noviembre de 2026
+
+- Se retiran del calendario de vuelos los precios sin vuelo real detrás, que entraron en la 1.11.0.
+- Aviso en las ciudades sin información de precios de alojamiento.
+
 ## 1.11.0 · 7 de noviembre de 2026
 
-- Muchos más días con precio en el calendario de vuelos, con la misma fuente gratuita.
 - Se recorren todas las rutas de Europa con datos y sus precios se guardan en el historial.
 - Niza y Montecarlo ya no muestran los hoteles de la otra ciudad.
 
