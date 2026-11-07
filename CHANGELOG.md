@@ -6,6 +6,11 @@ Cada versión tiene tres números, por ejemplo 1.2.3:
 - **El segundo** cambia al añadir algo nuevo, como más ciudades o una función.
 - **El tercero** cambia al corregir un error o hacer un retoque.
 
+## 1.9.3 · 7 de noviembre de 2026
+
+- El calendario se abre solo al elegir el destino, como estaba previsto.
+- En móvil, el texto final de la portada ya no pisa el menú.
+
 ## 1.9.2 · 7 de noviembre de 2026
 
 - Fotos nuevas del Coliseo y de la basílica de San Pedro en la portada.

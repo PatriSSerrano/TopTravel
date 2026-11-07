@@ -75,3 +75,9 @@ html, body.lp { background: var(--lp-bg); }
 @media (max-width: 640px) {
   .lp-tool { min-width: 40px; min-height: 40px; justify-content: center; }
 }
+
+/* El pie empuja la escena hacia arriba al final: el último texto debe quedar bajo el menú */
+.sc-cap--center:has(.sc-note) { top: max(17vh, 170px); }
+@media (max-width: 640px) {
+  .sc-cap--center:has(.sc-note) { top: max(30vh, 240px); }
+}

@@ -257,6 +257,8 @@ function setupCombo(key, input, list, seg) {
   // mousedown evita que el campo pierda el foco antes de elegir.
   list.addEventListener('mousedown', (e) => e.preventDefault());
   list.addEventListener('click', (e) => {
+    // Sin esto, el mismo toque cerraría el calendario que se acaba de abrir.
+    e.stopPropagation();
     const li = e.target.closest('[role=option]');
     if (li) pick(items[Number(li.dataset.i)]);
   });
@@ -2151,7 +2153,7 @@ function ratesHtml(rates, s) {
 
 const rateId = (key, s) => [key, s.start, s.end, s.pax.adults, s.pax.rooms].join('|');
 const MAP_PRICES = 16;
-const PRICES_BEFORE_SCROLL = 4;
+const PRICES_BEFORE_SCROLL = 6;
 const CHEAP_FIRST = { Albergue: 0, 'Casa de huéspedes': 1, Hostal: 1, Apartamento: 2 };
 
 async function loadVisibleRates(root, s, rows = []) {
