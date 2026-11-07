@@ -15,7 +15,7 @@ import queue
 import sqlite3
 import threading
 import time
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 DB_PATH = Path(os.environ.get("TOPTRAVEL_HISTORY_DB", Path(__file__).resolve().parent / "data" / "historial.db"))
@@ -47,6 +47,7 @@ EUROPE_COUNTRIES = frozenset(
 )
 PENDING_IMPORT = DB_PATH.with_name("historial-nuevo.db")
 WORLD_REQUESTS_PER_DAY = 20000
+SAVED_FLIGHT_DAYS = 21  # un vuelo visto hace más ya no se enseña: el precio puede ser muy distinto
 WORLD_PAUSE = 2.5
 MAX_DB_BYTES = 500 * 1024 * 1024
 
@@ -55,6 +56,11 @@ CREATE TABLE IF NOT EXISTS flight_prices (
   origin TEXT NOT NULL, destination TEXT NOT NULL, travel_day TEXT NOT NULL,
   seen_day TEXT NOT NULL, price REAL NOT NULL,
   PRIMARY KEY (origin, destination, travel_day, seen_day)
+) WITHOUT ROWID;
+CREATE TABLE IF NOT EXISTS flight_seen (
+  origin TEXT NOT NULL, destination TEXT NOT NULL, travel_day TEXT NOT NULL, seen_day TEXT NOT NULL, price REAL NOT NULL,
+  airline TEXT, flight_number TEXT, departure_at TEXT, transfers INTEGER, duration INTEGER, origin_airport TEXT, destination_airport TEXT,
+  PRIMARY KEY (origin, destination, travel_day)
 ) WITHOUT ROWID;
 CREATE TABLE IF NOT EXISTS hotel_prices (
   hotel TEXT NOT NULL, check_in TEXT NOT NULL,
@@ -147,6 +153,44 @@ def save_flight(db, origin, destination, travel_day, price, seen_day):
     return True
 
 
+def save_route(db, origin, destination, flights, seen_day):
+    """Apunta el precio en el historial y el último vuelo visto de cada día."""
+    new_rows = 0
+    for travel_day, flight in flights.items():
+        new_rows += save_flight(db, origin, destination, travel_day, flight["price"], seen_day)
+        db.execute(
+            "INSERT OR REPLACE INTO flight_seen VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (origin, destination, travel_day, seen_day, flight["price"], flight.get("airline"), str(flight.get("flight_number") or ""), flight.get("departure_at"),
+             flight.get("transfers"), flight.get("duration"), flight.get("origin_airport"), flight.get("destination_airport")),
+        )
+    return new_rows
+
+
+def forget_old_flights(db, today):
+    oldest = (today - timedelta(days=SAVED_FLIGHT_DAYS)).isoformat()
+    db.execute("DELETE FROM flight_seen WHERE travel_day < ? OR seen_day < ?", (today.isoformat(), oldest))
+
+
+def saved_flights(origins, destinations, first_day, last_day, today=None):
+    """Vuelos reales vistos hace poco que la fuente ya no da. Devuelve {día: fila}, el más barato de cada día."""
+    today = today or date.today()
+    oldest = (today - timedelta(days=SAVED_FLIGHT_DAYS)).isoformat()
+    marks = ",".join("?" * len(origins)), ",".join("?" * len(destinations))
+    try:
+        db = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True, timeout=5)
+        db.row_factory = sqlite3.Row
+        try:
+            rows = db.execute(
+                f"SELECT * FROM flight_seen WHERE origin IN ({marks[0]}) AND destination IN ({marks[1]}) AND travel_day BETWEEN ? AND ? AND seen_day >= ? ORDER BY price DESC",
+                (*origins, *destinations, max(first_day, today.isoformat()), last_day, oldest),
+            ).fetchall()
+        finally:
+            db.close()
+    except sqlite3.Error:
+        return {}  # es un añadido: sin base, la búsqueda sigue con lo de la fuente
+    return {row["travel_day"]: dict(row) for row in rows}
+
+
 def save_hotel(db, hotel, check_in, price, seen_day):
     last = db.execute(
         "SELECT price FROM hotel_prices WHERE hotel = ? AND check_in = ? ORDER BY seen_day DESC LIMIT 1",
@@ -198,17 +242,14 @@ def run_job(job, tasks, handle, pause, today, sleep=time.sleep):
         db.close()
 
 
-def collect_flights(destinations_of, route_prices, today=None, sleep=time.sleep):
-    """route_prices(origen, destino) devuelve {día: precio} de la ida, de todos los meses a la vez."""
+def collect_flights(destinations_of, route_flights, today=None, sleep=time.sleep):
+    """route_flights(origen, destino) devuelve {día: vuelo} de la ida, de todos los meses a la vez."""
     today = today or date.today()
     tasks = [(origin, destination) for origin in ORIGINS for destination in destinations_of(origin)]
 
     def handle(db, task, day):
         origin, destination = task
-        return sum(
-            save_flight(db, origin, destination, travel_day, price, day)
-            for travel_day, price in route_prices(origin, destination).items()
-        )
+        return save_route(db, origin, destination, route_flights(origin, destination), day)
 
     run_job("vuelos", tasks, handle, FLIGHT_PAUSE, today, sleep)
 
@@ -245,14 +286,15 @@ def discover_world_routes(db, destinations_of, hubs, sleep=time.sleep):
         sleep(WORLD_PAUSE)
 
 
-def collect_world(destinations_of, hubs_of, route_prices, today=None, sleep=time.sleep, budget=WORLD_REQUESTS_PER_DAY):
+def collect_world(destinations_of, hubs_of, route_flights, today=None, sleep=time.sleep, budget=WORLD_REQUESTS_PER_DAY):
     """Avanza por todas las rutas hasta gastar el cupo del día; mañana sigue donde quedó."""
     today = today or date.today()
     day = today.isoformat()
     db = connect()
     try:
         db.execute("INSERT OR IGNORE INTO world_state (id, position, laps) VALUES (1, 0, 0)")
-        db.execute("INSERT OR IGNORE INTO runs (job, day) VALUES ('mundo', ?)", (day,))
+        if db.execute("INSERT OR IGNORE INTO runs (job, day) VALUES ('mundo', ?)", (day,)).rowcount:
+            forget_old_flights(db, today)
         db.commit()
         hubs = hubs_of()
         # Se apunta cada origen ya mirado: muchos pueblos no tienen vuelos y no hay que preguntar cada hora.
@@ -275,10 +317,7 @@ def collect_world(destinations_of, hubs_of, route_prices, today=None, sleep=time
             route = routes[position]
             new_rows, failed = 0, 0
             try:
-                new_rows = sum(
-                    save_flight(db, route["origin"], route["destination"], travel_day, price, day)
-                    for travel_day, price in route_prices(route["origin"], route["destination"]).items()
-                )
+                new_rows = save_route(db, route["origin"], route["destination"], route_flights(route["origin"], route["destination"]), day)
                 in_a_row = 0
             except Exception:
                 failed = 1
@@ -358,6 +397,7 @@ def import_pending():
         for origin in origins:
             db.execute("INSERT OR IGNORE INTO flight_prices SELECT * FROM nuevo.flight_prices WHERE origin = ?", (origin,))
             db.commit()
+        db.execute("INSERT OR IGNORE INTO flight_seen SELECT * FROM nuevo.flight_seen")
         db.execute("INSERT OR IGNORE INTO world_routes (origin, destination) SELECT origin, destination FROM nuevo.world_routes ORDER BY id")
         db.execute("INSERT OR IGNORE INTO world_hubs SELECT code FROM nuevo.world_hubs")
         db.commit()
@@ -368,7 +408,7 @@ def import_pending():
     PENDING_IMPORT.unlink()
 
 
-def start(destinations_of, all_destinations, hubs_of, route_prices, hotel_keys, stay_price):
+def start(destinations_of, all_destinations, hubs_of, route_flights, hotel_keys, stay_price):
     """Hilos aparte: si la web se reinicia, siguen por donde iban.
 
     Vuelos y hoteles van a la vez porque usan servicios distintos. La rotación del mundo
@@ -394,8 +434,8 @@ def start(destinations_of, all_destinations, hubs_of, route_prices, hotel_keys, 
             time.sleep(CHECK_EVERY)
 
     flights = (
-        (collect_flights, lambda: (destinations_of, route_prices)),
-        (collect_world, lambda: (all_destinations, hubs_of, route_prices)),
+        (collect_flights, lambda: (destinations_of, route_flights)),
+        (collect_world, lambda: (all_destinations, hubs_of, route_flights)),
     )
     hotels = ((collect_hotels, lambda: (hotel_keys(), stay_price)),)
     init_db()

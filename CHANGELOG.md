@@ -6,6 +6,10 @@ Cada versión tiene tres números, por ejemplo 1.2.3:
 - **El segundo** cambia al añadir algo nuevo, como más ciudades o una función.
 - **El tercero** cambia al corregir un error o hacer un retoque.
 
+## 1.12.0 · 7 de noviembre de 2026
+
+- El calendario suma vuelos reales vistos en las últimas semanas que la fuente ya no da, indicando cuándo se vieron.
+
 ## 1.11.1 · 7 de noviembre de 2026
 
 - Se retiran del calendario de vuelos los precios sin vuelo real detrás, que entraron en la 1.11.0.

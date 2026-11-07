@@ -308,7 +308,7 @@ function loadMonth(route, month) {
   fetch(`/api/calendar?${q}`)
     .then((r) => r.json().then((body) => ({ ok: r.ok, body })))
     .then(({ ok, body }) => {
-      state.prices[key] = ok ? { status: 'ok', days: body.days || {} } : { status: 'off', days: {} };
+      state.prices[key] = ok ? { status: 'ok', days: body.days || {}, saved: body.saved || {} } : { status: 'off', days: {} };
     })
     .catch(() => { state.prices[key] = { status: 'off', days: {} }; })
     .finally(() => { if (!$('calPop').hidden) renderCal(); });
@@ -322,13 +322,15 @@ function priceNote(route, months) {
   if (entries.some((e) => e.status === 'off')) return 'Los precios por día no están disponibles ahora mismo.';
   const leg = `${route.from.city} → ${route.to.city}`;
   if (!entries.some((e) => Object.keys(e.days).length)) return `No hay precios recientes para ${leg} en estos meses.`;
-  return `${leg}: precio orientativo por adulto, solo este tramo, encontrado recientemente. El definitivo se confirma en la web de venta.`;
+  const older = entries.some((e) => Object.keys(e.saved || {}).length) ? ' Los precios en cursiva se vieron hace unos días.' : '';
+  return `${leg}: precio orientativo por adulto, solo este tramo, encontrado recientemente. El definitivo se confirma en la web de venta.${older}`;
 }
 
 /* ---------- Calendario ---------- */
 function monthHtml(first, route) {
   const month = toIso(first).slice(0, 7);
   const days = route ? (state.prices[priceKey(route, month)]?.days || {}) : {};
+  const saved = route ? (state.prices[priceKey(route, month)]?.saved || {}) : {};
   const lowest = Object.keys(days).length ? Math.min(...Object.values(days)) : null;
   const today = todayIso();
   const max = maxIso();
@@ -348,7 +350,8 @@ function monthHtml(first, route) {
     const off = iso < today || iso > max;
     const price = off ? undefined : days[iso];
     if (price !== undefined && price === lowest) cls.push('low');
-    const label = price !== undefined ? `${showDate(iso)}, desde ${money(price)}` : showDate(iso);
+    if (price !== undefined && saved[iso]) cls.push('is-saved');
+    const label = price !== undefined ? `${showDate(iso)}, desde ${money(price)}${saved[iso] ? `, visto el ${showDate(saved[iso])}` : ''}` : showDate(iso);
     cells += `<button type="button" class="${cls.join(' ')}" data-d="${iso}" aria-label="${esc(label)}"${off ? ' disabled' : ''}>${day}${price !== undefined ? `<small>${esc(money(price))}</small>` : ''}</button>`;
   }
   return `<div class="cal__month"><h3>${esc(fmtMonth.format(first))}</h3><div class="cal__grid">${cells}</div></div>`;
@@ -723,6 +726,7 @@ function offerHtml(o, cheapest) {
       <div class="flight__buy">
         ${cheapest ? '<span class="badge-low">El más barato</span>' : ''}
         <div class="price">${esc(money(o.price))}<small>por adulto, orientativo</small></div>
+        ${o.seenDay ? `<small class="pcard__note">Precio visto el ${esc(showDate(o.seenDay))}. Puede haber cambiado.</small>` : ''}
         ${buy}
         ${compareOfferButton(o)}
       </div>

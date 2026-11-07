@@ -382,7 +382,8 @@ def cheaper_day(data):
         return None
     today = date.today().isoformat()
     status, body = api_calendar({"origin": data["origin"]["code"], "dest": data["dest"]["code"], "month": data["start"][:7]})
-    days = {d: p for d, p in body.get("days", {}).items() if d >= today} if status == 200 else {}
+    # Un aviso de «más barato» solo con precios de hoy, no con los guardados.
+    days = {d: p for d, p in body.get("days", {}).items() if d >= today and d not in body.get("saved", {})} if status == 200 else {}
     if not days:
         return None
     best = min(days, key=days.get)
@@ -400,9 +401,9 @@ def history_destinations(origin):
     return unique[:price_collector.MAX_DESTINATIONS]
 
 
-def history_route_prices(origin, destination):
+def history_route_flights(origin, destination):
     _background.on = True
-    return route_days(origin, destination)
+    return route_flights(origin, destination)
 
 
 def history_all_destinations(origin):
@@ -466,7 +467,13 @@ def api_calendar(q):
             days[date] = min(days.get(date, price), price)
     if q.get("direct") != "1":
         price_collector.note_flights(origin, dest, days)
-    return 200, {"days": days}
+    # Después de apuntarlos: un precio guardado no debe entrar otra vez en el historial como si fuera de hoy.
+    saved = {}
+    for day, row in saved_route_flights(origin, dest, f"{month}-01", f"{month}-31", q.get("direct") == "1").items():
+        if day not in days:
+            days[day] = row["price"]
+            saved[day] = row["seen_day"]
+    return 200, {"days": days, "saved": saved}
 
 
 def real_price_rows(rows):
@@ -474,19 +481,41 @@ def real_price_rows(rows):
     return [row for row in rows if row.get("gate") and row.get("duration") and row.get("actual") is not False]
 
 
-def route_days(origin, dest):
-    """Los precios reales de una ruta, de todos los meses en una sola consulta: solo para el historial."""
-    rows = tp_request("/v2/prices/latest", {
-        "origin": origin, "destination": dest, "currency": "eur", "period_type": "year",
-        "one_way": "true", "show_to_affiliates": "false", "limit": 1000,
-    }) or []
+def route_flights(origin, dest):
+    """Los vuelos reales de una ruta, de todos los meses en una sola consulta: solo para el historial."""
+    rows = prices_for_dates({"origin": origin, "destination": dest, "one_way": "true", "direct": "false"})
     first, last = date.today().isoformat(), search_limit().isoformat()
     days = {}
-    for row in real_price_rows(rows):
-        day, price = row.get("depart_date") or "", row.get("value")
-        if first <= day <= last and isinstance(price, (int, float)) and not row.get("return_date"):
-            days[day] = min(days.get(day, price), price)
+    for row in rows:
+        day, price = (row.get("departure_at") or "")[:10], row.get("price")
+        if first <= day <= last and isinstance(price, (int, float)) and (day not in days or price < days[day]["price"]):
+            days[day] = {
+                "price": price, "airline": row.get("airline"), "flight_number": row.get("flight_number"), "departure_at": row.get("departure_at"),
+                "transfers": row.get("transfers"), "duration": row.get("duration"), "origin_airport": row.get("origin_airport"), "destination_airport": row.get("destination_airport"),
+            }
     return days
+
+
+def saved_route_flights(origin, dest, first_day, last_day, direct=False):
+    """Lo guardado en el historial para esta ruta: se guarda por ciudad, y un aeropuerto concreto debe coincidir."""
+    airports = places_or_empty_airports()
+    origins, dests = {origin, airports.get(origin, origin)}, {dest, airports.get(dest, dest)}
+    found = {}
+    for day, row in price_collector.saved_flights(sorted(origins), sorted(dests), first_day, last_day).items():
+        if origin in airports and airports[origin] != origin and row["origin_airport"] != origin:
+            continue
+        if dest in airports and airports[dest] != dest and row["destination_airport"] != dest:
+            continue
+        if not direct or not row["transfers"]:
+            found[day] = row
+    return found
+
+
+def places_or_empty_airports():
+    try:
+        return places()["airports"]
+    except Unavailable:
+        return {}
 
 
 def api_day(q):
@@ -515,6 +544,10 @@ def api_day(q):
         offers.append(offer(row))
         if len(offers) == 30:
             break
+    if not offers and not back:
+        row = saved_route_flights(origin, dest, depart, depart, q.get("direct") == "1").get(depart)
+        if row:
+            offers.append({**offer(row), "seenDay": row["seen_day"]})
     return 200, {"offers": offers}
 
 
@@ -1747,7 +1780,7 @@ def main():
     if TRUST_PROXY:
         threading.Thread(target=watch_restart_flag, daemon=True).start()
         # Solo en la web publicada: en local no hace falta llenar el historial.
-        price_collector.start(history_destinations, history_all_destinations, history_hubs, history_route_prices, history_hotel_keys, history_stay_price)
+        price_collector.start(history_destinations, history_all_destinations, history_hubs, history_route_flights, history_hotel_keys, history_stay_price)
     state = "activados" if settings()["TRAVELPAYOUTS_TOKEN"] else "sin activar (falta la clave en .env)"
     print(f"TopTravel en http://localhost:{args.port} · precios {state}", flush=True)
     (ServerV6 if ":" in args.host else Server)((args.host, args.port), Handler).serve_forever()

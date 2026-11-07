@@ -38,10 +38,10 @@ def main():
     print("rutas:", routes, flush=True)
     db.close()
 
-    def route_prices(origin, destination):
+    def route_flights(origin, destination):
         for attempt in range(4):
             try:
-                return server.history_route_prices(origin, destination)
+                return server.history_route_flights(origin, destination)
             except server.Unavailable as error:
                 if str(error) != "busy" and attempt == 3:
                     raise
@@ -60,7 +60,7 @@ def main():
         if state and state["position"] == last:
             sys.exit("parado: demasiados fallos seguidos. Al repetirlo otro día, sigue por donde iba.")
         last = state["position"] if state else None
-        price_collector.collect_world(destinations, lambda: hubs, route_prices, sleep=lambda _: time.sleep(PAUSE), budget=10 ** 9)
+        price_collector.collect_world(destinations, lambda: hubs, route_flights, sleep=lambda _: time.sleep(PAUSE), budget=10 ** 9)
     db = sqlite3.connect(OUT)
     db.execute("PRAGMA journal_mode = DELETE")
     db.close()
