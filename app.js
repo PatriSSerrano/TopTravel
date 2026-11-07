@@ -719,6 +719,7 @@ function offerHtml(o, cheapest) {
   const buy = o.url
     ? `<a class="btn" href="${esc(o.url)}" target="_blank" rel="noopener" style="text-align:center">Web de ${esc(seller)}<span class="sr"> (se abre en una pestaña nueva)</span></a>${sellerNote}`
     : o.seller ? `<small class="pcard__note">Precio encontrado en ${esc(seller)}. La aerolínea y la hora se confirman allí.</small>`
+    : !o.airline ? '<small class="pcard__note">Precio real encontrado hace pocos días. La fuente no indica la aerolínea, la hora ni dónde se vende.</small>'
     : `<small class="pcard__note">Se compra en la web de ${esc(o.airlineName || o.airline)}.</small>`;
   return `
     <article class="card flight">
