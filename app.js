@@ -2431,7 +2431,7 @@ function renderPlans(el, items, city, center, s) {
         <p class="count" data-count></p>
         <div class="list" data-results></div>
         <button type="button" class="btn btn--out btn--block more">Ver más planes</button>
-        <p class="count">El precio, el presupuesto y el tipo de plan son orientativos: si el sitio no lo indica, se deducen de su tipo. «Poco conocido» significa que no tiene ficha en Wikipedia ni en Wikidata. Conviene confirmar los horarios antes de ir.</p>
+        <p class="count">El precio, el presupuesto y el tipo de plan son orientativos: si el sitio no lo indica, se deducen de su tipo. «Poco conocido» significa que no tiene ficha en Wikipedia ni en Wikidata. Los negocios se comparan con Overture Maps para quitar los cerrados, pero alguno puede haber cerrado hace poco: conviene confirmarlo antes de ir.</p>
         <p class="legal">Datos: © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">colaboradores de OpenStreetMap</a> y <a href="https://www.wikidata.org" target="_blank" rel="noopener">Wikidata</a>.</p>
       </div>
     </div>`;

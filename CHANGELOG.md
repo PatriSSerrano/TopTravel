@@ -6,6 +6,11 @@ Cada versión tiene tres números, por ejemplo 1.2.3:
 - **El segundo** cambia al añadir algo nuevo, como más ciudades o una función.
 - **El tercero** cambia al corregir un error o hacer un retoque.
 
+## 1.10.0 · 7 de noviembre de 2026
+
+- Se quitan de los planes los negocios cerrados o sin confirmar, comparándolos con Overture Maps.
+- Hoteles con precio, ubicación y nota en Europa, Norteamérica y 33 ciudades de Asia.
+
 ## 1.9.3 · 7 de noviembre de 2026
 
 - El calendario se abre solo al elegir el destino, como estaba previsto.
